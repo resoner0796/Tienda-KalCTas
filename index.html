@@ -16,7 +16,7 @@
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            overflow: hidden; /* Evita el scroll horizontal durante las transiciones del panel lateral */
+            overflow-x: hidden; /* Evita el scroll horizontal durante las transiciones del panel lateral */
         }
 
         /* --- Contenedor Principal (Bloque Naranja Oscuro) --- */
@@ -35,6 +35,8 @@
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 1s ease-in, transform 1s ease-in;
+            min-height: 80vh; /* Ajuste para el scroll interno */
+            padding-bottom: 80px;
         }
 
         .container.show {
@@ -50,6 +52,15 @@
             opacity: 0;
             transform: scale(0.95);
             transition: opacity 0.5s ease, transform 0.5s ease;
+            /* Estilos para el scroll en los catálogos */
+            max-height: calc(100vh - 200px); /* Altura máxima para permitir scroll */
+            overflow-y: auto;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .screen::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
         }
 
         .screen.active {
@@ -217,7 +228,7 @@
         }
 
         /* --- Modales y alertas --- */
-        .image-modal, .auth-modal, .alert-box, .cart-modal {
+        .image-modal, .auth-modal, .alert-box, .cart-modal, .edit-profile-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -429,6 +440,11 @@
             margin-bottom: 20px;
         }
 
+        .account-info {
+            flex-grow: 1; /* Permite que la información ocupe el espacio restante */
+            overflow-y: auto; /* Permite el scroll interno */
+        }
+        
         .account-info p {
             margin: 10px 0;
             font-size: 1.1em;
@@ -521,11 +537,12 @@
     </div>
 
     <div id="account-panel" class="account-panel">
+        <span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
         <h3>Mi Cuenta</h3>
         <div class="account-info" id="account-info">
             </div>
         <div class="account-buttons">
-            <button class="btn btn-edit-profile" onclick="editarDatos()">Editar mis datos</button>
+            <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
     </div>
@@ -533,6 +550,20 @@
     <div id="image-modal" class="image-modal" onclick="cerrarModal()">
         <span class="close-modal">&times;</span>
         <img class="modal-content-img" id="modal-image">
+    </div>
+
+    <div id="edit-profile-modal" class="edit-profile-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="cerrarModalEditarDatos()">&times;</span>
+            <h3>Editar Mis Datos</h3>
+            <form id="edit-profile-form" class="auth-form">
+                <input type="text" id="edit-nombre" placeholder="Nombre" required>
+                <input type="text" id="edit-apellido" placeholder="Apellido" required>
+                <input type="tel" id="edit-telefono" placeholder="Teléfono de contacto (Opcional)">
+                <button type="submit" class="btn-auth">Guardar Cambios</button>
+                <p id="edit-message" class="auth-message"></p>
+            </form>
+        </div>
     </div>
 
     <div id="auth-modal" class="auth-modal">
@@ -551,10 +582,10 @@
             <div id="register-form-container" style="display:none;">
                 <h3>Crear Cuenta</h3>
                 <form id="register-form" class="auth-form">
-                    <input type="email" id="register-email" placeholder="Correo electrónico" required>
-                    <input type="password" id="register-password" placeholder="Contraseña" required>
                     <input type="text" id="register-nombre" placeholder="Nombre" required>
                     <input type="text" id="register-apellido" placeholder="Apellido" required>
+                    <input type="email" id="register-email" placeholder="Correo electrónico" required>
+                    <input type="password" id="register-password" placeholder="Contraseña" required>
                     <button type="submit" class="btn-auth">Registrarme</button>
                     <p id="register-message" class="auth-message"></p>
                 </form>
@@ -594,9 +625,10 @@
         const alertText = document.getElementById('alert-text');
         
         const pantallas = document.querySelectorAll('.screen');
+        const mainContainer = document.getElementById('main-container');
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('main-container').classList.add('show');
+            mainContainer.classList.add('show');
         });
 
         function showMessage(text) {
@@ -632,7 +664,6 @@
             if (user) {
                 console.log('Usuario autenticado:', user.email);
                 authButton.textContent = 'Mi Cuenta';
-                // Cambio: Ahora el botón de Mi Cuenta abre el panel lateral
                 authButton.onclick = () => mostrarPanelMiCuenta();
                 habilitarBotonesCarrito();
                 cargarDatosUsuario();
@@ -694,6 +725,7 @@
                     email: email,
                     nombre: nombre,
                     apellido: apellido,
+                    telefono: null, // Campo de teléfono inicializado en null
                     carrito: []
                 });
                 showMessage('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
@@ -750,6 +782,7 @@
                     accountInfo.innerHTML = `
                         <p><strong>Nombre:</strong> ${userData.nombre} ${userData.apellido}</p>
                         <p><strong>Correo:</strong> ${userData.email}</p>
+                        <p><strong>Teléfono:</strong> ${userData.telefono || 'No registrado'}</p>
                     `;
                 }
             } catch (error) {
@@ -758,9 +791,52 @@
             }
         }
 
-        function editarDatos() {
-            showMessage("Función para editar datos aún no implementada.");
+        const editProfileModal = document.getElementById('edit-profile-modal');
+        const editProfileForm = document.getElementById('edit-profile-form');
+
+        async function mostrarModalEditarDatos() {
+            if (!currentUser) return;
+            cerrarPanelMiCuenta();
+            editProfileModal.style.display = 'flex';
+            try {
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    document.getElementById('edit-nombre').value = userData.nombre || '';
+                    document.getElementById('edit-apellido').value = userData.apellido || '';
+                    document.getElementById('edit-telefono').value = userData.telefono || '';
+                }
+            } catch (error) {
+                console.error("Error al cargar datos para editar:", error);
+                showMessage("No se pudieron cargar los datos para editar.");
+            }
         }
+
+        function cerrarModalEditarDatos() {
+            editProfileModal.style.display = 'none';
+        }
+
+        editProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('edit-nombre').value;
+            const apellido = document.getElementById('edit-apellido').value;
+            const telefono = document.getElementById('edit-telefono').value;
+
+            try {
+                const userRef = db.collection('usuarios').doc(currentUser.uid);
+                await userRef.update({
+                    nombre: nombre,
+                    apellido: apellido,
+                    telefono: telefono
+                });
+                showMessage('Datos actualizados con éxito.');
+                cerrarModalEditarDatos();
+                cargarDatosUsuario(); // Recargar los datos para reflejar los cambios
+            } catch (error) {
+                console.error("Error al actualizar datos:", error);
+                document.getElementById('edit-message').textContent = "Hubo un error al guardar los cambios.";
+            }
+        });
 
         async function cerrarSesion() {
             try {
@@ -821,9 +897,11 @@
                             <img src="${producto.imagenUrl}" alt="Modelo de calceta">
                             <p class="product-price">$${producto.precio}</p>
                             <p>${producto.nombre}</p>
-                            <p><strong>Stock: ${producto.stock}</strong></p> <div class="model-buttons">
+                            <div class="model-buttons">
                                 <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
-                                <button class="btn btn-add" data-id="${doc.id}">Agregar al Carrito</button>
+                                <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 ? 'disabled' : ''}>
+                                    ${producto.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
+                                </button>
                             </div>
                         </div>
                     `;
@@ -834,9 +912,9 @@
                 botonesAgregar.forEach(btn => {
                     btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
                     if (currentUser) {
-                        btn.disabled = false;
+                        btn.disabled = btn.disabled; // Mantiene el estado de "Agotado"
                     } else {
-                        btn.disabled = true;
+                        btn.disabled = true; // Deshabilita si no está logeado
                     }
                 });
 
@@ -877,15 +955,14 @@
                         throw "Este producto está agotado.";
                     }
                     
-                    // Disminuye el stock temporalmente
-                    transaction.update(productoRef, { stock: productoData.stock - 1 });
+                    transaction.update(productoRef, { stock: firebase.firestore.FieldValue.increment(-1) });
                     return doc;
                 });
 
                 const producto = {
                     id: productoDoc.id,
                     ...productoDoc.data(),
-                    stock: undefined // No agregamos el stock al carrito
+                    stock: undefined 
                 };
 
                 const userRef = db.collection('usuarios').doc(currentUser.uid);
@@ -894,8 +971,7 @@
                 });
                 
                 showMessage('¡El modelo ha sido agregado al carrito!');
-                console.log(`Producto ID ${producto.id} agregado al carrito de ${currentUser.email}. Nuevo stock: ${productoDoc.data().stock - 1}`);
-                generarGaleria(document.querySelector('.screen.active').id); // Actualiza la galería para reflejar el cambio de stock
+                generarGaleria(document.querySelector('.screen.active').id); 
             } catch (error) {
                 console.error("Error al agregar al carrito:", error);
                 if (typeof error === 'string') {
@@ -958,13 +1034,10 @@
                 const userRef = db.collection('usuarios').doc(currentUser.uid);
                 const userDoc = await userRef.get();
                 const userData = userDoc.data();
-                let carrito = userData.carrito || [];
+                let carrito = [...(userData.carrito || [])]; 
                 
-                // Usamos el índice para eliminar el producto correcto
                 if (index > -1 && index < carrito.length) {
                     const productoEliminado = carrito.splice(index, 1)[0];
-
-                    // Devuelve el stock temporalmente
                     const productoRef = db.collection('productos').doc(productoEliminado.id);
                     await productoRef.update({
                         stock: firebase.firestore.FieldValue.increment(1)
