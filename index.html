@@ -132,22 +132,28 @@
 
         .btn-kalctas-2-4 { background-color: #ff6b6b; }
         .btn-kalctas-3-4 { background-color: #48dbfb; }
-        .btn-deportivas { background-color: #1dd1a1; }
+        .btn-kalctas-largas { background-color: #f39c12; }
         .btn-volver { background-color: #576574; }
 
         .btn-view { background-color: #2e86de; }
-        .btn-add { background-color: #27ae60; }
+        .btn-add {
+            background-color: #27ae60;
+            display: flex; /* Centrado del texto y emoji */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
         .btn-checkout { background-color: #f39c12; }
         
         /* --- Iconos de la cabecera --- */
         .header-icons {
-            position: fixed; /* Posición fija para no desplazarse con el scroll */
+            position: fixed;
             top: 20px;
             right: 25px;
             display: flex;
             gap: 15px;
             transition: all 1s ease-in;
-            z-index: 100; /* Asegura que esté por encima de otros elementos */
+            z-index: 100;
         }
 
         .header-icon {
@@ -155,6 +161,7 @@
             color: #ffffff;
             cursor: pointer;
             transition: transform 0.2s ease;
+            line-height: 1; /* Elimina el espacio extra para un mejor centrado visual */
         }
 
         .header-icon:hover {
@@ -162,7 +169,7 @@
         }
 
         .auth-button {
-            position: fixed; /* Posición fija para no desplazarse con el scroll */
+            position: fixed;
             top: 20px;
             left: 25px;
             background-color: transparent;
@@ -174,7 +181,7 @@
             font-size: 0.8em;
             font-weight: bold;
             transition: background-color 0.2s ease;
-            z-index: 100; /* Asegura que esté por encima de otros elementos */
+            z-index: 100;
         }
 
         .auth-button:hover {
@@ -475,7 +482,6 @@
             gap: 10px;
             margin-top: auto;
         }
-
     </style>
 </head>
 <body>
@@ -496,8 +502,8 @@
                 <button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
                     KalCTas 3/4
                 </button>
-                <button class="btn btn-deportivas" onclick="mostrarPantalla('pantalla-deportivas')">
-                    KalCTas Deportivas
+                <button class="btn btn-kalctas-largas" onclick="mostrarPantalla('pantalla-largas')">
+                    KalCTas Largas
                 </button>
             </div>
         </main>
@@ -518,9 +524,9 @@
             </button>
         </section>
 
-        <section id="pantalla-deportivas" class="screen">
+        <section id="pantalla-largas" class="screen">
             <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
-            <div class="model-grid" id="grid-deportivas"></div>
+            <div class="model-grid" id="grid-largas"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
             </button>
@@ -631,7 +637,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             mainContainer.classList.add('show');
-            window.scrollTo(0, 0); // Asegura que la página inicie en la parte superior
+            window.scrollTo(0, 0); 
         });
 
         function showMessage(text) {
@@ -682,7 +688,6 @@
             document.querySelectorAll('.btn-add').forEach(btn => btn.disabled = true);
         }
 
-        // Funciones de autenticación
         const authModal = document.getElementById('auth-modal');
         const loginFormContainer = document.getElementById('login-form-container');
         const registerFormContainer = document.getElementById('register-form-container');
@@ -955,9 +960,9 @@
                     categoria = 'KalCTas3-4';
                     gridId = 'grid-3-4';
                     break;
-                case 'pantalla-deportivas':
-                    categoria = 'KalCTasDeportivas';
-                    gridId = 'grid-deportivas';
+                case 'pantalla-largas':
+                    categoria = 'KalCTasLargas';
+                    gridId = 'grid-largas';
                     break;
                 default:
                     categoria = '';
