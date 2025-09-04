@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalCTas Tienda</title>
+    <style>
+        /* --- Estilos Generales --- */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5; /* Un gris claro y suave para el fondo */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        /* --- Contenedor Principal --- */
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            transition: all 0.3s ease;
+        }
+
+        /* --- Títulos --- */
+        h1 {
+            color: #1a2c5b; /* Un azul oscuro y formal */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #555;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        /* --- Logo --- */
+        .logo {
+            max-width: 150px; /* Ajusta el tamaño del logo */
+            margin-bottom: 30px;
+        }
+
+        /* --- Contenedor de Botones --- */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Espacio entre los botones */
+        }
+
+        /* --- Estilo de Botones --- */
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px); /* Efecto de "levantar" el botón */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Colores específicos para cada botón */
+        .btn-kalctas-2-4 { background-color: #ff6b6b; } /* Coral */
+        .btn-kalctas-3-4 { background-color: #48dbfb; } /* Azul claro */
+        .btn-deportivas { background-color: #1dd1a1; } /* Verde menta */
+        .btn-volver { background-color: #576574; } /* Gris oscuro */
+        
+        /* --- Pantallas/Secciones --- */
+        /* Por defecto, todas las pantallas de productos están ocultas */
+        .screen {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <main id="pantalla-principal" class="screen" style="display: block;">
+            <h1>Bienvenido</h1>
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo">
+            
+            <div class="button-container">
+                <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
+                    KalCTas 2/4
+                </button>
+                <button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
+                    KalCTas 3/4
+                </button>
+                <button class="btn btn-deportivas" onclick="mostrarPantalla('pantalla-deportivas')">
+                    KalCTas Deportivas
+                </button>
+            </div>
+        </main>
+
+        <section id="pantalla-2-4" class="screen">
+            <h2>Catálogo: KalCTas 2/4</h2>
+            <p>Aquí irá el contenido de las calcetas 2/4.</p>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
+            </button>
+        </section>
+
+        <section id="pantalla-3-4" class="screen">
+            <h2>Catálogo: KalCTas 3/4</h2>
+            <p>Aquí irá el contenido de las calcetas 3/4.</p>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
+            </button>
+        </section>
+
+        <section id="pantalla-deportivas" class="screen">
+            <h2>Catálogo: KalCTas Deportivas</h2>
+            <p>Aquí irá el contenido de las calcetas deportivas.</p>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
+            </button>
+        </section>
+    </div>
+
+    <script>
+        // --- Lógica de Navegación ---
+
+        // Seleccionamos todas las pantallas/secciones que tenemos
+        const pantallas = document.querySelectorAll('.screen');
+
+        /**
+         * Función para mostrar una pantalla específica y ocultar las demás.
+         * @param {string} idDePantalla - El ID del elemento que se quiere mostrar.
+         */
+        function mostrarPantalla(idDePantalla) {
+            // Ocultamos todas las pantallas primero
+            pantallas.forEach(pantalla => {
+                pantalla.style.display = 'none';
+            });
+
+            // Mostramos solo la pantalla que queremos ver
+            const pantallaActiva = document.getElementById(idDePantalla);
+            if (pantallaActiva) {
+                pantallaActiva.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
