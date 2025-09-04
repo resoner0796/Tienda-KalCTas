@@ -91,30 +91,29 @@
 
         .title-container h1 {
             margin: 0;
-            font-size: 1.8em;
+            font-size: 1.5em; /* Tamaño de fuente ajustado */
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            white-space: nowrap; /* Asegura que el texto esté en una sola línea */
         }
 
         .title-container hr {
-            width: 150px;
-            height: 2px;
-            background-color: #ffffff;
-            border: none;
-            margin: 5px 0 20px 0;
+            display: none; /* Se elimina la línea blanca */
         }
 
         /* --- Logo --- */
         .logo {
-            max-width: 250px;
+            max-width: 300px; /* Tamaño del logo aumentado */
             margin-bottom: 30px;
             order: 2;
             transition: all 1s ease-in;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Efecto de sombreado */
         }
 
         .logo-small {
             display: block;
             width: 100px;
             margin: 0 auto 20px auto;
+            cursor: pointer; /* Indica que es interactivo */
         }
 
         /* --- Contenedor de Botones (Menú principal) --- */
@@ -522,7 +521,6 @@
         <main id="pantalla-principal" class="screen active">
             <div class="title-container">
                 <h1>¡Bienvenido a KalCTas!</h1>
-                <hr>
             </div>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
@@ -539,7 +537,7 @@
         </main>
 
         <section id="pantalla-2-4" class="screen">
-            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
+            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
             <div class="model-grid" id="grid-2-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
@@ -547,7 +545,7 @@
         </section>
 
         <section id="pantalla-3-4" class="screen">
-            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
+            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
             <div class="model-grid" id="grid-3-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
@@ -555,7 +553,7 @@
         </section>
 
         <section id="pantalla-largas" class="screen">
-            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
+            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
             <div class="model-grid" id="grid-largas"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
