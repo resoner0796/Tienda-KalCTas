@@ -322,7 +322,7 @@
     <div class="container">
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-            <a href="#" class="header-icon" onclick="alert('¡Aquí irá la pantalla del carrito!')">🛍️</a>
+            <a href="#" class="header-icon" onclick="mostrarMensajeCarrito()">🛍️</a>
         </div>
 
         <main id="pantalla-principal" class="screen" style="display: block;">
@@ -397,7 +397,6 @@
         </div>
     </div>
     
-    <!-- Contenedor para el mensaje personalizado, reemplazando a `alert()` -->
     <div id="alert-box" class="alert-box">
         <div class="alert-content">
             <p id="alert-text" class="alert-text"></p>
@@ -438,6 +437,10 @@
 
         function closeAlert() {
             alertBox.style.display = 'none';
+        }
+        
+        function mostrarMensajeCarrito() {
+            showMessage('¡Aquí irá la pantalla del carrito!');
         }
 
         // Manejo del estado de autenticación
@@ -557,24 +560,34 @@
         }
         
         async function generarGaleria(idDePantalla) {
-            const contenedor = document.getElementById(`grid-${idDePantalla.split('-')[1]}`);
-            
-            // Lógica corregida para mapear el ID de la pantalla al nombre de categoría de Firestore
             let categoria;
+            let gridId;
+
             switch(idDePantalla) {
                 case 'pantalla-2-4':
                     categoria = 'KalCTas2-4';
+                    gridId = 'grid-2-4';
                     break;
                 case 'pantalla-3-4':
                     categoria = 'KalCTas3-4';
+                    gridId = 'grid-3-4';
                     break;
                 case 'pantalla-deportivas':
                     categoria = 'KalCTasDeportivas';
+                    gridId = 'grid-deportivas';
                     break;
                 default:
                     categoria = '';
+                    gridId = '';
             }
+
+            const contenedor = document.getElementById(gridId);
             
+            if (!contenedor) {
+                console.error(`Error: No se encontró el contenedor con el ID: ${gridId}`);
+                return;
+            }
+
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
             try {
