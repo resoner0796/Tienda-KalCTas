@@ -18,49 +18,51 @@
             text-align: center;
         }
 
-        /* --- Contenedor Principal --- */
+        /* --- Contenedor Principal (Bloque Naranja Oscuro) --- */
         .container {
-            background-color: #ffffff;
+            background-color: #e67e22; /* Naranja más oscuro para el bloque */
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra un poco más pronunciada */
             max-width: 400px;
             width: 90%;
             transition: all 0.3s ease;
-            display: flex; /* Usamos flexbox para organizar los elementos */
-            flex-direction: column; /* Apila los elementos verticalmente */
-            align-items: center; /* Centra los elementos horizontalmente */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative; /* Necesario para posicionar el carrito absolutamente */
+            color: #ffffff; /* Texto blanco para el contraste con el fondo oscuro */
         }
 
         /* --- Títulos --- */
         h1 {
-            color: #1a2c5b; /* Un azul oscuro y formal */
-            font-size: 1.8em; /* Hacemos el "Bienvenido" más chico */
+            color: #ffffff; /* Título blanco para el contraste */
+            font-size: 1.8em; 
             margin-bottom: 20px;
-            order: 2; /* Establece el orden del h1 después del logo */
+            order: 2; 
         }
 
         h2 {
-            color: #555;
-            border-bottom: 2px solid #f0f2f5;
+            color: #ffffff; /* Títulos de subpantallas en blanco */
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Línea divisoria más suave */
             padding-bottom: 10px;
             margin-top: 0;
         }
         
         /* --- Logo --- */
         .logo {
-            max-width: 200px; /* Hacemos el logo más grande */
-            margin-bottom: 30px; /* Espacio debajo del logo */
-            order: 1; /* Establece el orden del logo para que esté primero */
+            max-width: 200px; 
+            margin-bottom: 30px; 
+            order: 1; 
         }
 
         /* --- Contenedor de Botones --- */
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Espacio entre los botones */
-            width: 100%; /* Asegura que los botones ocupen el ancho completo */
-            order: 3; /* Establece el orden de los botones después del h1 */
+            gap: 15px; 
+            width: 100%; 
+            order: 3; 
         }
 
         /* --- Estilo de Botones --- */
@@ -77,27 +79,44 @@
         }
 
         .btn:hover {
-            transform: translateY(-3px); /* Efecto de "levantar" el botón */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra de hover más profunda */
         }
 
-        /* Colores específicos para cada botón */
+        /* Colores específicos para cada botón - Mantenemos los colores vibrantes */
         .btn-kalctas-2-4 { background-color: #ff6b6b; } /* Coral */
         .btn-kalctas-3-4 { background-color: #48dbfb; } /* Azul claro */
         .btn-deportivas { background-color: #1dd1a1; } /* Verde menta */
         .btn-volver { background-color: #576574; } /* Gris oscuro */
         
         /* --- Pantallas/Secciones --- */
-        /* Por defecto, todas las pantallas de productos están ocultas */
         .screen {
             display: none;
-            width: 100%; /* Asegura que las pantallas ocupen el ancho completo */
+            width: 100%; 
+        }
+
+        /* --- Ícono de Carrito --- */
+        .cart-icon {
+            position: absolute;
+            top: 15px; /* Ajusta la posición desde arriba */
+            right: 20px; /* Ajusta la posición desde la derecha */
+            font-size: 2.2em; /* Tamaño del icono */
+            color: #ffffff; /* Color del carrito */
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none; /* Si usas un enlace */
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.1); /* Efecto de crecimiento al pasar el ratón */
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <a href="#" class="cart-icon" onclick="alert('¡Aquí irá la pantalla del carrito!')">🛒</a>
+
         <main id="pantalla-principal" class="screen" style="display: block;">
             <img src="LOGO.png" alt="Logo de la tienda" class="logo">
             
