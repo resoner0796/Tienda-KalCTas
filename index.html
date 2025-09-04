@@ -107,7 +107,7 @@
 
         /* --- Logo --- */
         .logo {
-            max-width: 275px; /* Tamaño del logo reajustado */
+            max-width: 310px; /* Tamaño del logo reajustado */
             margin-bottom: 30px;
             order: 2;
             transition: all 1s ease-in;
@@ -272,7 +272,7 @@
         }
 
         /* --- Modales y alertas --- */
-        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal {
+        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -333,7 +333,50 @@
             position: relative;
         }
 
-        .auth-modal-content h3, .payment-modal-content h3 {
+        .my-orders-modal-content {
+            background-color: #e67e22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 550px;
+            text-align: center;
+            position: relative;
+        }
+
+        .my-orders-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .my-orders-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .my-orders-item h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .my-orders-item .status {
+            background-color: #3498db;
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 5px;
+        }
+        .my-orders-item .status.Entregado { background-color: #2ecc71; }
+        .my-orders-item .status.Pendiente { background-color: #f1c40f; }
+        .my-orders-item .status.Confirmado { background-color: #3498db; }
+
+        .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
             text-align: center;
             margin-bottom: 20px;
             color: #ffffff;
@@ -600,7 +643,7 @@
         <div class="account-info" id="account-info">
             </div>
         <div class="account-buttons">
-            <button class="btn btn-pedidos">Mis pedidos</button>
+            <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
@@ -685,7 +728,7 @@
 
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
+            <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
             <h3>Detalles de la Transferencia</h3>
             <div class="info-container">
                 <p><strong>Cuenta CLABE:</strong> 012822015052928359</p>
@@ -695,7 +738,7 @@
                 <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
                 <p style="font-size: 1.2em;">899 338 8669</p>
             </div>
-            <button class="btn btn-volver" onclick="cerrarModalEntrega()">Cerrar</button>
+            <button class="btn btn-add" onclick="mostrarModalConfirmarTransferencia()">Confirmar Pedido</button>
         </div>
     </div>
     
@@ -724,6 +767,13 @@
         </div>
     </div>
 
+    <div id="my-orders-modal" class="my-orders-modal">
+        <div class="my-orders-modal-content">
+            <span class="close-modal" onclick="cerrarModalMisPedidos()">&times;</span>
+            <h3>Mis Pedidos</h3>
+            <ul class="my-orders-list" id="my-orders-list"></ul>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -971,6 +1021,69 @@
             }
         }
         
+        // Modal de Mis Pedidos
+        const myOrdersModal = document.getElementById('my-orders-modal');
+        const myOrdersList = document.getElementById('my-orders-list');
+
+        function mostrarModalMisPedidos() {
+            if (!currentUser) {
+                showMessage('Debes iniciar sesión para ver tus pedidos.');
+                return;
+            }
+            cerrarPanelMiCuenta();
+            myOrdersModal.style.display = 'flex';
+            cargarMisPedidos();
+        }
+
+        function cerrarModalMisPedidos() {
+            myOrdersModal.style.display = 'none';
+        }
+        
+        async function cargarMisPedidos() {
+            if (!currentUser) return;
+            myOrdersList.innerHTML = '<p style="text-align:center;">Cargando pedidos...</p>';
+            try {
+                const pedidosRef = db.collection('pedidos').where('usuarioId', '==', currentUser.uid).orderBy('fechaCreacion', 'desc');
+                const snapshot = await pedidosRef.get();
+                
+                myOrdersList.innerHTML = '';
+                if (snapshot.empty) {
+                    myOrdersList.innerHTML = '<p style="text-align:center;">No has realizado ningún pedido aún.</p>';
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const pedido = doc.data();
+                    const fechaCreacion = pedido.fechaCreacion ? pedido.fechaCreacion.toDate().toLocaleDateString() : 'N/A';
+                    const total = pedido.productos.reduce((sum, p) => sum + p.precio, 0);
+                    
+                    const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio})</li>`).join('');
+                    
+                    const itemHtml = `
+                        <li class="my-orders-item">
+                            <h4>
+                                Pedido #${doc.id.substring(0, 6)}
+                                <span class="status ${pedido.estado}">${pedido.estado}</span>
+                            </h4>
+                            <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+                            <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
+                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega}</p>
+                            <p><strong>Fecha de pedido:</strong> ${fechaCreacion}</p>
+                            <p><strong>Productos:</strong></p>
+                            <ul>
+                                ${productosHtml}
+                            </ul>
+                        </li>
+                    `;
+                    myOrdersList.innerHTML += itemHtml;
+                });
+
+            } catch (error) {
+                console.error("Error al cargar los pedidos del usuario:", error);
+                myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos.</p>';
+            }
+        }
+
         // Panel lateral del carrito
         const cartPanel = document.getElementById('cart-panel');
         const cartList = document.getElementById('cart-list');
@@ -1066,7 +1179,8 @@
         const confirmOrderModal = document.getElementById('confirm-order-modal');
         const deliveryForm = document.getElementById('delivery-form');
         const otherLocationNote = document.getElementById('other-location-note');
-        
+        const transferInfoModal = document.getElementById('transfer-info-modal');
+
         async function pagar() {
             if (!currentUser) {
                 showMessage('Debes iniciar sesión para ver tu carrito.');
@@ -1099,16 +1213,24 @@
             document.getElementById('payment-method-input').value = metodoPago;
             
             if (metodoPago === 'Transferencia') {
-                document.getElementById('confirm-order-title').textContent = "Pagar por Transferencia";
-                document.getElementById('transfer-info-modal').style.display = 'flex';
+                transferInfoModal.style.display = 'flex';
             } else if (metodoPago === 'Efectivo') {
                 document.getElementById('confirm-order-title').textContent = "Pago en Efectivo";
                 confirmOrderModal.style.display = 'flex';
             }
         }
         
+        function mostrarModalConfirmarTransferencia() {
+            transferInfoModal.style.display = 'none';
+            document.getElementById('confirm-order-title').textContent = "Pagar por Transferencia";
+            confirmOrderModal.style.display = 'flex';
+        }
+
+        function cerrarModalTransferencia() {
+            transferInfoModal.style.display = 'none';
+        }
+
         function cerrarModalEntrega() {
-            document.getElementById('transfer-info-modal').style.display = 'none';
             confirmOrderModal.style.display = 'none';
             mostrarPanelCarrito();
         }
