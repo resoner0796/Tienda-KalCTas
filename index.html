@@ -1062,7 +1062,7 @@
                     const itemHtml = `
                         <li class="my-orders-item">
                             <h4>
-                                ${pedido.folio}
+                                Pedido ${pedido.folio || ''}
                                 <span class="status ${pedido.estado}">${pedido.estado}</span>
                             </h4>
                             <p><strong>Total:</strong> $${total.toFixed(2)}</p>
@@ -1080,7 +1080,7 @@
 
             } catch (error) {
                 console.error("Error al cargar los pedidos del usuario:", error);
-                myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos.</p>';
+                myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos. (Verifica el índice en Firestore)</p>';
             }
         }
 
@@ -1205,7 +1205,7 @@
         }
 
         function iniciarPagoTarjeta() {
-            showMessage("Opción de pago con tarjeta en desarrollo (se integrará con Stripe).");
+            showMessage("Opción de pago con tarjeta en desarrollo.");
         }
 
         function iniciarProcesoDeEntrega(metodoPago) {
@@ -1222,7 +1222,7 @@
         function mostrarModalConfirmarEntrega() {
             transferInfoModal.style.display = 'none';
             const metodoPago = document.getElementById('payment-method-input').value;
-            document.getElementById('confirm-order-title').textContent = (metodoPago === 'Transferencia') ? "Pagar por Transferencia" : "Pago en Efectivo";
+            document.getElementById('confirm-order-title').textContent = (metodoPago === 'Transferencia') ? "Confirmar Entrega" : "Confirmar Entrega";
             confirmOrderModal.style.display = 'flex';
         }
 
@@ -1232,7 +1232,6 @@
 
         function cerrarModalEntrega() {
             confirmOrderModal.style.display = 'none';
-            mostrarPanelCarrito();
         }
 
         function toggleOtherLocation() {
@@ -1248,6 +1247,10 @@
 
         deliveryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitButton = deliveryForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Procesando...';
+
             const metodoPago = document.getElementById('payment-method-input').value;
             const fechaEntrega = deliveryForm['delivery-date'].value;
             const lugarEntregaSelect = deliveryForm['delivery-location'].value;
@@ -1255,56 +1258,62 @@
             
             if (lugarEntregaSelect === 'Otro' && lugarEntrega.trim() === '') {
                 showMessage('Por favor, especifica el lugar de entrega.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Confirmar Pedido';
                 return;
             }
 
             try {
-                // Obtener los productos del carrito del usuario
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                const carrito = userDoc.data().carrito || [];
+                // Iniciar una transacción para garantizar la consistencia de los datos
+                await db.runTransaction(async (transaction) => {
+                    const userRef = db.collection('usuarios').doc(currentUser.uid);
+                    const userDoc = await transaction.get(userRef);
+                    const carrito = userDoc.data().carrito || [];
 
-                if (carrito.length === 0) {
-                    showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
-                    return;
-                }
-                
-                // Generar el folio del pedido
-                const pedidosRef = db.collection('pedidos');
-                const lastPedido = await pedidosRef.orderBy('fechaCreacion', 'desc').limit(1).get();
-                let lastFolioNumber = 0;
-                if (!lastPedido.empty) {
-                    const lastPedidoData = lastPedido.docs[0].data();
-                    const folioMatch = lastPedidoData.folio.match(/PEDIDO-(\d+)/);
-                    if (folioMatch) {
-                        lastFolioNumber = parseInt(folioMatch[1]);
+                    if (carrito.length === 0) {
+                        throw new Error('El carrito está vacío.');
                     }
-                }
-                const newFolio = `PEDIDO-${(lastFolioNumber + 1).toString().padStart(3, '0')}`;
-                
-                // Generar un nuevo pedido en la colección 'pedidos'
-                await db.collection('pedidos').add({
-                    folio: newFolio,
-                    usuarioId: currentUser.uid,
-                    productos: carrito,
-                    metodoPago: metodoPago,
-                    fechaEntrega: fechaEntrega,
-                    lugarEntrega: lugarEntrega,
-                    estado: 'Pendiente',
-                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+
+                    // 1. Obtener y actualizar el folio del pedido
+                    const counterRef = db.collection('contadores').doc('pedidos');
+                    const counterDoc = await transaction.get(counterRef);
+                    
+                    let nuevoFolioNum = 1;
+                    if (counterDoc.exists) {
+                        nuevoFolioNum = counterDoc.data().ultimoFolio + 1;
+                    }
+                    
+                    const folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
+                    
+                    transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
+
+                    // 2. Crear el nuevo pedido con el folio
+                    const nuevoPedidoRef = db.collection('pedidos').doc();
+                    transaction.set(nuevoPedidoRef, {
+                        folio: folioFormateado,
+                        usuarioId: currentUser.uid,
+                        productos: carrito,
+                        metodoPago: metodoPago,
+                        fechaEntrega: fechaEntrega,
+                        lugarEntrega: lugarEntrega,
+                        estado: 'Pendiente',
+                        fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // 3. Vaciar el carrito del usuario
+                    transaction.update(userRef, { carrito: [] });
                 });
 
-                // Vaciar el carrito del usuario
-                await db.collection('usuarios').doc(currentUser.uid).update({
-                    carrito: []
-                });
-
-                showMessage('¡Pedido registrado! Nos comunicaremos contigo para confirmar los detalles de la entrega. El pedido se ha vaciado de tu carrito.');
+                showMessage(`¡Pedido ${document.getElementById('payment-method-input').value === 'Transferencia' ? 'registrado' : 'confirmado'}! Tu folio es ${folioFormateado}. Nos comunicaremos contigo para los detalles.`);
                 cerrarModalEntrega();
-                renderizarCarrito();
+                renderizarCarrito(); // Actualiza la vista del carrito (que ahora estará vacío)
 
             } catch (error) {
                 console.error("Error al registrar el pedido:", error);
-                showMessage('Hubo un error al procesar tu pedido. Intenta de nuevo.');
+                showMessage(`Hubo un error al procesar tu pedido: ${error.message}. Intenta de nuevo.`);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Confirmar Pedido';
             }
         });
 
@@ -1326,16 +1335,11 @@
                     gridId = 'grid-largas';
                     break;
                 default:
-                    categoria = '';
-                    gridId = '';
+                    return;
             }
 
             const contenedor = document.getElementById(gridId);
-            
-            if (!contenedor) {
-                console.error(`Error: No se encontró el contenedor con el ID: ${gridId}`);
-                return;
-            }
+            if (!contenedor) return;
 
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
@@ -1367,12 +1371,9 @@
                     contenedor.innerHTML += cardHtml;
                 });
                 
-                const botonesAgregar = document.querySelectorAll('.btn-add');
-                botonesAgregar.forEach(btn => {
+                document.querySelectorAll(`#${gridId} .btn-add`).forEach(btn => {
                     btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
-                    if (currentUser) {
-                        btn.disabled = btn.disabled;
-                    } else {
+                    if (!currentUser) {
                         btn.disabled = true;
                     }
                 });
@@ -1411,7 +1412,7 @@
                     const userDoc = await transaction.get(userRef);
 
                     if (!productoDoc.exists) {
-                        throw "El producto no existe.";
+                        throw new Error("El producto no existe.");
                     }
 
                     const productoData = productoDoc.data();
@@ -1423,7 +1424,7 @@
                     transaction.update(productoRef, { stock: newStock });
                     
                     const userData = userDoc.data();
-                    let carrito = userData.carrito || [];
+                    const carrito = userData.carrito || [];
                     const productoToAdd = {
                         id: productoDoc.id,
                         nombre: productoData.nombre,
@@ -1439,11 +1440,7 @@
                 generarGaleria(document.querySelector('.screen.active').id);
             } catch (error) {
                 console.error("Error al agregar al carrito:", error);
-                if (error.message && error.message.includes("agotado")) {
-                    showMessage("Este producto está agotado.");
-                } else {
-                    showMessage('Hubo un error al agregar el producto al carrito. Intenta de nuevo.');
-                }
+                showMessage(error.message || 'Hubo un error al agregar el producto. Intenta de nuevo.');
             }
         }
     </script>
