@@ -358,23 +358,34 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 10px;
+            cursor: pointer;
         }
-        .my-orders-item h4 {
-            margin: 0 0 10px 0;
-            font-size: 1.1em;
+        .order-summary {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: bold;
         }
+        
+        .order-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: left;
+        }
+
         .my-orders-item .status {
-            background-color: #3498db;
             font-size: 0.8em;
             padding: 4px 8px;
             border-radius: 5px;
+            color: #fff;
         }
         .my-orders-item .status.Entregado { background-color: #2ecc71; }
-        .my-orders-item .status.Pendiente { background-color: #f1c40f; }
+        .my-orders-item .status.Pendiente { background-color: #f1c40f; color: #333; }
         .my-orders-item .status.Confirmado { background-color: #3498db; }
+        .my-orders-item .status.Cancelado { background-color: #e74c3c; }
+
 
         .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
             text-align: center;
@@ -794,6 +805,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
+        let unsubscribeMisPedidos = null; // Para detener la escucha de pedidos
         
         const alertBox = document.getElementById('alert-box');
         const alertText = document.getElementById('alert-text');
@@ -833,25 +845,24 @@
             currentUser = user;
             const authButton = document.getElementById('auth-button');
             if (user) {
-                console.log('Usuario autenticado:', user.email);
                 authButton.textContent = 'Mi Cuenta';
                 authButton.onclick = () => mostrarPanelMiCuenta();
                 habilitarBotonesCarrito();
                 cargarDatosUsuario();
             } else {
-                console.log('Usuario no autenticado.');
                 authButton.textContent = 'Iniciar Sesión';
                 authButton.onclick = () => mostrarAuthModal();
                 deshabilitarBotonesCarrito();
+                if (unsubscribeMisPedidos) unsubscribeMisPedidos(); // Deja de escuchar si cierra sesión
             }
         });
 
         function habilitarBotonesCarrito() {
-            document.querySelectorAll('.btn-add').forEach(btn => btn.disabled = false);
+            // Esta función se puede simplificar o eliminar si la lógica de deshabilitado es más específica
         }
 
         function deshabilitarBotonesCarrito() {
-            document.querySelectorAll('.btn-add').forEach(btn => btn.disabled = true);
+            // Esta función se puede simplificar o eliminar
         }
 
         const authModal = document.getElementById('auth-modal');
@@ -995,12 +1006,7 @@
             const telefono = document.getElementById('edit-telefono').value;
 
             try {
-                const userRef = db.collection('usuarios').doc(currentUser.uid);
-                await userRef.update({
-                    nombre: nombre,
-                    apellido: apellido,
-                    telefono: telefono
-                });
+                await db.collection('usuarios').doc(currentUser.uid).update({ nombre, apellido, telefono });
                 showMessage('Datos actualizados con éxito.');
                 cerrarModalEditarDatos();
                 cargarDatosUsuario();
@@ -1037,15 +1043,21 @@
 
         function cerrarModalMisPedidos() {
             myOrdersModal.style.display = 'none';
+            if (unsubscribeMisPedidos) {
+                unsubscribeMisPedidos(); // Deja de escuchar cuando el modal se cierra
+                unsubscribeMisPedidos = null;
+            }
         }
         
-        async function cargarMisPedidos() {
+        function cargarMisPedidos() {
             if (!currentUser) return;
+            if (unsubscribeMisPedidos) unsubscribeMisPedidos(); // Cancela cualquier suscripción anterior
+
             myOrdersList.innerHTML = '<p style="text-align:center;">Cargando pedidos...</p>';
-            try {
-                const pedidosRef = db.collection('pedidos').where('usuarioId', '==', currentUser.uid).orderBy('fechaCreacion', 'desc');
-                const snapshot = await pedidosRef.get();
-                
+            
+            const pedidosRef = db.collection('pedidos').where('usuarioId', '==', currentUser.uid).orderBy('fechaCreacion', 'desc');
+            
+            unsubscribeMisPedidos = pedidosRef.onSnapshot(snapshot => {
                 myOrdersList.innerHTML = '';
                 if (snapshot.empty) {
                     myOrdersList.innerHTML = '<p style="text-align:center;">No has realizado ningún pedido aún.</p>';
@@ -1054,34 +1066,41 @@
                 
                 snapshot.forEach(doc => {
                     const pedido = doc.data();
-                    const fechaCreacion = pedido.fechaCreacion ? pedido.fechaCreacion.toDate().toLocaleDateString() : 'N/A';
                     const total = pedido.productos.reduce((sum, p) => sum + p.precio, 0);
+                    const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio.toFixed(2)})</li>`).join('');
+
+                    const item = document.createElement('li');
+                    item.className = 'my-orders-item';
+                    item.onclick = function() {
+                        const details = this.querySelector('.order-details');
+                        details.style.display = details.style.display === 'block' ? 'none' : 'block';
+                    };
                     
-                    const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio})</li>`).join('');
-                    
-                    const itemHtml = `
-                        <li class="my-orders-item">
-                            <h4>
-                                Pedido ${pedido.folio || ''}
-                                <span class="status ${pedido.estado}">${pedido.estado}</span>
-                            </h4>
+                    item.innerHTML = `
+                        <div class="order-summary">
+                            <span>${pedido.folio || 'Pedido'}</span>
+                            <span class="status ${pedido.estado}">${pedido.estado}</span>
+                        </div>
+                        <div class="order-details">
                             <p><strong>Total:</strong> $${total.toFixed(2)}</p>
                             <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
                             <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega}</p>
-                            <p><strong>Fecha de pedido:</strong> ${fechaCreacion}</p>
+                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega}</p>
+                            ${pedido.estado === 'Cancelado' && pedido.motivoCancelacion ? `<p><strong>Motivo de cancelación:</strong> ${pedido.motivoCancelacion}</p>` : ''}
                             <p><strong>Productos:</strong></p>
                             <ul>
                                 ${productosHtml}
                             </ul>
-                        </li>
+                        </div>
                     `;
-                    myOrdersList.innerHTML += itemHtml;
+                    myOrdersList.appendChild(item);
                 });
 
-            } catch (error) {
+            }, error => {
                 console.error("Error al cargar los pedidos del usuario:", error);
-                myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos. (Verifica el índice en Firestore)</p>';
-            }
+                myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos.</p>';
+                if (unsubscribeMisPedidos) unsubscribeMisPedidos();
+            });
         }
 
         // Panel lateral del carrito
@@ -1115,9 +1134,9 @@
             
             try {
                 const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                const userData = userDoc.data();
-                const carrito = userData.carrito || [];
+                if (!userDoc.exists) return;
 
+                const carrito = userDoc.data().carrito || [];
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
                     cartTotal.textContent = 'Total: $0.00';
@@ -1129,11 +1148,9 @@
                     const listItem = document.createElement('li');
                     listItem.className = 'cart-item';
                     listItem.innerHTML = `
-                        <span class="cart-item-name">${producto.nombre}</span>
-                        <span class="cart-item-price">$${producto.precio}</span>
-                        <button class="btn-delete" onclick="eliminarDelCarrito('${producto.id}', ${index})">
-                            Eliminar
-                        </button>
+                        <span>${producto.nombre}</span>
+                        <span>$${producto.precio.toFixed(2)}</span>
+                        <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
                     `;
                     cartList.appendChild(listItem);
                     total += producto.precio;
@@ -1143,25 +1160,21 @@
 
             } catch (error) {
                 console.error("Error al renderizar el carrito:", error);
-                cartList.innerHTML = '<p>Hubo un error al cargar el carrito. Intenta de nuevo.</p>';
-                cartTotal.textContent = 'Total: $0.00';
             }
         }
         
-        async function eliminarDelCarrito(productoId, index) {
+        async function eliminarDelCarrito(index) {
             if (!currentUser) return;
             try {
                 const userRef = db.collection('usuarios').doc(currentUser.uid);
                 const userDoc = await userRef.get();
-                const userData = userDoc.data();
-                let carrito = [...(userData.carrito || [])]; 
+                const carrito = userDoc.data().carrito || []; 
                 
                 if (index > -1 && index < carrito.length) {
                     const productoEliminado = carrito.splice(index, 1)[0];
+                    // Devolver el stock
                     const productoRef = db.collection('productos').doc(productoEliminado.id);
-                    await productoRef.update({
-                        stock: firebase.firestore.FieldValue.increment(1)
-                    });
+                    await productoRef.update({ stock: firebase.firestore.FieldValue.increment(1) });
                 }
                 
                 await userRef.update({ carrito: carrito });
@@ -1221,8 +1234,6 @@
         
         function mostrarModalConfirmarEntrega() {
             transferInfoModal.style.display = 'none';
-            const metodoPago = document.getElementById('payment-method-input').value;
-            document.getElementById('confirm-order-title').textContent = (metodoPago === 'Transferencia') ? "Confirmar Entrega" : "Confirmar Entrega";
             confirmOrderModal.style.display = 'flex';
         }
 
@@ -1235,14 +1246,9 @@
         }
 
         function toggleOtherLocation() {
-            const location = document.getElementById('delivery-location').value;
-            if (location === 'Otro') {
-                otherLocationNote.style.display = 'block';
-                otherLocationNote.required = true;
-            } else {
-                otherLocationNote.style.display = 'none';
-                otherLocationNote.required = false;
-            }
+            const locationSelect = document.getElementById('delivery-location');
+            otherLocationNote.style.display = locationSelect.value === 'Otro' ? 'block' : 'none';
+            otherLocationNote.required = locationSelect.value === 'Otro';
         }
 
         deliveryForm.addEventListener('submit', async (e) => {
@@ -1256,57 +1262,49 @@
             const lugarEntregaSelect = deliveryForm['delivery-location'].value;
             const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
             
-            if (lugarEntregaSelect === 'Otro' && lugarEntrega.trim() === '') {
+            if (lugarEntregaSelect === 'Otro' && !lugarEntrega.trim()) {
                 showMessage('Por favor, especifica el lugar de entrega.');
                 submitButton.disabled = false;
                 submitButton.textContent = 'Confirmar Pedido';
                 return;
             }
 
+            let folioFormateado; // Declarar la variable aquí
+
             try {
-                // Iniciar una transacción para garantizar la consistencia de los datos
                 await db.runTransaction(async (transaction) => {
                     const userRef = db.collection('usuarios').doc(currentUser.uid);
                     const userDoc = await transaction.get(userRef);
+                    if (!userDoc.exists) throw new Error("Usuario no encontrado.");
                     const carrito = userDoc.data().carrito || [];
 
-                    if (carrito.length === 0) {
-                        throw new Error('El carrito está vacío.');
-                    }
+                    if (carrito.length === 0) throw new Error('El carrito está vacío.');
 
-                    // 1. Obtener y actualizar el folio del pedido
                     const counterRef = db.collection('contadores').doc('pedidos');
                     const counterDoc = await transaction.get(counterRef);
                     
-                    let nuevoFolioNum = 1;
-                    if (counterDoc.exists) {
-                        nuevoFolioNum = counterDoc.data().ultimoFolio + 1;
-                    }
-                    
-                    const folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
+                    const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
+                    folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
                     
                     transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
 
-                    // 2. Crear el nuevo pedido con el folio
                     const nuevoPedidoRef = db.collection('pedidos').doc();
                     transaction.set(nuevoPedidoRef, {
                         folio: folioFormateado,
                         usuarioId: currentUser.uid,
                         productos: carrito,
-                        metodoPago: metodoPago,
-                        fechaEntrega: fechaEntrega,
-                        lugarEntrega: lugarEntrega,
+                        metodoPago, fechaEntrega, lugarEntrega,
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // 3. Vaciar el carrito del usuario
                     transaction.update(userRef, { carrito: [] });
                 });
 
-                showMessage(`¡Pedido ${document.getElementById('payment-method-input').value === 'Transferencia' ? 'registrado' : 'confirmado'}! Tu folio es ${folioFormateado}. Nos comunicaremos contigo para los detalles.`);
+                // Ahora la variable es accesible aquí
+                showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
                 cerrarModalEntrega();
-                renderizarCarrito(); // Actualiza la vista del carrito (que ahora estará vacío)
+                renderizarCarrito();
 
             } catch (error) {
                 console.error("Error al registrar el pedido:", error);
@@ -1322,20 +1320,10 @@
             let gridId;
 
             switch(idDePantalla) {
-                case 'pantalla-2-4':
-                    categoria = 'KalCTas2-4';
-                    gridId = 'grid-2-4';
-                    break;
-                case 'pantalla-3-4':
-                    categoria = 'KalCTas3-4';
-                    gridId = 'grid-3-4';
-                    break;
-                case 'pantalla-largas':
-                    categoria = 'KalCTasLargas';
-                    gridId = 'grid-largas';
-                    break;
-                default:
-                    return;
+                case 'pantalla-2-4': categoria = 'KalCTas2-4'; gridId = 'grid-2-4'; break;
+                case 'pantalla-3-4': categoria = 'KalCTas3-4'; gridId = 'grid-3-4'; break;
+                case 'pantalla-largas': categoria = 'KalCTasLargas'; gridId = 'grid-largas'; break;
+                default: return;
             }
 
             const contenedor = document.getElementById(gridId);
@@ -1344,43 +1332,39 @@
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
             try {
-                const querySnapshot = await db.collection('productos').where('categoria', '==', categoria).get();
-                
+                const snapshot = await db.collection('productos').where('categoria', '==', categoria).get();
                 contenedor.innerHTML = '';
                 
-                if (querySnapshot.empty) {
-                    contenedor.innerHTML = '<p>No hay modelos disponibles en esta categoría.</p>';
+                if (snapshot.empty) {
+                    contenedor.innerHTML = '<p>No hay modelos disponibles.</p>';
                     return;
                 }
                 
-                querySnapshot.forEach(doc => {
+                snapshot.forEach(doc => {
                     const producto = doc.data();
-                    const cardHtml = `
-                        <div class="model-card">
-                            <img src="${producto.imagenUrl}" alt="Modelo de calceta">
-                            <p class="product-price">$${producto.precio}</p>
-                            <p>${producto.nombre}</p>
-                            <div class="model-buttons">
-                                <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
-                                <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 ? 'disabled' : ''}>
-                                    ${producto.stock <= 0 ? 'Agotado' : 'Agregar a la 🛍️'}
-                                </button>
-                            </div>
+                    const card = document.createElement('div');
+                    card.className = 'model-card';
+                    card.innerHTML = `
+                        <img src="${producto.imagenUrl}" alt="${producto.nombre}">
+                        <p class="product-price">$${producto.precio.toFixed(2)}</p>
+                        <p>${producto.nombre}</p>
+                        <div class="model-buttons">
+                            <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
+                            <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
+                                ${producto.stock <= 0 ? 'Agotado' : 'Agregar 🛍️'}
+                            </button>
                         </div>
                     `;
-                    contenedor.innerHTML += cardHtml;
+                    contenedor.appendChild(card);
                 });
                 
-                document.querySelectorAll(`#${gridId} .btn-add`).forEach(btn => {
+                contenedor.querySelectorAll('.btn-add').forEach(btn => {
                     btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
-                    if (!currentUser) {
-                        btn.disabled = true;
-                    }
                 });
 
             } catch (error) {
                 console.error("Error al obtener los productos:", error);
-                contenedor.innerHTML = '<p>Hubo un error al cargar los modelos. Intenta de nuevo más tarde.</p>';
+                contenedor.innerHTML = '<p>Hubo un error al cargar los modelos.</p>';
             }
         }
 
@@ -1409,38 +1393,30 @@
                     const userRef = db.collection('usuarios').doc(currentUser.uid);
 
                     const productoDoc = await transaction.get(productoRef);
-                    const userDoc = await transaction.get(userRef);
-
-                    if (!productoDoc.exists) {
-                        throw new Error("El producto no existe.");
-                    }
+                    if (!productoDoc.exists) throw new Error("El producto no existe.");
 
                     const productoData = productoDoc.data();
-                    if (productoData.stock <= 0) {
-                        throw new Error("Este producto está agotado.");
-                    }
+                    if (productoData.stock <= 0) throw new Error("Este producto está agotado.");
                     
-                    const newStock = productoData.stock - 1;
-                    transaction.update(productoRef, { stock: newStock });
+                    transaction.update(productoRef, { stock: productoData.stock - 1 });
                     
-                    const userData = userDoc.data();
-                    const carrito = userData.carrito || [];
-                    const productoToAdd = {
+                    const userDoc = await transaction.get(userRef);
+                    const carrito = userDoc.data().carrito || [];
+                    carrito.push({
                         id: productoDoc.id,
                         nombre: productoData.nombre,
                         precio: productoData.precio,
                         imagenUrl: productoData.imagenUrl
-                    };
+                    });
                     
-                    carrito.push(productoToAdd);
-                    transaction.update(userRef, { carrito: carrito });
+                    transaction.update(userRef, { carrito });
                 });
                 
-                showMessage('¡El modelo ha sido agregado al carrito!');
+                showMessage('¡Modelo agregado al carrito!');
                 generarGaleria(document.querySelector('.screen.active').id);
             } catch (error) {
                 console.error("Error al agregar al carrito:", error);
-                showMessage(error.message || 'Hubo un error al agregar el producto. Intenta de nuevo.');
+                showMessage(error.message || 'Hubo un error al agregar el producto.');
             }
         }
     </script>
