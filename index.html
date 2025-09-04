@@ -367,11 +367,10 @@
             align-items: center;
         }
         .my-orders-item .status {
+            background-color: #3498db;
             font-size: 0.8em;
             padding: 4px 8px;
             border-radius: 5px;
-            color: #ffffff;
-            font-weight: bold;
         }
         .my-orders-item .status.Entregado { background-color: #2ecc71; }
         .my-orders-item .status.Pendiente { background-color: #f1c40f; }
@@ -739,7 +738,7 @@
                 <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
                 <p style="font-size: 1.2em;">899 338 8669</p>
             </div>
-            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega()">Continuar</button>
+            <button class="btn btn-add" onclick="mostrarModalConfirmarTransferencia()">Confirmar Pedido</button>
         </div>
     </div>
     
@@ -763,7 +762,7 @@
                 
                 <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
 
-                <button type="submit" class="btn btn-add">Confirmar Pedido</button>
+                <button type="submit" class="btn-add">Confirmar Pedido</button>
             </form>
         </div>
     </div>
@@ -1055,11 +1054,8 @@
                 
                 snapshot.forEach(doc => {
                     const pedido = doc.data();
-                    // SE CORRIGIÓ EL MANEJO DE LA FECHA DE CREACIÓN
                     const fechaCreacion = pedido.fechaCreacion ? pedido.fechaCreacion.toDate().toLocaleDateString() : 'N/A';
-                    
-                    // SE CORRIGIÓ EL CÁLCULO DEL TOTAL
-                    const total = pedido.productos.reduce((sum, p) => sum + parseFloat(p.precio), 0);
+                    const total = pedido.productos.reduce((sum, p) => sum + p.precio, 0);
                     
                     const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio})</li>`).join('');
                     
@@ -1140,7 +1136,7 @@
                         </button>
                     `;
                     cartList.appendChild(listItem);
-                    total += parseFloat(producto.precio); // SE ASEGURÓ QUE EL PRECIO SEA UN NÚMERO
+                    total += producto.precio;
                 });
 
                 cartTotal.textContent = `Total: $${total.toFixed(2)}`;
@@ -1212,7 +1208,6 @@
             showMessage("Opción de pago con tarjeta en desarrollo (se integrará con Stripe).");
         }
 
-        // SE MODIFICÓ ESTA FUNCIÓN PARA MOSTRAR EL MODAL DE ENTREGA DESPUÉS DE LA TRANSFERENCIA
         function iniciarProcesoDeEntrega(metodoPago) {
             cerrarModalPago();
             document.getElementById('payment-method-input').value = metodoPago;
@@ -1225,8 +1220,7 @@
             }
         }
         
-        // NUEVA FUNCIÓN PARA MOSTRAR EL MODAL DE CONFIRMAR ENTREGA DESPUÉS DE LA TRANSFERENCIA
-        function mostrarModalConfirmarEntrega() {
+        function mostrarModalConfirmarTransferencia() {
             transferInfoModal.style.display = 'none';
             document.getElementById('confirm-order-title').textContent = "Pagar por Transferencia";
             confirmOrderModal.style.display = 'flex';
@@ -1430,7 +1424,7 @@
                 showMessage('¡El modelo ha sido agregado al carrito!');
                 generarGaleria(document.querySelector('.screen.active').id);
             } catch (error) {
-                console.serror("Error al agregar al carrito:", error);
+                console.error("Error al agregar al carrito:", error);
                 if (error.message && error.message.includes("agotado")) {
                     showMessage("Este producto está agotado.");
                 } else {
