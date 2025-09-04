@@ -9,61 +9,75 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ff9f43; /* Un naranja agradable y más vibrante */
+            background-color: #ff9f43;
             color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
+            overflow: hidden; /* Evita el scroll horizontal durante las transiciones del panel lateral */
         }
 
         /* --- Contenedor Principal (Bloque Naranja Oscuro) --- */
         .container {
-            background-color: #e67e22; /* Naranja más oscuro para el bloque */
+            background-color: #e67e22;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra un poco más pronunciada */
-            max-width: 450px; /* Aumentado para acomodar mejor el contenido */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
             width: 90%;
-            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative; /* Necesario para posicionar el carrito absolutamente */
-            color: #ffffff; /* Texto blanco para el contraste con el fondo oscuro */
-            opacity: 0; /* Inicialmente invisible para la transición de entrada */
-            transform: translateY(20px); /* Ligeramente desplazado para el efecto de entrada */
+            position: relative;
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(20px);
             transition: opacity 1s ease-in, transform 1s ease-in;
         }
-        
-        /* Estilo para mostrar el contenedor con la transición */
+
         .container.show {
             opacity: 1;
             transform: translateY(0);
         }
 
+        /* --- Transiciones de pantalla --- */
+        .screen {
+            display: none;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+        
         /* --- Títulos --- */
         h1 {
             color: #ffffff;
-            font-size: 1.2em; /* Ligeramente más pequeño */
-            margin-bottom: 5px; /* Más cerca del logo */
-            order: 1; /* Posicionado antes que el logo */
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            order: 1;
         }
 
         h2 {
-            display: none; /* Se elimina este texto como se solicitó */
+            display: none;
         }
 
         /* --- Logo --- */
         .logo {
-            max-width: 250px; /* Un poco más grande */
+            max-width: 250px;
             margin-bottom: 30px;
-            order: 2; /* Posicionado después del texto de bienvenida */
+            order: 2;
             transition: all 1s ease-in;
         }
 
-        /* Nuevo estilo para el logo en las pantallas de catálogo */
         .logo-small {
             display: block;
             width: 100px;
@@ -110,16 +124,9 @@
         .btn-deportivas { background-color: #1dd1a1; }
         .btn-volver { background-color: #576574; }
 
-        .btn-view { background-color: #2e86de; } /* Azul más claro */
-        .btn-add { background-color: #27ae60; } /* Verde más oscuro */
+        .btn-view { background-color: #2e86de; }
+        .btn-add { background-color: #27ae60; }
         
-        /* --- Pantallas/Secciones --- */
-        .screen {
-            display: none;
-            width: 100%;
-            text-align: center;
-        }
-
         /* --- Iconos de la cabecera --- */
         .header-icons {
             position: absolute;
@@ -148,10 +155,10 @@
             background-color: transparent;
             border: 2px solid #ffffff;
             color: #ffffff;
-            padding: 6px 10px; /* Ajuste para hacerlo más pequeño */
+            padding: 6px 10px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.8em; /* Ajuste de tamaño de fuente */
+            font-size: 0.8em;
             font-weight: bold;
             transition: background-color 0.2s ease;
         }
@@ -206,10 +213,10 @@
             font-weight: bold;
             color: #ffffff;
             font-size: 1.1em;
-            margin-bottom: 5px; /* Separación del precio con los botones */
+            margin-bottom: 5px;
         }
 
-        /* --- Modal de visualización de imagen (opcional) --- */
+        /* --- Modales y alertas --- */
         .image-modal, .auth-modal, .alert-box, .cart-modal {
             display: none;
             position: fixed;
@@ -393,6 +400,63 @@
             padding-top: 10px;
             border-top: 2px solid rgba(255, 255, 255, 0.5);
         }
+
+        /* Estilos para el panel lateral de Mi Cuenta */
+        .account-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 300px;
+            background-color: #e67e22;
+            color: #ffffff;
+            padding: 20px;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .account-panel.show {
+            transform: translateX(0);
+        }
+        
+        .account-panel h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .account-info p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .account-info p strong {
+            display: block;
+            font-size: 0.9em;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        .account-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-logout {
+            background-color: #e74c3c;
+        }
+
+        .btn-edit-profile {
+            background-color: #48dbfb;
+        }
     </style>
 </head>
 <body>
@@ -403,7 +467,7 @@
             <a href="#" class="header-icon" onclick="mostrarPantalla('pantalla-carrito')">🛍️</a>
         </div>
 
-        <main id="pantalla-principal" class="screen" style="display: block;">
+        <main id="pantalla-principal" class="screen active">
             <h1>¡Bienvenido a KalCTas!</h1>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
@@ -456,6 +520,16 @@
         </section>
     </div>
 
+    <div id="account-panel" class="account-panel">
+        <h3>Mi Cuenta</h3>
+        <div class="account-info" id="account-info">
+            </div>
+        <div class="account-buttons">
+            <button class="btn btn-edit-profile" onclick="editarDatos()">Editar mis datos</button>
+            <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+    </div>
+    
     <div id="image-modal" class="image-modal" onclick="cerrarModal()">
         <span class="close-modal">&times;</span>
         <img class="modal-content-img" id="modal-image">
@@ -479,6 +553,8 @@
                 <form id="register-form" class="auth-form">
                     <input type="email" id="register-email" placeholder="Correo electrónico" required>
                     <input type="password" id="register-password" placeholder="Contraseña" required>
+                    <input type="text" id="register-nombre" placeholder="Nombre" required>
+                    <input type="text" id="register-apellido" placeholder="Apellido" required>
                     <button type="submit" class="btn-auth">Registrarme</button>
                     <p id="register-message" class="auth-message"></p>
                 </form>
@@ -499,7 +575,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
-        // Tu configuración de Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
           authDomain: "tienda-kalctas.firebaseapp.com",
@@ -509,17 +584,17 @@
           appId: "1:374355691085:web:18abb15678c7a6870bbe04"
         };
 
-        // Inicializa Firebase
         firebase.initializeApp(firebaseConfig);
 
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
         
-        // Elementos para el mensaje personalizado
         const alertBox = document.getElementById('alert-box');
         const alertText = document.getElementById('alert-text');
         
+        const pantallas = document.querySelectorAll('.screen');
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('main-container').classList.add('show');
         });
@@ -533,19 +608,34 @@
             alertBox.style.display = 'none';
         }
         
-        // Manejo del estado de autenticación
+        function mostrarPantalla(idDePantalla) {
+            pantallas.forEach(pantalla => {
+                pantalla.classList.remove('active');
+            });
+
+            const pantallaActiva = document.getElementById(idDePantalla);
+            if (pantallaActiva) {
+                pantallaActiva.classList.add('active');
+                if (idDePantalla.startsWith('pantalla-')) {
+                    if (idDePantalla === 'pantalla-carrito') {
+                        renderizarCarrito();
+                    } else {
+                        generarGaleria(idDePantalla);
+                    }
+                }
+            }
+        }
+        
         auth.onAuthStateChanged(user => {
             currentUser = user;
             const authButton = document.getElementById('auth-button');
             if (user) {
                 console.log('Usuario autenticado:', user.email);
-                // Cambio: Mostrar "Mi cuenta" en lugar del correo
-                authButton.textContent = 'Mi cuenta';
-                authButton.onclick = () => {
-                    showMessage('Has cerrado sesión.');
-                    auth.signOut();
-                };
+                authButton.textContent = 'Mi Cuenta';
+                // Cambio: Ahora el botón de Mi Cuenta abre el panel lateral
+                authButton.onclick = () => mostrarPanelMiCuenta();
                 habilitarBotonesCarrito();
+                cargarDatosUsuario();
             } else {
                 console.log('Usuario no autenticado.');
                 authButton.textContent = 'Iniciar Sesión';
@@ -562,7 +652,7 @@
             document.querySelectorAll('.btn-add').forEach(btn => btn.disabled = true);
         }
 
-        // --- Funciones de autenticación ---
+        // Funciones de autenticación
         const authModal = document.getElementById('auth-modal');
         const loginFormContainer = document.getElementById('login-form-container');
         const registerFormContainer = document.getElementById('register-form-container');
@@ -595,11 +685,15 @@
             e.preventDefault();
             const email = registerForm['register-email'].value;
             const password = registerForm['register-password'].value;
+            const nombre = registerForm['register-nombre'].value;
+            const apellido = registerForm['register-apellido'].value;
+
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                // Cambio: Crea un documento de usuario en Firestore con el campo 'carrito' vacío
                 await db.collection('usuarios').doc(userCredential.user.uid).set({
                     email: email,
+                    nombre: nombre,
+                    apellido: apellido,
                     carrito: []
                 });
                 showMessage('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
@@ -635,30 +729,50 @@
             }
         }
 
-        // --- Lógica de Navegación ---
-        const pantallas = document.querySelectorAll('.screen');
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-image');
+        // Panel de Mi Cuenta
+        const accountPanel = document.getElementById('account-panel');
+        const accountInfo = document.getElementById('account-info');
 
-        function mostrarPantalla(idDePantalla) {
-            pantallas.forEach(pantalla => {
-                pantalla.style.display = 'none';
-            });
+        function mostrarPanelMiCuenta() {
+            accountPanel.classList.add('show');
+        }
 
-            const pantallaActiva = document.getElementById(idDePantalla);
-            if (pantallaActiva) {
-                pantallaActiva.style.display = 'block';
-                // Llama a la función para generar la galería si es una pantalla de catálogo o carrito
-                if (idDePantalla.startsWith('pantalla-')) {
-                    if (idDePantalla === 'pantalla-carrito') {
-                        renderizarCarrito();
-                    } else {
-                        generarGaleria(idDePantalla);
-                    }
+        function cerrarPanelMiCuenta() {
+            accountPanel.classList.remove('show');
+        }
+
+        async function cargarDatosUsuario() {
+            if (!currentUser) return;
+            try {
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    accountInfo.innerHTML = `
+                        <p><strong>Nombre:</strong> ${userData.nombre} ${userData.apellido}</p>
+                        <p><strong>Correo:</strong> ${userData.email}</p>
+                    `;
                 }
+            } catch (error) {
+                console.error("Error al cargar datos del usuario:", error);
+                accountInfo.innerHTML = `<p>Error al cargar los datos.</p>`;
             }
         }
-        
+
+        function editarDatos() {
+            showMessage("Función para editar datos aún no implementada.");
+        }
+
+        async function cerrarSesion() {
+            try {
+                await auth.signOut();
+                cerrarPanelMiCuenta();
+                showMessage("Has cerrado sesión.");
+            } catch (error) {
+                console.error("Error al cerrar sesión:", error);
+                showMessage("Hubo un error al intentar cerrar sesión.");
+            }
+        }
+
         async function generarGaleria(idDePantalla) {
             let categoria;
             let gridId;
@@ -705,8 +819,9 @@
                     const cardHtml = `
                         <div class="model-card">
                             <img src="${producto.imagenUrl}" alt="Modelo de calceta">
-                            <p class="product-price">$${producto.precio}</p> <p>${producto.nombre}</p>
-                            <div class="model-buttons">
+                            <p class="product-price">$${producto.precio}</p>
+                            <p>${producto.nombre}</p>
+                            <p><strong>Stock: ${producto.stock}</strong></p> <div class="model-buttons">
                                 <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
                                 <button class="btn btn-add" data-id="${doc.id}">Agregar al Carrito</button>
                             </div>
@@ -731,6 +846,9 @@
             }
         }
 
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+
         function verImagen(imagenSrc) {
             modal.style.display = 'flex';
             modalImg.src = imagenSrc;
@@ -740,7 +858,6 @@
             modal.style.display = 'none';
         }
         
-        // Cambio: Nueva lógica para agregar al carrito
         async function agregarAlCarrito(productoId) {
             if (!currentUser) {
                 showMessage('Debes iniciar sesión para agregar productos al carrito.');
@@ -749,35 +866,46 @@
             }
 
             try {
-                const productoDoc = await db.collection('productos').doc(productoId).get();
-                if (!productoDoc.exists) {
-                    showMessage('El producto no existe.');
-                    return;
-                }
-                
+                const productoRef = db.collection('productos').doc(productoId);
+                const productoDoc = await db.runTransaction(async (transaction) => {
+                    const doc = await transaction.get(productoRef);
+                    if (!doc.exists) {
+                        throw "El producto no existe.";
+                    }
+                    const productoData = doc.data();
+                    if (productoData.stock <= 0) {
+                        throw "Este producto está agotado.";
+                    }
+                    
+                    // Disminuye el stock temporalmente
+                    transaction.update(productoRef, { stock: productoData.stock - 1 });
+                    return doc;
+                });
+
                 const producto = {
                     id: productoDoc.id,
-                    ...productoDoc.data()
+                    ...productoDoc.data(),
+                    stock: undefined // No agregamos el stock al carrito
                 };
 
                 const userRef = db.collection('usuarios').doc(currentUser.uid);
-                const userDoc = await userRef.get();
-                const userData = userDoc.data();
-
-                let carrito = userData.carrito || [];
-                carrito.push(producto);
-
-                await userRef.update({ carrito: carrito });
+                await userRef.update({
+                    carrito: firebase.firestore.FieldValue.arrayUnion(producto)
+                });
                 
                 showMessage('¡El modelo ha sido agregado al carrito!');
-                console.log(`Producto ID ${producto.id} agregado al carrito de ${currentUser.email}`);
+                console.log(`Producto ID ${producto.id} agregado al carrito de ${currentUser.email}. Nuevo stock: ${productoDoc.data().stock - 1}`);
+                generarGaleria(document.querySelector('.screen.active').id); // Actualiza la galería para reflejar el cambio de stock
             } catch (error) {
                 console.error("Error al agregar al carrito:", error);
-                showMessage('Hubo un error al agregar el producto al carrito. Intenta de nuevo.');
+                if (typeof error === 'string') {
+                    showMessage(error);
+                } else {
+                    showMessage('Hubo un error al agregar el producto al carrito. Intenta de nuevo.');
+                }
             }
         }
         
-        // Cambio: Nueva función para renderizar el carrito
         async function renderizarCarrito() {
             if (!currentUser) {
                 showMessage('Debes iniciar sesión para ver tu carrito.');
@@ -824,7 +952,6 @@
             }
         }
 
-        // Cambio: Nueva función para eliminar productos del carrito
         async function eliminarDelCarrito(productoId, index) {
             if (!currentUser) return;
             try {
@@ -834,11 +961,20 @@
                 let carrito = userData.carrito || [];
                 
                 // Usamos el índice para eliminar el producto correcto
-                carrito.splice(index, 1);
+                if (index > -1 && index < carrito.length) {
+                    const productoEliminado = carrito.splice(index, 1)[0];
+
+                    // Devuelve el stock temporalmente
+                    const productoRef = db.collection('productos').doc(productoEliminado.id);
+                    await productoRef.update({
+                        stock: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
                 
                 await userRef.update({ carrito: carrito });
                 showMessage('Producto eliminado del carrito.');
-                renderizarCarrito(); // Volver a renderizar el carrito para reflejar el cambio
+                renderizarCarrito();
+                generarGaleria(document.querySelector('.screen.active').id);
             } catch (error) {
                 console.error("Error al eliminar del carrito:", error);
                 showMessage('Hubo un error al eliminar el producto.');
