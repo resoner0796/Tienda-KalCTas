@@ -1062,7 +1062,7 @@
                     const itemHtml = `
                         <li class="my-orders-item">
                             <h4>
-                                Pedido #${doc.id.substring(0, 6)}
+                                ${pedido.folio}
                                 <span class="status ${pedido.estado}">${pedido.estado}</span>
                             </h4>
                             <p><strong>Total:</strong> $${total.toFixed(2)}</p>
@@ -1268,8 +1268,22 @@
                     return;
                 }
                 
+                // Generar el folio del pedido
+                const pedidosRef = db.collection('pedidos');
+                const lastPedido = await pedidosRef.orderBy('fechaCreacion', 'desc').limit(1).get();
+                let lastFolioNumber = 0;
+                if (!lastPedido.empty) {
+                    const lastPedidoData = lastPedido.docs[0].data();
+                    const folioMatch = lastPedidoData.folio.match(/PEDIDO-(\d+)/);
+                    if (folioMatch) {
+                        lastFolioNumber = parseInt(folioMatch[1]);
+                    }
+                }
+                const newFolio = `PEDIDO-${(lastFolioNumber + 1).toString().padStart(3, '0')}`;
+                
                 // Generar un nuevo pedido en la colección 'pedidos'
                 await db.collection('pedidos').add({
+                    folio: newFolio,
                     usuarioId: currentUser.uid,
                     productos: carrito,
                     metodoPago: metodoPago,
