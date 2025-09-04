@@ -84,6 +84,13 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .btn-kalctas-2-4 { background-color: #ff6b6b; }
         .btn-kalctas-3-4 { background-color: #48dbfb; }
         .btn-deportivas { background-color: #1dd1a1; }
@@ -99,26 +106,49 @@
             text-align: center;
         }
 
-        /* --- Ícono de Carrito --- */
-        .cart-icon {
+        /* --- Iconos de la cabecera --- */
+        .header-icons {
             position: absolute;
             top: 20px;
             right: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-icon {
             font-size: 2.2em;
             color: #ffffff;
             cursor: pointer;
             transition: transform 0.2s ease;
-            text-decoration: none;
         }
 
-        .cart-icon:hover {
+        .header-icon:hover {
             transform: scale(1.1);
+        }
+
+        .auth-button {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            background-color: transparent;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .auth-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         /* --- Diseño de la galería de modelos --- */
         .model-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Columnas que se ajustan automáticamente */
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin-top: 20px;
             width: 100%;
@@ -152,13 +182,13 @@
         }
         
         .model-buttons .btn {
-            width: calc(50% - 5px); /* Para que los dos botones quepan en una fila */
+            width: calc(50% - 5px);
             padding: 10px;
             font-size: 0.9em;
         }
 
         /* --- Modal de visualización de imagen (opcional) --- */
-        .image-modal {
+        .image-modal, .auth-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -172,7 +202,7 @@
             align-items: center;
         }
 
-        .modal-content {
+        .modal-content-img {
             max-width: 90%;
             max-height: 90%;
             display: block;
@@ -195,12 +225,83 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        /* Estilos para el modal de autenticación */
+        .auth-modal-content {
+            background-color: #e67e22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 350px;
+            text-align: left;
+            position: relative;
+        }
+
+        .auth-modal-content h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 1.5em;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .auth-form input {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1em;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .auth-form .btn-auth {
+            background-color: #48dbfb;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .auth-form .btn-auth:hover {
+            background-color: #2d8ebf;
+        }
+        
+        .auth-toggle {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #ffffff;
+        }
+
+        .auth-toggle a {
+            color: #48dbfb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .auth-message {
+            margin-top: 15px;
+            color: #ff6b6b;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <a href="#" class="cart-icon" onclick="alert('¡Aquí irá la pantalla del carrito!')">🛍️</a>
+        <button id="auth-button" class="auth-button">Iniciar Sesión</button>
+        <div class="header-icons">
+            <a href="#" class="header-icon" onclick="alert('¡Aquí irá la pantalla del carrito!')">🛍️</a>
+        </div>
 
         <main id="pantalla-principal" class="screen" style="display: block;">
             <h1>¡Bienvenido a KalCTas!</h1>
@@ -245,10 +346,154 @@
 
     <div id="image-modal" class="image-modal" onclick="cerrarModal()">
         <span class="close-modal">&times;</span>
-        <img class="modal-content" id="modal-image">
+        <img class="modal-content-img" id="modal-image">
     </div>
 
+    <div id="auth-modal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="cerrarAuthModal()">&times;</span>
+            <div id="login-form-container">
+                <h3>Iniciar Sesión</h3>
+                <form id="login-form" class="auth-form">
+                    <input type="email" id="login-email" placeholder="Correo electrónico" required>
+                    <input type="password" id="login-password" placeholder="Contraseña" required>
+                    <button type="submit" class="btn-auth">Entrar</button>
+                    <p id="login-message" class="auth-message"></p>
+                </form>
+                <p class="auth-toggle">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro()">Regístrate</a></p>
+            </div>
+            <div id="register-form-container" style="display:none;">
+                <h3>Crear Cuenta</h3>
+                <form id="register-form" class="auth-form">
+                    <input type="email" id="register-email" placeholder="Correo electrónico" required>
+                    <input type="password" id="register-password" placeholder="Contraseña" required>
+                    <button type="submit" class="btn-auth">Registrarme</button>
+                    <p id="register-message" class="auth-message"></p>
+                </form>
+                <p class="auth-toggle">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia Sesión</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
     <script>
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
+          authDomain: "tienda-kalctas.firebaseapp.com",
+          projectId: "tienda-kalctas",
+          storageBucket: "tienda-kalctas.firebasestorage.app",
+          messagingSenderId: "374355691085",
+          appId: "1:374355691085:web:18abb15678c7a6870bbe04"
+        };
+
+        // Inicializa Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        let currentUser = null;
+
+        // Manejo del estado de autenticación
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            const authButton = document.getElementById('auth-button');
+            if (user) {
+                // El usuario ha iniciado sesión
+                console.log('Usuario autenticado:', user.email);
+                authButton.textContent = `Hola, ${user.email}`;
+                authButton.onclick = () => {
+                    auth.signOut().then(() => {
+                        alert('Has cerrado sesión.');
+                    });
+                };
+                habilitarBotonesCarrito();
+            } else {
+                // El usuario ha cerrado sesión o no ha iniciado
+                console.log('Usuario no autenticado.');
+                authButton.textContent = 'Iniciar Sesión';
+                authButton.onclick = () => mostrarAuthModal();
+                deshabilitarBotonesCarrito();
+            }
+        });
+
+        function habilitarBotonesCarrito() {
+            document.querySelectorAll('.btn-add').forEach(btn => btn.disabled = false);
+        }
+
+        function deshabilitarBotonesCarrito() {
+            document.querySelectorAll('.btn-add').forEach(btn => btn.disabled = true);
+        }
+
+        // --- Funciones de autenticación ---
+        const authModal = document.getElementById('auth-modal');
+        const loginFormContainer = document.getElementById('login-form-container');
+        const registerFormContainer = document.getElementById('register-form-container');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginMessage = document.getElementById('login-message');
+        const registerMessage = document.getElementById('register-message');
+
+        function mostrarAuthModal() {
+            authModal.style.display = 'flex';
+        }
+
+        function cerrarAuthModal() {
+            authModal.style.display = 'none';
+        }
+        
+        function mostrarRegistro() {
+            loginFormContainer.style.display = 'none';
+            registerFormContainer.style.display = 'block';
+            loginMessage.textContent = '';
+        }
+        
+        function mostrarLogin() {
+            registerFormContainer.style.display = 'none';
+            loginFormContainer.style.display = 'block';
+            registerMessage.textContent = '';
+        }
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = registerForm['register-email'].value;
+            const password = registerForm['register-password'].value;
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
+                cerrarAuthModal();
+            } catch (error) {
+                console.error('Error de registro:', error.message);
+                registerMessage.textContent = traducirErrorFirebase(error.code);
+            }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm['login-email'].value;
+            const password = loginForm['login-password'].value;
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                alert('¡Sesión iniciada correctamente!');
+                cerrarAuthModal();
+            } catch (error) {
+                console.error('Error de inicio de sesión:', error.message);
+                loginMessage.textContent = traducirErrorFirebase(error.code);
+            }
+        });
+        
+        function traducirErrorFirebase(codigo) {
+            switch (codigo) {
+                case 'auth/email-already-in-use': return 'El correo electrónico ya está registrado.';
+                case 'auth/invalid-email': return 'El correo electrónico no es válido.';
+                case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
+                case 'auth/user-not-found': return 'No se encontró un usuario con este correo.';
+                case 'auth/wrong-password': return 'La contraseña es incorrecta.';
+                default: return 'Ocurrió un error inesperado. Intenta de nuevo.';
+            }
+        }
+
         // --- Datos de los modelos (pueden ser dinámicos en el futuro) ---
         const modelos = {
             'pantalla-2-4': ['01.png', '02.png', '03.png', '04.png', '05.png'],
@@ -275,7 +520,6 @@
             const pantallaActiva = document.getElementById(idDePantalla);
             if (pantallaActiva) {
                 pantallaActiva.style.display = 'block';
-                // Llama a la función para generar la galería si es una pantalla de catálogo
                 if (modelos[idDePantalla]) {
                     generarGaleria(idDePantalla);
                 }
@@ -284,11 +528,11 @@
         
         function generarGaleria(idDePantalla) {
             const contenedor = document.getElementById(`grid-${idDePantalla.split('-')[1]}`);
-            const categoria = idDePantalla.split('-')[1]; // ej. '2-4'
+            const categoria = idDePantalla.split('-')[1];
             const carpeta = carpetas[idDePantalla];
             const listaImagenes = modelos[idDePantalla];
             
-            contenedor.innerHTML = ''; // Limpia el contenedor antes de agregar nuevos elementos
+            contenedor.innerHTML = '';
             
             if (listaImagenes && listaImagenes.length > 0) {
                 listaImagenes.forEach(imagen => {
@@ -307,6 +551,7 @@
             } else {
                 contenedor.innerHTML = '<p>No hay modelos disponibles en esta categoría.</p>';
             }
+            deshabilitarBotonesCarrito(); // Se asegura de que los botones estén deshabilitados al cargar la galería
         }
 
         function verImagen(imagenSrc) {
@@ -319,9 +564,13 @@
         }
         
         function agregarAlCarrito(imagenSrc) {
-            alert('¡El modelo ha sido agregado al carrito!');
-            console.log(`Modelo agregado: ${imagenSrc}`);
-            // Aquí puedes agregar la lógica para manejar el carrito
+            if (currentUser) {
+                alert('¡El modelo ha sido agregado al carrito!');
+                console.log(`Modelo agregado por ${currentUser.email}: ${imagenSrc}`);
+            } else {
+                alert('Debes iniciar sesión para agregar productos al carrito.');
+                mostrarAuthModal();
+            }
         }
     </script>
 </body>
