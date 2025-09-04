@@ -24,7 +24,7 @@
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra un poco más pronunciada */
-            max-width: 400px;
+            max-width: 450px; /* Aumentado para acomodar mejor el contenido */
             width: 90%;
             transition: all 0.3s ease;
             display: flex;
@@ -36,33 +36,34 @@
 
         /* --- Títulos --- */
         h1 {
-            color: #ffffff; /* Título blanco para el contraste */
-            font-size: 1.8em; 
-            margin-bottom: 20px;
-            order: 2; 
+            color: #ffffff;
+            font-size: 1.5em; /* Ligeramente más pequeño */
+            margin-bottom: 5px; /* Más cerca del logo */
+            order: 1; /* Posicionado antes que el logo */
         }
 
         h2 {
-            color: #ffffff; /* Títulos de subpantallas en blanco */
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Línea divisoria más suave */
+            color: #ffffff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
             padding-bottom: 10px;
             margin-top: 0;
-        }
-        
-        /* --- Logo --- */
-        .logo {
-            max-width: 200px; 
-            margin-bottom: 30px; 
-            order: 1; 
+            margin-bottom: 20px;
         }
 
-        /* --- Contenedor de Botones --- */
+        /* --- Logo --- */
+        .logo {
+            max-width: 250px; /* Un poco más grande */
+            margin-bottom: 30px;
+            order: 2; /* Posicionado después del texto de bienvenida */
+        }
+
+        /* --- Contenedor de Botones (Menú principal) --- */
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 15px; 
-            width: 100%; 
-            order: 3; 
+            gap: 15px;
+            width: 100%;
+            order: 3;
         }
 
         /* --- Estilo de Botones --- */
@@ -79,49 +80,131 @@
         }
 
         .btn:hover {
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra de hover más profunda */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        /* Colores específicos para cada botón - Mantenemos los colores vibrantes */
-        .btn-kalctas-2-4 { background-color: #ff6b6b; } /* Coral */
-        .btn-kalctas-3-4 { background-color: #48dbfb; } /* Azul claro */
-        .btn-deportivas { background-color: #1dd1a1; } /* Verde menta */
-        .btn-volver { background-color: #576574; } /* Gris oscuro */
+        .btn-kalctas-2-4 { background-color: #ff6b6b; }
+        .btn-kalctas-3-4 { background-color: #48dbfb; }
+        .btn-deportivas { background-color: #1dd1a1; }
+        .btn-volver { background-color: #576574; }
+
+        .btn-view { background-color: #2e86de; } /* Azul más claro */
+        .btn-add { background-color: #27ae60; } /* Verde más oscuro */
         
         /* --- Pantallas/Secciones --- */
         .screen {
             display: none;
-            width: 100%; 
+            width: 100%;
+            text-align: center;
         }
 
         /* --- Ícono de Carrito --- */
         .cart-icon {
             position: absolute;
-            top: 15px; /* Ajusta la posición desde arriba */
-            right: 20px; /* Ajusta la posición desde la derecha */
-            font-size: 2.2em; /* Tamaño del icono */
-            color: #ffffff; /* Color del carrito */
+            top: 20px;
+            right: 25px;
+            font-size: 2.2em;
+            color: #ffffff;
             cursor: pointer;
             transition: transform 0.2s ease;
-            text-decoration: none; /* Si usas un enlace */
+            text-decoration: none;
         }
 
         .cart-icon:hover {
-            transform: scale(1.1); /* Efecto de crecimiento al pasar el ratón */
+            transform: scale(1.1);
+        }
+
+        /* --- Diseño de la galería de modelos --- */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Columnas que se ajustan automáticamente */
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .model-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .model-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .model-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .model-buttons .btn {
+            width: calc(50% - 5px); /* Para que los dos botones quepan en una fila */
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        /* --- Modal de visualización de imagen (opcional) --- */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            display: block;
+            margin: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <a href="#" class="cart-icon" onclick="alert('¡Aquí irá la pantalla del carrito!')">🛒</a>
+        <a href="#" class="cart-icon" onclick="alert('¡Aquí irá la pantalla del carrito!')">🛍️</a>
 
         <main id="pantalla-principal" class="screen" style="display: block;">
+            <h1>¡Bienvenido a KalCTas!</h1>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo">
-            
-            <h1>Bienvenido</h1>
-            
             <div class="button-container">
                 <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
                     KalCTas 2/4
@@ -137,7 +220,7 @@
 
         <section id="pantalla-2-4" class="screen">
             <h2>Catálogo: KalCTas 2/4</h2>
-            <p>Aquí irá el contenido de las calcetas 2/4.</p>
+            <div class="model-grid" id="grid-2-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
             </button>
@@ -145,7 +228,7 @@
 
         <section id="pantalla-3-4" class="screen">
             <h2>Catálogo: KalCTas 3/4</h2>
-            <p>Aquí irá el contenido de las calcetas 3/4.</p>
+            <div class="model-grid" id="grid-3-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
             </button>
@@ -153,16 +236,36 @@
 
         <section id="pantalla-deportivas" class="screen">
             <h2>Catálogo: KalCTas Deportivas</h2>
-            <p>Aquí irá el contenido de las calcetas deportivas.</p>
+            <div class="model-grid" id="grid-deportivas"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
             </button>
         </section>
     </div>
 
+    <div id="image-modal" class="image-modal" onclick="cerrarModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modal-image">
+    </div>
+
     <script>
+        // --- Datos de los modelos (pueden ser dinámicos en el futuro) ---
+        const modelos = {
+            'pantalla-2-4': ['01.png', '02.png', '03.png', '04.png', '05.png'],
+            'pantalla-3-4': ['01.png', '02.png', '03.png', '04.png'],
+            'pantalla-deportivas': ['01.png', '02.png', '03.png'],
+        };
+        
+        const carpetas = {
+            'pantalla-2-4': 'KalCTas2-4',
+            'pantalla-3-4': 'KalCTas3-4',
+            'pantalla-deportivas': 'KalCTasDeportivas',
+        };
+
         // --- Lógica de Navegación ---
         const pantallas = document.querySelectorAll('.screen');
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
 
         function mostrarPantalla(idDePantalla) {
             pantallas.forEach(pantalla => {
@@ -172,7 +275,53 @@
             const pantallaActiva = document.getElementById(idDePantalla);
             if (pantallaActiva) {
                 pantallaActiva.style.display = 'block';
+                // Llama a la función para generar la galería si es una pantalla de catálogo
+                if (modelos[idDePantalla]) {
+                    generarGaleria(idDePantalla);
+                }
             }
+        }
+        
+        function generarGaleria(idDePantalla) {
+            const contenedor = document.getElementById(`grid-${idDePantalla.split('-')[1]}`);
+            const categoria = idDePantalla.split('-')[1]; // ej. '2-4'
+            const carpeta = carpetas[idDePantalla];
+            const listaImagenes = modelos[idDePantalla];
+            
+            contenedor.innerHTML = ''; // Limpia el contenedor antes de agregar nuevos elementos
+            
+            if (listaImagenes && listaImagenes.length > 0) {
+                listaImagenes.forEach(imagen => {
+                    const imagenSrc = `assets/${carpeta}/${imagen}`;
+                    const cardHtml = `
+                        <div class="model-card">
+                            <img src="${imagenSrc}" alt="Modelo de calceta">
+                            <div class="model-buttons">
+                                <button class="btn btn-view" onclick="verImagen('${imagenSrc}')">Ver</button>
+                                <button class="btn btn-add" onclick="agregarAlCarrito('${imagenSrc}')">Agregar al Carrito</button>
+                            </div>
+                        </div>
+                    `;
+                    contenedor.innerHTML += cardHtml;
+                });
+            } else {
+                contenedor.innerHTML = '<p>No hay modelos disponibles en esta categoría.</p>';
+            }
+        }
+
+        function verImagen(imagenSrc) {
+            modal.style.display = 'flex';
+            modalImg.src = imagenSrc;
+        }
+        
+        function cerrarModal() {
+            modal.style.display = 'none';
+        }
+        
+        function agregarAlCarrito(imagenSrc) {
+            alert('¡El modelo ha sido agregado al carrito!');
+            console.log(`Modelo agregado: ${imagenSrc}`);
+            // Aquí puedes agregar la lógica para manejar el carrito
         }
     </script>
 </body>
