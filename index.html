@@ -397,7 +397,7 @@
             gap: 15px;
         }
 
-        .auth-form input, .cash-form input, .cash-form select, .cash-form textarea {
+        .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
             padding: 12px;
             border-radius: 8px;
             border: none;
@@ -738,7 +738,7 @@
                 <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
                 <p style="font-size: 1.2em;">899 338 8669</p>
             </div>
-            <button class="btn btn-add" onclick="mostrarModalConfirmarTransferencia()">Confirmar Pedido</button>
+            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega()">Continuar</button>
         </div>
     </div>
     
@@ -1215,14 +1215,14 @@
             if (metodoPago === 'Transferencia') {
                 transferInfoModal.style.display = 'flex';
             } else if (metodoPago === 'Efectivo') {
-                document.getElementById('confirm-order-title').textContent = "Pago en Efectivo";
-                confirmOrderModal.style.display = 'flex';
+                mostrarModalConfirmarEntrega();
             }
         }
         
-        function mostrarModalConfirmarTransferencia() {
+        function mostrarModalConfirmarEntrega() {
             transferInfoModal.style.display = 'none';
-            document.getElementById('confirm-order-title').textContent = "Pagar por Transferencia";
+            const metodoPago = document.getElementById('payment-method-input').value;
+            document.getElementById('confirm-order-title').textContent = (metodoPago === 'Transferencia') ? "Pagar por Transferencia" : "Pago en Efectivo";
             confirmOrderModal.style.display = 'flex';
         }
 
