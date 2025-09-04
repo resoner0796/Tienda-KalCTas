@@ -91,7 +91,7 @@
 
         .title-container h1 {
             margin: 0;
-            font-size: 1.5em; /* Tamaño de fuente ajustado */
+            font-size: 1.2em; /* Tamaño de fuente ajustado */
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             white-space: nowrap; /* Asegura que el texto esté en una sola línea */
         }
@@ -102,11 +102,11 @@
 
         /* --- Logo --- */
         .logo {
-            max-width: 300px; /* Tamaño del logo aumentado */
+            max-width: 275px; /* Tamaño del logo reajustado */
             margin-bottom: 30px;
             order: 2;
             transition: all 1s ease-in;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Efecto de sombreado */
+            box-shadow: none; /* Se elimina el sombreado */
         }
 
         .logo-small {
@@ -114,6 +114,7 @@
             width: 100px;
             margin: 0 auto 20px auto;
             cursor: pointer; /* Indica que es interactivo */
+            box-shadow: none; /* Se elimina el sombreado */
         }
 
         /* --- Contenedor de Botones (Menú principal) --- */
@@ -155,6 +156,7 @@
         .btn-kalctas-3-4 { background-color: #48dbfb; }
         .btn-kalctas-largas { background-color: #f39c12; }
         .btn-volver { background-color: #576574; }
+        .btn-pedidos { background-color: #3498db; } /* Nuevo estilo para botón de pedidos */
 
         .btn-view { background-color: #2e86de; }
         .btn-add {
@@ -264,7 +266,7 @@
         }
 
         /* --- Modales y alertas --- */
-        .image-modal, .auth-modal, .alert-box, .edit-profile-modal {
+        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -313,12 +315,31 @@
             text-align: left;
             position: relative;
         }
+        
+        .payment-modal-content {
+            background-color: #e67e22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+        }
 
-        .auth-modal-content h3 {
+        .auth-modal-content h3, .payment-modal-content h3 {
             text-align: center;
             margin-bottom: 20px;
             color: #ffffff;
             font-size: 1.5em;
+        }
+        
+        .payment-modal-content .info-container {
+            text-align: left;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
         }
 
         .auth-form {
@@ -327,7 +348,7 @@
             gap: 15px;
         }
 
-        .auth-form input {
+        .auth-form input, .cash-form input, .cash-form select, .cash-form textarea {
             padding: 12px;
             border-radius: 8px;
             border: none;
@@ -567,6 +588,7 @@
         <div class="account-info" id="account-info">
             </div>
         <div class="account-buttons">
+            <button class="btn btn-pedidos">Mis pedidos</button>
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
@@ -636,6 +658,59 @@
             <button class="alert-button" onclick="closeAlert()">Aceptar</button>
         </div>
     </div>
+
+    <div id="payment-options-modal" class="payment-options-modal">
+        <div class="payment-modal-content">
+            <span class="close-modal" onclick="cerrarModalPago()">&times;</span>
+            <h3>Selecciona tu método de pago</h3>
+            <div class="button-container">
+                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta</button>
+                <button class="btn btn-kalctas-3-4" onclick="mostrarInfoTransferencia()">Pagar por Transferencia</button>
+                <button class="btn btn-kalctas-largas" onclick="mostrarFormularioEfectivo()">Pagar en efectivo</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="transfer-info-modal" class="transfer-info-modal">
+        <div class="payment-modal-content">
+            <span class="close-modal" onclick="cerrarInfoTransferencia()">&times;</span>
+            <h3>Pagar por Transferencia</h3>
+            <div class="info-container">
+                <p><strong>Cuenta CLABE:</strong> 012 822 01505292835 9</p>
+                <p><strong>Banco:</strong> BBVA</p>
+                <p><strong>Nombre:</strong> KalCTas</p>
+                <p><strong>Concepto:</strong> [Tu nombre de usuario]</p>
+                <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
+                <p style="font-size: 1.2em;">899 338 8669</p>
+            </div>
+            <button class="btn btn-volver" onclick="cerrarInfoTransferencia()">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="cash-payment-modal" class="cash-payment-modal">
+        <div class="payment-modal-content">
+            <span class="close-modal" onclick="cerrarFormularioEfectivo()">&times;</span>
+            <h3>Pago en efectivo</h3>
+            <form id="cash-form" class="auth-form">
+                <label for="delivery-date">Fecha de entrega:</label>
+                <input type="date" id="delivery-date" required>
+                
+                <label for="delivery-location">Lugar de entrega:</label>
+                <select id="delivery-location" onchange="toggleOtherLocation()">
+                    <option value="Periférico">Periférico</option>
+                    <option value="Smart periférico">Smart periférico</option>
+                    <option value="Soriana Hidalgo">Soriana Hidalgo</option>
+                    <option value="HEB Morelos">HEB Morelos</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                
+                <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
+
+                <button type="submit" class="btn-add">Confirmar Pedido</button>
+            </form>
+        </div>
+    </div>
+
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -972,11 +1047,107 @@
                 showMessage('Hubo un error al eliminar el producto.');
             }
         }
-
-        function pagar() {
-            showMessage("Función de pago no implementada aún.");
-        }
         
+        // Función principal para iniciar el proceso de pago
+        const paymentOptionsModal = document.getElementById('payment-options-modal');
+        function pagar() {
+            cerrarPanelCarrito();
+            paymentOptionsModal.style.display = 'flex';
+        }
+        function cerrarModalPago() {
+            paymentOptionsModal.style.display = 'none';
+        }
+
+        // Funciones para cada opción de pago
+        function iniciarPagoTarjeta() {
+            showMessage("Opción de pago con tarjeta en desarrollo (se integrará con Stripe).");
+        }
+
+        const transferInfoModal = document.getElementById('transfer-info-modal');
+        function mostrarInfoTransferencia() {
+            cerrarModalPago();
+            transferInfoModal.style.display = 'flex';
+        }
+        function cerrarInfoTransferencia() {
+            transferInfoModal.style.display = 'none';
+            mostrarPanelCarrito();
+        }
+
+        const cashPaymentModal = document.getElementById('cash-payment-modal');
+        const cashForm = document.getElementById('cash-form');
+        const otherLocationNote = document.getElementById('other-location-note');
+        function mostrarFormularioEfectivo() {
+            cerrarModalPago();
+            cashPaymentModal.style.display = 'flex';
+        }
+        function cerrarFormularioEfectivo() {
+            cashPaymentModal.style.display = 'none';
+            mostrarPanelCarrito();
+        }
+
+        function toggleOtherLocation() {
+            const location = document.getElementById('delivery-location').value;
+            if (location === 'Otro') {
+                otherLocationNote.style.display = 'block';
+                otherLocationNote.required = true;
+            } else {
+                otherLocationNote.style.display = 'none';
+                otherLocationNote.required = false;
+            }
+        }
+
+        cashForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                showMessage('Debes iniciar sesión para confirmar el pedido.');
+                return;
+            }
+
+            const fechaEntrega = cashForm['delivery-date'].value;
+            const lugarEntregaSelect = cashForm['delivery-location'].value;
+            const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
+            
+            if (lugarEntregaSelect === 'Otro' && lugarEntrega.trim() === '') {
+                showMessage('Por favor, especifica el lugar de entrega.');
+                return;
+            }
+
+            try {
+                // Obtener los productos del carrito del usuario
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                const carrito = userDoc.data().carrito || [];
+
+                if (carrito.length === 0) {
+                    showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
+                    return;
+                }
+
+                // Generar un nuevo pedido en la colección 'pedidos'
+                await db.collection('pedidos').add({
+                    usuarioId: currentUser.uid,
+                    productos: carrito,
+                    metodoPago: 'Efectivo',
+                    fechaEntrega: fechaEntrega,
+                    lugarEntrega: lugarEntrega,
+                    estado: 'Pendiente de confirmación',
+                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Vaciar el carrito del usuario
+                await db.collection('usuarios').doc(currentUser.uid).update({
+                    carrito: []
+                });
+
+                showMessage('¡Pedido registrado! Nos comunicaremos vía WhatsApp para confirmar los detalles de la entrega. El pedido se ha vaciado de tu carrito.');
+                cerrarFormularioEfectivo();
+                renderizarCarrito();
+
+            } catch (error) {
+                console.error("Error al registrar el pedido:", error);
+                showMessage('Hubo un error al procesar tu pedido. Intenta de nuevo.');
+            }
+        });
+
         async function generarGaleria(idDePantalla) {
             let categoria;
             let gridId;
