@@ -133,10 +133,10 @@
             background-color: transparent;
             border: 2px solid #ffffff;
             color: #ffffff;
-            padding: 8px 12px;
+            padding: 6px 10px; /* Ajuste para hacerlo más pequeño */
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.8em; /* Ajuste de tamaño de fuente */
             font-weight: bold;
             transition: background-color 0.2s ease;
         }
@@ -377,6 +377,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
         // Tu configuración de Firebase
@@ -393,6 +394,7 @@
         firebase.initializeApp(firebaseConfig);
 
         const auth = firebase.auth();
+        const db = firebase.firestore();
         let currentUser = null;
 
         // Manejo del estado de autenticación
@@ -400,7 +402,6 @@
             currentUser = user;
             const authButton = document.getElementById('auth-button');
             if (user) {
-                // El usuario ha iniciado sesión
                 console.log('Usuario autenticado:', user.email);
                 authButton.textContent = `Hola, ${user.email}`;
                 authButton.onclick = () => {
@@ -410,7 +411,6 @@
                 };
                 habilitarBotonesCarrito();
             } else {
-                // El usuario ha cerrado sesión o no ha iniciado
                 console.log('Usuario no autenticado.');
                 authButton.textContent = 'Iniciar Sesión';
                 authButton.onclick = () => mostrarAuthModal();
@@ -494,19 +494,6 @@
             }
         }
 
-        // --- Datos de los modelos (pueden ser dinámicos en el futuro) ---
-        const modelos = {
-            'pantalla-2-4': ['01.png', '02.png', '03.png', '04.png', '05.png'],
-            'pantalla-3-4': ['01.png', '02.png', '03.png', '04.png'],
-            'pantalla-deportivas': ['01.png', '02.png', '03.png'],
-        };
-        
-        const carpetas = {
-            'pantalla-2-4': 'KalCTas2-4',
-            'pantalla-3-4': 'KalCTas3-4',
-            'pantalla-deportivas': 'KalCTasDeportivas',
-        };
-
         // --- Lógica de Navegación ---
         const pantallas = document.querySelectorAll('.screen');
         const modal = document.getElementById('image-modal');
@@ -520,38 +507,60 @@
             const pantallaActiva = document.getElementById(idDePantalla);
             if (pantallaActiva) {
                 pantallaActiva.style.display = 'block';
-                if (modelos[idDePantalla]) {
+                // Llama a la función para generar la galería si es una pantalla de catálogo
+                if (idDePantalla.startsWith('pantalla-')) {
                     generarGaleria(idDePantalla);
                 }
             }
         }
         
-        function generarGaleria(idDePantalla) {
+        async function generarGaleria(idDePantalla) {
             const contenedor = document.getElementById(`grid-${idDePantalla.split('-')[1]}`);
-            const categoria = idDePantalla.split('-')[1];
-            const carpeta = carpetas[idDePantalla];
-            const listaImagenes = modelos[idDePantalla];
+            const categoria = idDePantalla.substring(idDePantalla.indexOf('-') + 1); // Extrae la parte "2-4", "3-4", etc.
             
-            contenedor.innerHTML = '';
-            
-            if (listaImagenes && listaImagenes.length > 0) {
-                listaImagenes.forEach(imagen => {
-                    const imagenSrc = `assets/${carpeta}/${imagen}`;
+            contenedor.innerHTML = '<p>Cargando modelos...</p>';
+
+            try {
+                // Consulta a la base de datos de Firestore
+                const querySnapshot = await db.collection('productos').where('categoria', '==', categoria).get();
+                
+                contenedor.innerHTML = ''; // Limpia el mensaje de carga
+                
+                if (querySnapshot.empty) {
+                    contenedor.innerHTML = '<p>No hay modelos disponibles en esta categoría.</p>';
+                    return;
+                }
+                
+                querySnapshot.forEach(doc => {
+                    const producto = doc.data();
                     const cardHtml = `
                         <div class="model-card">
-                            <img src="${imagenSrc}" alt="Modelo de calceta">
+                            <img src="${producto.imagenUrl}" alt="Modelo de calceta">
+                            <p>${producto.nombre}</p>
                             <div class="model-buttons">
-                                <button class="btn btn-view" onclick="verImagen('${imagenSrc}')">Ver</button>
-                                <button class="btn btn-add" onclick="agregarAlCarrito('${imagenSrc}')">Agregar al Carrito</button>
+                                <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
+                                <button class="btn btn-add" data-id="${doc.id}">Agregar al Carrito</button>
                             </div>
                         </div>
                     `;
                     contenedor.innerHTML += cardHtml;
                 });
-            } else {
-                contenedor.innerHTML = '<p>No hay modelos disponibles en esta categoría.</p>';
+                
+                // Habilita los botones de agregar al carrito si el usuario está logueado
+                const botonesAgregar = document.querySelectorAll('.btn-add');
+                botonesAgregar.forEach(btn => {
+                    btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
+                    if (currentUser) {
+                        btn.disabled = false;
+                    } else {
+                        btn.disabled = true;
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error al obtener los productos:", error);
+                contenedor.innerHTML = '<p>Hubo un error al cargar los modelos. Intenta de nuevo más tarde.</p>';
             }
-            deshabilitarBotonesCarrito(); // Se asegura de que los botones estén deshabilitados al cargar la galería
         }
 
         function verImagen(imagenSrc) {
@@ -563,14 +572,15 @@
             modal.style.display = 'none';
         }
         
-        function agregarAlCarrito(imagenSrc) {
-            if (currentUser) {
-                alert('¡El modelo ha sido agregado al carrito!');
-                console.log(`Modelo agregado por ${currentUser.email}: ${imagenSrc}`);
-            } else {
+        async function agregarAlCarrito(productoId) {
+            if (!currentUser) {
                 alert('Debes iniciar sesión para agregar productos al carrito.');
                 mostrarAuthModal();
+                return;
             }
+
+            console.log(`Producto ID ${productoId} agregado al carrito por ${currentUser.email}`);
+            alert('¡El modelo ha sido agregado al carrito!');
         }
     </script>
 </body>
