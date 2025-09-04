@@ -87,6 +87,11 @@
             flex-direction: column;
             align-items: center;
             order: 1;
+            position: absolute; /* Posicionamiento absoluto para moverlo */
+            top: 25%; /* Ajuste de posición */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50; /* Asegura que esté sobre el logo */
         }
 
         .title-container h1 {
@@ -107,6 +112,7 @@
             order: 2;
             transition: all 1s ease-in;
             box-shadow: none; /* Se elimina el sombreado */
+            margin-top: 100px; /* Ajuste para dar espacio al título */
         }
 
         .logo-small {
@@ -266,7 +272,7 @@
         }
 
         /* --- Modales y alertas --- */
-        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal {
+        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -354,6 +360,12 @@
             border: none;
             font-size: 1em;
             background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .auth-form label {
+            text-align: left;
+            font-weight: bold;
+            margin-top: 10px;
         }
 
         .auth-form .btn-auth {
@@ -665,33 +677,34 @@
             <h3>Selecciona tu método de pago</h3>
             <div class="button-container">
                 <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta</button>
-                <button class="btn btn-kalctas-3-4" onclick="mostrarInfoTransferencia()">Pagar por Transferencia</button>
-                <button class="btn btn-kalctas-largas" onclick="mostrarFormularioEfectivo()">Pagar en efectivo</button>
+                <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')">Pagar por Transferencia</button>
+                <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')">Pagar en efectivo</button>
             </div>
         </div>
     </div>
 
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarInfoTransferencia()">&times;</span>
-            <h3>Pagar por Transferencia</h3>
+            <span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
+            <h3>Detalles de la Transferencia</h3>
             <div class="info-container">
-                <p><strong>Cuenta CLABE:</strong> 012 822 01505292835 9</p>
+                <p><strong>Cuenta CLABE:</strong> 012822015052928359</p>
                 <p><strong>Banco:</strong> BBVA</p>
                 <p><strong>Nombre:</strong> KalCTas</p>
                 <p><strong>Concepto:</strong> [Tu nombre de usuario]</p>
                 <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
                 <p style="font-size: 1.2em;">899 338 8669</p>
             </div>
-            <button class="btn btn-volver" onclick="cerrarInfoTransferencia()">Cerrar</button>
+            <button class="btn btn-volver" onclick="cerrarModalEntrega()">Cerrar</button>
         </div>
     </div>
-
-    <div id="cash-payment-modal" class="cash-payment-modal">
+    
+    <div id="confirm-order-modal" class="confirm-order-modal">
         <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarFormularioEfectivo()">&times;</span>
-            <h3>Pago en efectivo</h3>
-            <form id="cash-form" class="auth-form">
+            <span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
+            <h3 id="confirm-order-title"></h3>
+            <form id="delivery-form" class="auth-form">
+                <input type="hidden" id="payment-method-input">
                 <label for="delivery-date">Fecha de entrega:</label>
                 <input type="date" id="delivery-date" required>
                 
@@ -1048,40 +1061,55 @@
             }
         }
         
-        // Función principal para iniciar el proceso de pago
+        // Lógica de pago
         const paymentOptionsModal = document.getElementById('payment-options-modal');
-        function pagar() {
+        const confirmOrderModal = document.getElementById('confirm-order-modal');
+        const deliveryForm = document.getElementById('delivery-form');
+        const otherLocationNote = document.getElementById('other-location-note');
+        
+        async function pagar() {
+            if (!currentUser) {
+                showMessage('Debes iniciar sesión para ver tu carrito.');
+                mostrarAuthModal();
+                return;
+            }
+
+            const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+            const carrito = userDoc.data().carrito || [];
+
+            if (carrito.length === 0) {
+                showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
+                return;
+            }
+
             cerrarPanelCarrito();
             paymentOptionsModal.style.display = 'flex';
         }
+        
         function cerrarModalPago() {
             paymentOptionsModal.style.display = 'none';
         }
 
-        // Funciones para cada opción de pago
         function iniciarPagoTarjeta() {
             showMessage("Opción de pago con tarjeta en desarrollo (se integrará con Stripe).");
         }
 
-        const transferInfoModal = document.getElementById('transfer-info-modal');
-        function mostrarInfoTransferencia() {
+        function iniciarProcesoDeEntrega(metodoPago) {
             cerrarModalPago();
-            transferInfoModal.style.display = 'flex';
+            document.getElementById('payment-method-input').value = metodoPago;
+            
+            if (metodoPago === 'Transferencia') {
+                document.getElementById('confirm-order-title').textContent = "Pagar por Transferencia";
+                document.getElementById('transfer-info-modal').style.display = 'flex';
+            } else if (metodoPago === 'Efectivo') {
+                document.getElementById('confirm-order-title').textContent = "Pago en Efectivo";
+                confirmOrderModal.style.display = 'flex';
+            }
         }
-        function cerrarInfoTransferencia() {
-            transferInfoModal.style.display = 'none';
-            mostrarPanelCarrito();
-        }
-
-        const cashPaymentModal = document.getElementById('cash-payment-modal');
-        const cashForm = document.getElementById('cash-form');
-        const otherLocationNote = document.getElementById('other-location-note');
-        function mostrarFormularioEfectivo() {
-            cerrarModalPago();
-            cashPaymentModal.style.display = 'flex';
-        }
-        function cerrarFormularioEfectivo() {
-            cashPaymentModal.style.display = 'none';
+        
+        function cerrarModalEntrega() {
+            document.getElementById('transfer-info-modal').style.display = 'none';
+            confirmOrderModal.style.display = 'none';
             mostrarPanelCarrito();
         }
 
@@ -1096,15 +1124,11 @@
             }
         }
 
-        cashForm.addEventListener('submit', async (e) => {
+        deliveryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) {
-                showMessage('Debes iniciar sesión para confirmar el pedido.');
-                return;
-            }
-
-            const fechaEntrega = cashForm['delivery-date'].value;
-            const lugarEntregaSelect = cashForm['delivery-location'].value;
+            const metodoPago = document.getElementById('payment-method-input').value;
+            const fechaEntrega = deliveryForm['delivery-date'].value;
+            const lugarEntregaSelect = deliveryForm['delivery-location'].value;
             const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
             
             if (lugarEntregaSelect === 'Otro' && lugarEntrega.trim() === '') {
@@ -1121,15 +1145,15 @@
                     showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
                     return;
                 }
-
+                
                 // Generar un nuevo pedido en la colección 'pedidos'
                 await db.collection('pedidos').add({
                     usuarioId: currentUser.uid,
                     productos: carrito,
-                    metodoPago: 'Efectivo',
+                    metodoPago: metodoPago,
                     fechaEntrega: fechaEntrega,
                     lugarEntrega: lugarEntrega,
-                    estado: 'Pendiente de confirmación',
+                    estado: 'Pendiente',
                     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
@@ -1138,8 +1162,8 @@
                     carrito: []
                 });
 
-                showMessage('¡Pedido registrado! Nos comunicaremos vía WhatsApp para confirmar los detalles de la entrega. El pedido se ha vaciado de tu carrito.');
-                cerrarFormularioEfectivo();
+                showMessage('¡Pedido registrado! Nos comunicaremos contigo para confirmar los detalles de la entrega. El pedido se ha vaciado de tu carrito.');
+                cerrarModalEntrega();
                 renderizarCarrito();
 
             } catch (error) {
