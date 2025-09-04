@@ -188,7 +188,7 @@
         }
 
         /* --- Modal de visualización de imagen (opcional) --- */
-        .image-modal, .auth-modal {
+        .image-modal, .auth-modal, .alert-box {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -293,6 +293,28 @@
             text-align: center;
             font-weight: bold;
         }
+
+        /* Estilos para el nuevo mensaje personalizado */
+        .alert-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .alert-text {
+            color: #333;
+        }
+
+        .alert-button {
+            margin-top: 15px;
+            background-color: #576574;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -374,6 +396,14 @@
             </div>
         </div>
     </div>
+    
+    <!-- Contenedor para el mensaje personalizado, reemplazando a `alert()` -->
+    <div id="alert-box" class="alert-box">
+        <div class="alert-content">
+            <p id="alert-text" class="alert-text"></p>
+            <button class="alert-button" onclick="closeAlert()">Aceptar</button>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -396,6 +426,19 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
+        
+        // Elementos para el mensaje personalizado
+        const alertBox = document.getElementById('alert-box');
+        const alertText = document.getElementById('alert-text');
+
+        function showMessage(text) {
+            alertText.textContent = text;
+            alertBox.style.display = 'flex';
+        }
+
+        function closeAlert() {
+            alertBox.style.display = 'none';
+        }
 
         // Manejo del estado de autenticación
         auth.onAuthStateChanged(user => {
@@ -405,9 +448,8 @@
                 console.log('Usuario autenticado:', user.email);
                 authButton.textContent = `Hola, ${user.email}`;
                 authButton.onclick = () => {
-                    auth.signOut().then(() => {
-                        alert('Has cerrado sesión.');
-                    });
+                    showMessage('Has cerrado sesión.');
+                    auth.signOut();
                 };
                 habilitarBotonesCarrito();
             } else {
@@ -461,7 +503,7 @@
             const password = registerForm['register-password'].value;
             try {
                 await auth.createUserWithEmailAndPassword(email, password);
-                alert('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
+                showMessage('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
                 cerrarAuthModal();
             } catch (error) {
                 console.error('Error de registro:', error.message);
@@ -475,7 +517,7 @@
             const password = loginForm['login-password'].value;
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-                alert('¡Sesión iniciada correctamente!');
+                showMessage('¡Sesión iniciada correctamente!');
                 cerrarAuthModal();
             } catch (error) {
                 console.error('Error de inicio de sesión:', error.message);
@@ -516,7 +558,22 @@
         
         async function generarGaleria(idDePantalla) {
             const contenedor = document.getElementById(`grid-${idDePantalla.split('-')[1]}`);
-            const categoria = idDePantalla.substring(idDePantalla.indexOf('-') + 1); // Extrae la parte "2-4", "3-4", etc.
+            
+            // Lógica corregida para mapear el ID de la pantalla al nombre de categoría de Firestore
+            let categoria;
+            switch(idDePantalla) {
+                case 'pantalla-2-4':
+                    categoria = 'KalCTas2-4';
+                    break;
+                case 'pantalla-3-4':
+                    categoria = 'KalCTas3-4';
+                    break;
+                case 'pantalla-deportivas':
+                    categoria = 'KalCTasDeportivas';
+                    break;
+                default:
+                    categoria = '';
+            }
             
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
@@ -574,13 +631,13 @@
         
         async function agregarAlCarrito(productoId) {
             if (!currentUser) {
-                alert('Debes iniciar sesión para agregar productos al carrito.');
+                showMessage('Debes iniciar sesión para agregar productos al carrito.');
                 mostrarAuthModal();
                 return;
             }
 
             console.log(`Producto ID ${productoId} agregado al carrito por ${currentUser.email}`);
-            alert('¡El modelo ha sido agregado al carrito!');
+            showMessage('¡El modelo ha sido agregado al carrito!');
         }
     </script>
 </body>
