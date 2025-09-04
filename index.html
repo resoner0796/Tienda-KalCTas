@@ -32,22 +32,27 @@
             align-items: center;
             position: relative; /* Necesario para posicionar el carrito absolutamente */
             color: #ffffff; /* Texto blanco para el contraste con el fondo oscuro */
+            opacity: 0; /* Inicialmente invisible para la transición de entrada */
+            transform: translateY(20px); /* Ligeramente desplazado para el efecto de entrada */
+            transition: opacity 1s ease-in, transform 1s ease-in;
+        }
+        
+        /* Estilo para mostrar el contenedor con la transición */
+        .container.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* --- Títulos --- */
         h1 {
             color: #ffffff;
-            font-size: 1.5em; /* Ligeramente más pequeño */
+            font-size: 1.2em; /* Ligeramente más pequeño */
             margin-bottom: 5px; /* Más cerca del logo */
             order: 1; /* Posicionado antes que el logo */
         }
 
         h2 {
-            color: #ffffff;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
-            margin-top: 0;
-            margin-bottom: 20px;
+            display: none; /* Se elimina este texto como se solicitó */
         }
 
         /* --- Logo --- */
@@ -55,6 +60,14 @@
             max-width: 250px; /* Un poco más grande */
             margin-bottom: 30px;
             order: 2; /* Posicionado después del texto de bienvenida */
+            transition: all 1s ease-in;
+        }
+
+        /* Nuevo estilo para el logo en las pantallas de catálogo */
+        .logo-small {
+            display: block;
+            width: 100px;
+            margin: 0 auto 20px auto;
         }
 
         /* --- Contenedor de Botones (Menú principal) --- */
@@ -64,6 +77,7 @@
             gap: 15px;
             width: 100%;
             order: 3;
+            transition: all 1s ease-in;
         }
 
         /* --- Estilo de Botones --- */
@@ -113,6 +127,7 @@
             right: 25px;
             display: flex;
             gap: 15px;
+            transition: all 1s ease-in;
         }
 
         .header-icon {
@@ -187,8 +202,15 @@
             font-size: 0.9em;
         }
 
+        .product-price {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 1.1em;
+            margin-bottom: 5px; /* Separación del precio con los botones */
+        }
+
         /* --- Modal de visualización de imagen (opcional) --- */
-        .image-modal, .auth-modal, .alert-box {
+        .image-modal, .auth-modal, .alert-box, .cart-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -315,20 +337,76 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        /* --- Estilos para la pantalla del carrito --- */
+        .cart-content {
+            background-color: #e67e22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 450px;
+            text-align: left;
+            position: relative;
+            color: #ffffff;
+        }
+
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+        }
+
+        .cart-item-price {
+            margin-left: auto;
+            margin-right: 15px;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: #ffffff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cart-total {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding-top: 10px;
+            border-top: 2px solid rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="main-container">
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-            <a href="#" class="header-icon" onclick="mostrarMensajeCarrito()">🛍️</a>
+            <a href="#" class="header-icon" onclick="mostrarPantalla('pantalla-carrito')">🛍️</a>
         </div>
 
         <main id="pantalla-principal" class="screen" style="display: block;">
             <h1>¡Bienvenido a KalCTas!</h1>
-            <img src="LOGO.png" alt="Logo de la tienda" class="logo">
-            <div class="button-container">
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
+            <div class="button-container" id="main-buttons">
                 <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
                     KalCTas 2/4
                 </button>
@@ -342,7 +420,7 @@
         </main>
 
         <section id="pantalla-2-4" class="screen">
-            <h2>Catálogo: KalCTas 2/4</h2>
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
             <div class="model-grid" id="grid-2-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
@@ -350,7 +428,7 @@
         </section>
 
         <section id="pantalla-3-4" class="screen">
-            <h2>Catálogo: KalCTas 3/4</h2>
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
             <div class="model-grid" id="grid-3-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
@@ -358,8 +436,20 @@
         </section>
 
         <section id="pantalla-deportivas" class="screen">
-            <h2>Catálogo: KalCTas Deportivas</h2>
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
             <div class="model-grid" id="grid-deportivas"></div>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
+            </button>
+        </section>
+        
+        <section id="pantalla-carrito" class="screen">
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
+            <h3>Tu Carrito de Compras</h3>
+            <ul class="cart-items" id="cart-list">
+                </ul>
+            <div class="cart-total" id="cart-total">
+                </div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
                 Volver
             </button>
@@ -429,6 +519,10 @@
         // Elementos para el mensaje personalizado
         const alertBox = document.getElementById('alert-box');
         const alertText = document.getElementById('alert-text');
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('main-container').classList.add('show');
+        });
 
         function showMessage(text) {
             alertText.textContent = text;
@@ -439,17 +533,14 @@
             alertBox.style.display = 'none';
         }
         
-        function mostrarMensajeCarrito() {
-            showMessage('¡Aquí irá la pantalla del carrito!');
-        }
-
         // Manejo del estado de autenticación
         auth.onAuthStateChanged(user => {
             currentUser = user;
             const authButton = document.getElementById('auth-button');
             if (user) {
                 console.log('Usuario autenticado:', user.email);
-                authButton.textContent = `Hola, ${user.email}`;
+                // Cambio: Mostrar "Mi cuenta" en lugar del correo
+                authButton.textContent = 'Mi cuenta';
                 authButton.onclick = () => {
                     showMessage('Has cerrado sesión.');
                     auth.signOut();
@@ -505,7 +596,12 @@
             const email = registerForm['register-email'].value;
             const password = registerForm['register-password'].value;
             try {
-                await auth.createUserWithEmailAndPassword(email, password);
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                // Cambio: Crea un documento de usuario en Firestore con el campo 'carrito' vacío
+                await db.collection('usuarios').doc(userCredential.user.uid).set({
+                    email: email,
+                    carrito: []
+                });
                 showMessage('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
                 cerrarAuthModal();
             } catch (error) {
@@ -552,9 +648,13 @@
             const pantallaActiva = document.getElementById(idDePantalla);
             if (pantallaActiva) {
                 pantallaActiva.style.display = 'block';
-                // Llama a la función para generar la galería si es una pantalla de catálogo
+                // Llama a la función para generar la galería si es una pantalla de catálogo o carrito
                 if (idDePantalla.startsWith('pantalla-')) {
-                    generarGaleria(idDePantalla);
+                    if (idDePantalla === 'pantalla-carrito') {
+                        renderizarCarrito();
+                    } else {
+                        generarGaleria(idDePantalla);
+                    }
                 }
             }
         }
@@ -591,10 +691,9 @@
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
             try {
-                // Consulta a la base de datos de Firestore
                 const querySnapshot = await db.collection('productos').where('categoria', '==', categoria).get();
                 
-                contenedor.innerHTML = ''; // Limpia el mensaje de carga
+                contenedor.innerHTML = '';
                 
                 if (querySnapshot.empty) {
                     contenedor.innerHTML = '<p>No hay modelos disponibles en esta categoría.</p>';
@@ -606,7 +705,7 @@
                     const cardHtml = `
                         <div class="model-card">
                             <img src="${producto.imagenUrl}" alt="Modelo de calceta">
-                            <p>${producto.nombre}</p>
+                            <p class="product-price">$${producto.precio}</p> <p>${producto.nombre}</p>
                             <div class="model-buttons">
                                 <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
                                 <button class="btn btn-add" data-id="${doc.id}">Agregar al Carrito</button>
@@ -616,7 +715,6 @@
                     contenedor.innerHTML += cardHtml;
                 });
                 
-                // Habilita los botones de agregar al carrito si el usuario está logueado
                 const botonesAgregar = document.querySelectorAll('.btn-add');
                 botonesAgregar.forEach(btn => {
                     btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
@@ -642,6 +740,7 @@
             modal.style.display = 'none';
         }
         
+        // Cambio: Nueva lógica para agregar al carrito
         async function agregarAlCarrito(productoId) {
             if (!currentUser) {
                 showMessage('Debes iniciar sesión para agregar productos al carrito.');
@@ -649,8 +748,101 @@
                 return;
             }
 
-            console.log(`Producto ID ${productoId} agregado al carrito por ${currentUser.email}`);
-            showMessage('¡El modelo ha sido agregado al carrito!');
+            try {
+                const productoDoc = await db.collection('productos').doc(productoId).get();
+                if (!productoDoc.exists) {
+                    showMessage('El producto no existe.');
+                    return;
+                }
+                
+                const producto = {
+                    id: productoDoc.id,
+                    ...productoDoc.data()
+                };
+
+                const userRef = db.collection('usuarios').doc(currentUser.uid);
+                const userDoc = await userRef.get();
+                const userData = userDoc.data();
+
+                let carrito = userData.carrito || [];
+                carrito.push(producto);
+
+                await userRef.update({ carrito: carrito });
+                
+                showMessage('¡El modelo ha sido agregado al carrito!');
+                console.log(`Producto ID ${producto.id} agregado al carrito de ${currentUser.email}`);
+            } catch (error) {
+                console.error("Error al agregar al carrito:", error);
+                showMessage('Hubo un error al agregar el producto al carrito. Intenta de nuevo.');
+            }
+        }
+        
+        // Cambio: Nueva función para renderizar el carrito
+        async function renderizarCarrito() {
+            if (!currentUser) {
+                showMessage('Debes iniciar sesión para ver tu carrito.');
+                return;
+            }
+
+            const cartList = document.getElementById('cart-list');
+            const cartTotal = document.getElementById('cart-total');
+            cartList.innerHTML = '';
+            cartTotal.textContent = '';
+            
+            try {
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                const userData = userDoc.data();
+                const carrito = userData.carrito || [];
+
+                if (carrito.length === 0) {
+                    cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
+                    cartTotal.textContent = 'Total: $0.00';
+                    return;
+                }
+
+                let total = 0;
+                carrito.forEach((producto, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'cart-item';
+                    listItem.innerHTML = `
+                        <span class="cart-item-name">${producto.nombre}</span>
+                        <span class="cart-item-price">$${producto.precio}</span>
+                        <button class="btn-delete" onclick="eliminarDelCarrito('${producto.id}', ${index})">
+                            Eliminar
+                        </button>
+                    `;
+                    cartList.appendChild(listItem);
+                    total += producto.precio;
+                });
+
+                cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+
+            } catch (error) {
+                console.error("Error al renderizar el carrito:", error);
+                cartList.innerHTML = '<p>Hubo un error al cargar el carrito. Intenta de nuevo.</p>';
+                cartTotal.textContent = 'Total: $0.00';
+            }
+        }
+
+        // Cambio: Nueva función para eliminar productos del carrito
+        async function eliminarDelCarrito(productoId, index) {
+            if (!currentUser) return;
+            try {
+                const userRef = db.collection('usuarios').doc(currentUser.uid);
+                const userDoc = await userRef.get();
+                const userData = userDoc.data();
+                let carrito = userData.carrito || [];
+                
+                // Usamos el índice para eliminar el producto correcto
+                carrito.splice(index, 1);
+                
+                await userRef.update({ carrito: carrito });
+                showMessage('Producto eliminado del carrito.');
+                renderizarCarrito(); // Volver a renderizar el carrito para reflejar el cambio
+            } catch (error) {
+                console.error("Error al eliminar del carrito:", error);
+                showMessage('Hubo un error al eliminar el producto.');
+            }
         }
     </script>
 </body>
