@@ -847,19 +847,23 @@
             if (user) {
                 authButton.textContent = 'Mi Cuenta';
                 authButton.onclick = () => mostrarPanelMiCuenta();
+                habilitarBotonesCarrito();
                 cargarDatosUsuario();
             } else {
                 authButton.textContent = 'Iniciar Sesión';
                 authButton.onclick = () => mostrarAuthModal();
+                deshabilitarBotonesCarrito();
                 if (unsubscribeMisPedidos) unsubscribeMisPedidos(); // Deja de escuchar si cierra sesión
-            }
-            // Actualizar botones de la galería cada vez que cambie el estado de auth
-            const activeScreen = document.querySelector('.screen.active');
-            if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
-                generarGaleria(activeScreen.id);
             }
         });
 
+        function habilitarBotonesCarrito() {
+            // Esta función se puede simplificar o eliminar si la lógica de deshabilitado es más específica
+        }
+
+        function deshabilitarBotonesCarrito() {
+            // Esta función se puede simplificar o eliminar
+        }
 
         const authModal = document.getElementById('auth-modal');
         const loginFormContainer = document.getElementById('login-form-container');
@@ -1388,18 +1392,15 @@
                     const productoRef = db.collection('productos').doc(productoId);
                     const userRef = db.collection('usuarios').doc(currentUser.uid);
 
-                    // --- INICIO DE CORRECCIÓN ---
-                    // 1. LEER todos los documentos PRIMERO
                     const productoDoc = await transaction.get(productoRef);
-                    const userDoc = await transaction.get(userRef);
-                    
                     if (!productoDoc.exists) throw new Error("El producto no existe.");
-                    if (!userDoc.exists) throw new Error("El usuario no existe.");
 
-                    // 2. Realizar las operaciones y validaciones
                     const productoData = productoDoc.data();
                     if (productoData.stock <= 0) throw new Error("Este producto está agotado.");
                     
+                    transaction.update(productoRef, { stock: productoData.stock - 1 });
+                    
+                    const userDoc = await transaction.get(userRef);
                     const carrito = userDoc.data().carrito || [];
                     carrito.push({
                         id: productoDoc.id,
@@ -1407,11 +1408,8 @@
                         precio: productoData.precio,
                         imagenUrl: productoData.imagenUrl
                     });
-
-                    // 3. ESCRIBIR todos los cambios al FINAL
-                    transaction.update(productoRef, { stock: productoData.stock - 1 });
-                    transaction.update(userRef, { carrito: carrito });
-                    // --- FIN DE CORRECCIÓN ---
+                    
+                    transaction.update(userRef, { carrito });
                 });
                 
                 showMessage('¡Modelo agregado al carrito!');
