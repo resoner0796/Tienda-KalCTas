@@ -16,7 +16,7 @@
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            overflow-x: hidden; /* Evita el scroll horizontal durante las transiciones del panel lateral */
+            overflow: hidden; /* Evita el scroll global */
         }
 
         /* --- Contenedor Principal (Bloque Naranja Oscuro) --- */
@@ -35,8 +35,7 @@
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 1s ease-in, transform 1s ease-in;
-            min-height: 80vh; /* Ajuste para el scroll interno */
-            padding-bottom: 80px;
+            min-height: 80vh; 
         }
 
         .container.show {
@@ -52,11 +51,12 @@
             opacity: 0;
             transform: scale(0.95);
             transition: opacity 0.5s ease, transform 0.5s ease;
-            /* Estilos para el scroll en los catálogos */
-            max-height: calc(100vh - 200px); /* Altura máxima para permitir scroll */
+            max-height: calc(100vh - 100px); /* Ajuste de altura para scroll */
             overflow-y: auto;
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
+            position: relative;
+            z-index: 10;
         }
 
         .screen::-webkit-scrollbar {
@@ -137,15 +137,17 @@
 
         .btn-view { background-color: #2e86de; }
         .btn-add { background-color: #27ae60; }
+        .btn-checkout { background-color: #f39c12; }
         
         /* --- Iconos de la cabecera --- */
         .header-icons {
-            position: absolute;
+            position: fixed; /* Posición fija para no desplazarse con el scroll */
             top: 20px;
             right: 25px;
             display: flex;
             gap: 15px;
             transition: all 1s ease-in;
+            z-index: 100; /* Asegura que esté por encima de otros elementos */
         }
 
         .header-icon {
@@ -160,7 +162,7 @@
         }
 
         .auth-button {
-            position: absolute;
+            position: fixed; /* Posición fija para no desplazarse con el scroll */
             top: 20px;
             left: 25px;
             background-color: transparent;
@@ -172,6 +174,7 @@
             font-size: 0.8em;
             font-weight: bold;
             transition: background-color 0.2s ease;
+            z-index: 100; /* Asegura que esté por encima de otros elementos */
         }
 
         .auth-button:hover {
@@ -228,7 +231,7 @@
         }
 
         /* --- Modales y alertas --- */
-        .image-modal, .auth-modal, .alert-box, .cart-modal, .edit-profile-modal {
+        .image-modal, .auth-modal, .alert-box, .edit-profile-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -356,62 +359,6 @@
             cursor: pointer;
         }
 
-        /* --- Estilos para la pantalla del carrito --- */
-        .cart-content {
-            background-color: #e67e22;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 80%;
-            max-width: 450px;
-            text-align: left;
-            position: relative;
-            color: #ffffff;
-        }
-
-        .cart-items {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .cart-item-name {
-            font-weight: bold;
-        }
-
-        .cart-item-price {
-            margin-left: auto;
-            margin-right: 15px;
-        }
-
-        .btn-delete {
-            background-color: #e74c3c;
-            color: #ffffff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .cart-total {
-            text-align: right;
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            padding-top: 10px;
-            border-top: 2px solid rgba(255, 255, 255, 0.5);
-        }
-
         /* Estilos para el panel lateral de Mi Cuenta */
         .account-panel {
             position: fixed;
@@ -441,8 +388,8 @@
         }
 
         .account-info {
-            flex-grow: 1; /* Permite que la información ocupe el espacio restante */
-            overflow-y: auto; /* Permite el scroll interno */
+            flex-grow: 1; 
+            overflow-y: auto; 
         }
         
         .account-info p {
@@ -473,6 +420,62 @@
         .btn-edit-profile {
             background-color: #48dbfb;
         }
+        
+        /* Estilos para el nuevo panel lateral del carrito */
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 300px;
+            background-color: #e67e22;
+            color: #ffffff;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-panel.show {
+            transform: translateX(0);
+        }
+        
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .cart-total {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding-top: 10px;
+            border-top: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .cart-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: auto;
+        }
+
     </style>
 </head>
 <body>
@@ -480,7 +483,7 @@
     <div class="container" id="main-container">
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-            <a href="#" class="header-icon" onclick="mostrarPantalla('pantalla-carrito')">🛍️</a>
+            <a href="#" class="header-icon" onclick="mostrarPanelCarrito()">🛍️</a>
         </div>
 
         <main id="pantalla-principal" class="screen active">
@@ -522,18 +525,6 @@
                 Volver
             </button>
         </section>
-        
-        <section id="pantalla-carrito" class="screen">
-            <img src="LOGO.png" alt="Logo de la tienda" class="logo-small">
-            <h3>Tu Carrito de Compras</h3>
-            <ul class="cart-items" id="cart-list">
-                </ul>
-            <div class="cart-total" id="cart-total">
-                </div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
-            </button>
-        </section>
     </div>
 
     <div id="account-panel" class="account-panel">
@@ -544,6 +535,17 @@
         <div class="account-buttons">
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div id="cart-panel" class="cart-panel">
+        <span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
+        <h3>Tu Carrito</h3>
+        <ul class="cart-items" id="cart-list"></ul>
+        <div class="cart-total" id="cart-total"></div>
+        <div class="cart-buttons">
+            <button class="btn btn-checkout" onclick="pagar()">Pagar</button>
+            <button class="btn btn-volver" onclick="cerrarPanelCarrito()">Cerrar</button>
         </div>
     </div>
     
@@ -629,6 +631,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             mainContainer.classList.add('show');
+            window.scrollTo(0, 0); // Asegura que la página inicie en la parte superior
         });
 
         function showMessage(text) {
@@ -649,11 +652,7 @@
             if (pantallaActiva) {
                 pantallaActiva.classList.add('active');
                 if (idDePantalla.startsWith('pantalla-')) {
-                    if (idDePantalla === 'pantalla-carrito') {
-                        renderizarCarrito();
-                    } else {
-                        generarGaleria(idDePantalla);
-                    }
+                    generarGaleria(idDePantalla);
                 }
             }
         }
@@ -725,7 +724,7 @@
                     email: email,
                     nombre: nombre,
                     apellido: apellido,
-                    telefono: null, // Campo de teléfono inicializado en null
+                    telefono: null,
                     carrito: []
                 });
                 showMessage('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
@@ -831,7 +830,7 @@
                 });
                 showMessage('Datos actualizados con éxito.');
                 cerrarModalEditarDatos();
-                cargarDatosUsuario(); // Recargar los datos para reflejar los cambios
+                cargarDatosUsuario();
             } catch (error) {
                 console.error("Error al actualizar datos:", error);
                 document.getElementById('edit-message').textContent = "Hubo un error al guardar los cambios.";
@@ -848,7 +847,101 @@
                 showMessage("Hubo un error al intentar cerrar sesión.");
             }
         }
+        
+        // Panel lateral del carrito
+        const cartPanel = document.getElementById('cart-panel');
+        const cartList = document.getElementById('cart-list');
+        const cartTotal = document.getElementById('cart-total');
 
+        function mostrarPanelCarrito() {
+            if (!currentUser) {
+                showMessage('Debes iniciar sesión para ver tu carrito.');
+                mostrarAuthModal();
+                return;
+            }
+            cartPanel.classList.add('show');
+            renderizarCarrito();
+        }
+
+        function cerrarPanelCarrito() {
+            cartPanel.classList.remove('show');
+        }
+
+        async function renderizarCarrito() {
+            if (!currentUser) {
+                cartList.innerHTML = '<p>Debes iniciar sesión para ver tu carrito.</p>';
+                cartTotal.textContent = 'Total: $0.00';
+                return;
+            }
+            
+            cartList.innerHTML = '';
+            cartTotal.textContent = '';
+            
+            try {
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                const userData = userDoc.data();
+                const carrito = userData.carrito || [];
+
+                if (carrito.length === 0) {
+                    cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
+                    cartTotal.textContent = 'Total: $0.00';
+                    return;
+                }
+
+                let total = 0;
+                carrito.forEach((producto, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'cart-item';
+                    listItem.innerHTML = `
+                        <span class="cart-item-name">${producto.nombre}</span>
+                        <span class="cart-item-price">$${producto.precio}</span>
+                        <button class="btn-delete" onclick="eliminarDelCarrito('${producto.id}', ${index})">
+                            Eliminar
+                        </button>
+                    `;
+                    cartList.appendChild(listItem);
+                    total += producto.precio;
+                });
+
+                cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+
+            } catch (error) {
+                console.error("Error al renderizar el carrito:", error);
+                cartList.innerHTML = '<p>Hubo un error al cargar el carrito. Intenta de nuevo.</p>';
+                cartTotal.textContent = 'Total: $0.00';
+            }
+        }
+        
+        async function eliminarDelCarrito(productoId, index) {
+            if (!currentUser) return;
+            try {
+                const userRef = db.collection('usuarios').doc(currentUser.uid);
+                const userDoc = await userRef.get();
+                const userData = userDoc.data();
+                let carrito = [...(userData.carrito || [])]; 
+                
+                if (index > -1 && index < carrito.length) {
+                    const productoEliminado = carrito.splice(index, 1)[0];
+                    const productoRef = db.collection('productos').doc(productoEliminado.id);
+                    await productoRef.update({
+                        stock: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
+                
+                await userRef.update({ carrito: carrito });
+                showMessage('Producto eliminado del carrito.');
+                renderizarCarrito();
+                generarGaleria(document.querySelector('.screen.active').id);
+            } catch (error) {
+                console.error("Error al eliminar del carrito:", error);
+                showMessage('Hubo un error al eliminar el producto.');
+            }
+        }
+
+        function pagar() {
+            showMessage("Función de pago no implementada aún.");
+        }
+        
         async function generarGaleria(idDePantalla) {
             let categoria;
             let gridId;
@@ -900,7 +993,7 @@
                             <div class="model-buttons">
                                 <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
                                 <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 ? 'disabled' : ''}>
-                                    ${producto.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
+                                    ${producto.stock <= 0 ? 'Agotado' : 'Agregar a la 🛍️'}
                                 </button>
                             </div>
                         </div>
@@ -912,9 +1005,9 @@
                 botonesAgregar.forEach(btn => {
                     btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
                     if (currentUser) {
-                        btn.disabled = btn.disabled; // Mantiene el estado de "Agotado"
+                        btn.disabled = btn.disabled;
                     } else {
-                        btn.disabled = true; // Deshabilita si no está logeado
+                        btn.disabled = true;
                     }
                 });
 
@@ -944,113 +1037,47 @@
             }
 
             try {
-                const productoRef = db.collection('productos').doc(productoId);
-                const productoDoc = await db.runTransaction(async (transaction) => {
-                    const doc = await transaction.get(productoRef);
-                    if (!doc.exists) {
+                await db.runTransaction(async (transaction) => {
+                    const productoRef = db.collection('productos').doc(productoId);
+                    const userRef = db.collection('usuarios').doc(currentUser.uid);
+
+                    const productoDoc = await transaction.get(productoRef);
+                    const userDoc = await transaction.get(userRef);
+
+                    if (!productoDoc.exists) {
                         throw "El producto no existe.";
                     }
-                    const productoData = doc.data();
+
+                    const productoData = productoDoc.data();
                     if (productoData.stock <= 0) {
-                        throw "Este producto está agotado.";
+                        throw new Error("Este producto está agotado.");
                     }
                     
-                    transaction.update(productoRef, { stock: firebase.firestore.FieldValue.increment(-1) });
-                    return doc;
-                });
-
-                const producto = {
-                    id: productoDoc.id,
-                    ...productoDoc.data(),
-                    stock: undefined 
-                };
-
-                const userRef = db.collection('usuarios').doc(currentUser.uid);
-                await userRef.update({
-                    carrito: firebase.firestore.FieldValue.arrayUnion(producto)
+                    const newStock = productoData.stock - 1;
+                    transaction.update(productoRef, { stock: newStock });
+                    
+                    const userData = userDoc.data();
+                    let carrito = userData.carrito || [];
+                    const productoToAdd = {
+                        id: productoDoc.id,
+                        nombre: productoData.nombre,
+                        precio: productoData.precio,
+                        imagenUrl: productoData.imagenUrl
+                    };
+                    
+                    carrito.push(productoToAdd);
+                    transaction.update(userRef, { carrito: carrito });
                 });
                 
                 showMessage('¡El modelo ha sido agregado al carrito!');
-                generarGaleria(document.querySelector('.screen.active').id); 
+                generarGaleria(document.querySelector('.screen.active').id);
             } catch (error) {
                 console.error("Error al agregar al carrito:", error);
-                if (typeof error === 'string') {
-                    showMessage(error);
+                if (error.message && error.message.includes("agotado")) {
+                    showMessage("Este producto está agotado.");
                 } else {
                     showMessage('Hubo un error al agregar el producto al carrito. Intenta de nuevo.');
                 }
-            }
-        }
-        
-        async function renderizarCarrito() {
-            if (!currentUser) {
-                showMessage('Debes iniciar sesión para ver tu carrito.');
-                return;
-            }
-
-            const cartList = document.getElementById('cart-list');
-            const cartTotal = document.getElementById('cart-total');
-            cartList.innerHTML = '';
-            cartTotal.textContent = '';
-            
-            try {
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                const userData = userDoc.data();
-                const carrito = userData.carrito || [];
-
-                if (carrito.length === 0) {
-                    cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
-                    cartTotal.textContent = 'Total: $0.00';
-                    return;
-                }
-
-                let total = 0;
-                carrito.forEach((producto, index) => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'cart-item';
-                    listItem.innerHTML = `
-                        <span class="cart-item-name">${producto.nombre}</span>
-                        <span class="cart-item-price">$${producto.precio}</span>
-                        <button class="btn-delete" onclick="eliminarDelCarrito('${producto.id}', ${index})">
-                            Eliminar
-                        </button>
-                    `;
-                    cartList.appendChild(listItem);
-                    total += producto.precio;
-                });
-
-                cartTotal.textContent = `Total: $${total.toFixed(2)}`;
-
-            } catch (error) {
-                console.error("Error al renderizar el carrito:", error);
-                cartList.innerHTML = '<p>Hubo un error al cargar el carrito. Intenta de nuevo.</p>';
-                cartTotal.textContent = 'Total: $0.00';
-            }
-        }
-
-        async function eliminarDelCarrito(productoId, index) {
-            if (!currentUser) return;
-            try {
-                const userRef = db.collection('usuarios').doc(currentUser.uid);
-                const userDoc = await userRef.get();
-                const userData = userDoc.data();
-                let carrito = [...(userData.carrito || [])]; 
-                
-                if (index > -1 && index < carrito.length) {
-                    const productoEliminado = carrito.splice(index, 1)[0];
-                    const productoRef = db.collection('productos').doc(productoEliminado.id);
-                    await productoRef.update({
-                        stock: firebase.firestore.FieldValue.increment(1)
-                    });
-                }
-                
-                await userRef.update({ carrito: carrito });
-                showMessage('Producto eliminado del carrito.');
-                renderizarCarrito();
-                generarGaleria(document.querySelector('.screen.active').id);
-            } catch (error) {
-                console.error("Error al eliminar del carrito:", error);
-                showMessage('Hubo un error al eliminar el producto.');
             }
         }
     </script>
