@@ -1252,7 +1252,6 @@
             otherLocationNote.required = locationSelect.value === 'Otro';
         }
         
-        // Inicio de la sección corregida del código
         deliveryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = deliveryForm.querySelector('button[type="submit"]');
@@ -1298,7 +1297,6 @@
 
                     const nuevoPedidoRef = db.collection('pedidos').doc();
                     
-                    // Se añade el objeto 'datosCliente' y el 'montoTotal' al pedido
                     transaction.set(nuevoPedidoRef, {
                         folio: folioFormateado,
                         usuarioId: currentUser.uid,
@@ -1331,7 +1329,6 @@
                 submitButton.textContent = 'Confirmar Pedido';
             }
         });
-        // Fin de la sección corregida del código
 
 
         async function generarGaleria(idDePantalla) {
