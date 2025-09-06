@@ -816,6 +816,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             mainContainer.classList.add('show');
             window.scrollTo(0, 0); 
+            // Cargar la galería principal al inicio para todos
+            const activeScreen = document.querySelector('.screen.active');
+            if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
+                 generarGaleria(activeScreen.id);
+            }
         });
 
         function showMessage(text) {
@@ -1265,14 +1270,18 @@
                 return;
             }
 
-            let folioFormateado; // Declarar la variable aquí
+            let folioFormateado;
 
             try {
                 await db.runTransaction(async (transaction) => {
                     const userRef = db.collection('usuarios').doc(currentUser.uid);
                     const userDoc = await transaction.get(userRef);
+                    
                     if (!userDoc.exists) throw new Error("Usuario no encontrado.");
-                    const carrito = userDoc.data().carrito || [];
+                    
+                    // --- INICIO DE CORRECCIÓN ---
+                    const userData = userDoc.data();
+                    const carrito = userData.carrito || [];
 
                     if (carrito.length === 0) throw new Error('El carrito está vacío.');
 
@@ -1285,19 +1294,28 @@
                     transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
 
                     const nuevoPedidoRef = db.collection('pedidos').doc();
+                    
+                    // Se añade el objeto 'datosCliente' al pedido
                     transaction.set(nuevoPedidoRef, {
                         folio: folioFormateado,
                         usuarioId: currentUser.uid,
+                        datosCliente: {
+                            nombre: userData.nombre,
+                            apellido: userData.apellido,
+                            telefono: userData.telefono || 'No registrado'
+                        },
                         productos: carrito,
-                        metodoPago, fechaEntrega, lugarEntrega,
+                        metodoPago,
+                        fechaEntrega,
+                        lugarEntrega,
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                    // --- FIN DE CORRECCIÓN ---
 
                     transaction.update(userRef, { carrito: [] });
                 });
 
-                // Ahora la variable es accesible aquí
                 showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
                 cerrarModalEntrega();
                 renderizarCarrito();
@@ -1360,7 +1378,7 @@
 
             } catch (error) {
                 console.error("Error al obtener los productos:", error);
-                contenedor.innerHTML = '<p>Hubo un error al cargar los modelos.</p>';
+                contenedor.innerHTML = '<p>Hubo un error al cargar el catálogo.</p>';
             }
         }
 
@@ -1388,15 +1406,12 @@
                     const productoRef = db.collection('productos').doc(productoId);
                     const userRef = db.collection('usuarios').doc(currentUser.uid);
 
-                    // --- INICIO DE CORRECCIÓN ---
-                    // 1. LEER todos los documentos PRIMERO
                     const productoDoc = await transaction.get(productoRef);
                     const userDoc = await transaction.get(userRef);
                     
                     if (!productoDoc.exists) throw new Error("El producto no existe.");
                     if (!userDoc.exists) throw new Error("El usuario no existe.");
 
-                    // 2. Realizar las operaciones y validaciones
                     const productoData = productoDoc.data();
                     if (productoData.stock <= 0) throw new Error("Este producto está agotado.");
                     
@@ -1408,10 +1423,8 @@
                         imagenUrl: productoData.imagenUrl
                     });
 
-                    // 3. ESCRIBIR todos los cambios al FINAL
                     transaction.update(productoRef, { stock: productoData.stock - 1 });
                     transaction.update(userRef, { carrito: carrito });
-                    // --- FIN DE CORRECCIÓN ---
                 });
                 
                 showMessage('¡Modelo agregado al carrito!');
