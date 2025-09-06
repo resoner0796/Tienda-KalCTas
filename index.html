@@ -1067,7 +1067,7 @@
                 
                 snapshot.forEach(doc => {
                     const pedido = doc.data();
-                    const total = pedido.productos.reduce((sum, p) => sum + p.precio, 0);
+                    const total = pedido.montoTotal ? pedido.montoTotal.toFixed(2) : '0.00';
                     const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio.toFixed(2)})</li>`).join('');
 
                     const item = document.createElement('li');
@@ -1083,7 +1083,7 @@
                             <span class="status ${pedido.estado}">${pedido.estado}</span>
                         </div>
                         <div class="order-details">
-                            <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+                            <p><strong>Total:</strong> $${total}</p>
                             <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
                             <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega}</p>
                             <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega}</p>
@@ -1251,7 +1251,8 @@
             otherLocationNote.style.display = locationSelect.value === 'Otro' ? 'block' : 'none';
             otherLocationNote.required = locationSelect.value === 'Otro';
         }
-
+        
+        // Inicio de la sección corregida del código
         deliveryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = deliveryForm.querySelector('button[type="submit"]');
@@ -1284,6 +1285,9 @@
 
                     if (carrito.length === 0) throw new Error('El carrito está vacío.');
 
+                    // Calcular el monto total
+                    const montoTotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
+
                     const counterRef = db.collection('contadores').doc('pedidos');
                     const counterDoc = await transaction.get(counterRef);
                     
@@ -1294,16 +1298,17 @@
 
                     const nuevoPedidoRef = db.collection('pedidos').doc();
                     
-                    // Se añade el objeto 'datosCliente' al pedido
+                    // Se añade el objeto 'datosCliente' y el 'montoTotal' al pedido
                     transaction.set(nuevoPedidoRef, {
                         folio: folioFormateado,
                         usuarioId: currentUser.uid,
                         datosCliente: {
                             nombre: userData.nombre,
                             apellido: userData.apellido,
-                            telefono: userData.telefono || 'No registrado'
+                            telefono: userData.telefono || 'N/A'
                         },
                         productos: carrito,
+                        montoTotal: montoTotal,
                         metodoPago,
                         fechaEntrega,
                         lugarEntrega,
@@ -1326,6 +1331,8 @@
                 submitButton.textContent = 'Confirmar Pedido';
             }
         });
+        // Fin de la sección corregida del código
+
 
         async function generarGaleria(idDePantalla) {
             let categoria;
