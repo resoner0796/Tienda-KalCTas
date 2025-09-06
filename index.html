@@ -1279,7 +1279,6 @@
                     
                     if (!userDoc.exists) throw new Error("Usuario no encontrado.");
                     
-                    // --- INICIO DE CORRECCIÓN ---
                     const userData = userDoc.data();
                     const carrito = userData.carrito || [];
 
@@ -1311,7 +1310,6 @@
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    // --- FIN DE CORRECCIÓN ---
 
                     transaction.update(userRef, { carrito: [] });
                 });
