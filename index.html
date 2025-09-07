@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KalCTas Tienda</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* --- Estilos Generales --- */
         body {
@@ -163,7 +164,6 @@
         .btn-kalctas-largas { background-color: #f39c12; }
         .btn-volver { background-color: #576574; }
         .btn-pedidos { background-color: #3498db; } /* Nuevo estilo para botón de pedidos */
-
         .btn-view { background-color: #2e86de; }
         .btn-add {
             background-color: #27ae60;
@@ -272,7 +272,7 @@
         }
 
         /* --- Modales y alertas --- */
-        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal {
+        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -454,6 +454,19 @@
             margin-top: 15px;
             color: #ff6b6b;
             text-align: center;
+            font-weight: bold;
+        }
+        
+        /* ESTILOS PARA EL FORMULARIO DE TARJETA DE STRIPE */
+        #card-element {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #card-errors {
+            color: #ff6b6b;
+            margin-top: 10px;
             font-weight: bold;
         }
 
@@ -736,6 +749,21 @@
             </div>
         </div>
     </div>
+    
+    <div id="card-payment-modal" class="auth-modal">
+        <div class="payment-modal-content">
+            <span class="close-modal" onclick="cerrarModalPagoTarjeta()">&times;</span>
+            <h3>Pago con Tarjeta</h3>
+            <form id="payment-form" class="auth-form">
+                <div id="card-element">
+                  </div>
+                <button type="submit" id="submit-payment" class="btn btn-add">
+                    <span id="button-text">Pagar Ahora</span>
+                </button>
+                <div id="card-errors" role="alert"></div>
+              </form>
+        </div>
+    </div>
 
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
@@ -789,8 +817,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script> <script>
         const firebaseConfig = {
           apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
           authDomain: "tienda-kalctas.firebaseapp.com",
@@ -804,9 +831,16 @@
 
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const functions = firebase.functions(); // 4. INICIALIZAR FIREBASE FUNCTIONS
         let currentUser = null;
-        let unsubscribeMisPedidos = null; // Para detener la escucha de pedidos
+        let unsubscribeMisPedidos = null; 
         
+        // --- 5. CONFIGURACIÓN DE STRIPE ---
+        // TODO: REEMPLAZA CON TU CLAVE PÚBLICA DE STRIPE
+        const stripe = Stripe('pk_test_TU_CLAVE_PUBLICA_DE_STRIPE');
+        let cardElement; // Variable para el elemento de la tarjeta
+        const cardPaymentModal = document.getElementById('card-payment-modal');
+
         const alertBox = document.getElementById('alert-box');
         const alertText = document.getElementById('alert-text');
         
@@ -816,7 +850,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             mainContainer.classList.add('show');
             window.scrollTo(0, 0); 
-            // Cargar la galería principal al inicio para todos
             const activeScreen = document.querySelector('.screen.active');
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                  generarGaleria(activeScreen.id);
@@ -856,9 +889,8 @@
             } else {
                 authButton.textContent = 'Iniciar Sesión';
                 authButton.onclick = () => mostrarAuthModal();
-                if (unsubscribeMisPedidos) unsubscribeMisPedidos(); // Deja de escuchar si cierra sesión
+                if (unsubscribeMisPedidos) unsubscribeMisPedidos(); 
             }
-            // Actualizar botones de la galería cada vez que cambie el estado de auth
             const activeScreen = document.querySelector('.screen.active');
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                 generarGaleria(activeScreen.id);
@@ -1045,15 +1077,14 @@
         function cerrarModalMisPedidos() {
             myOrdersModal.style.display = 'none';
             if (unsubscribeMisPedidos) {
-                unsubscribeMisPedidos(); // Deja de escuchar cuando el modal se cierra
+                unsubscribeMisPedidos(); 
                 unsubscribeMisPedidos = null;
             }
         }
         
         function cargarMisPedidos() {
             if (!currentUser) return;
-            if (unsubscribeMisPedidos) unsubscribeMisPedidos(); // Cancela cualquier suscripción anterior
-
+            if (unsubscribeMisPedidos) unsubscribeMisPedidos(); 
             myOrdersList.innerHTML = '<p style="text-align:center;">Cargando pedidos...</p>';
             
             const pedidosRef = db.collection('pedidos').where('usuarioId', '==', currentUser.uid).orderBy('fechaCreacion', 'desc');
@@ -1085,8 +1116,8 @@
                         <div class="order-details">
                             <p><strong>Total:</strong> $${total}</p>
                             <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
-                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega}</p>
-                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega}</p>
+                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'N/A'}</p>
+                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'N/A'}</p>
                             ${pedido.estado === 'Cancelado' && pedido.motivoCancelacion ? `<p><strong>Motivo de cancelación:</strong> ${pedido.motivoCancelacion}</p>` : ''}
                             <p><strong>Productos:</strong></p>
                             <ul>
@@ -1173,7 +1204,6 @@
                 
                 if (index > -1 && index < carrito.length) {
                     const productoEliminado = carrito.splice(index, 1)[0];
-                    // Devolver el stock
                     const productoRef = db.collection('productos').doc(productoEliminado.id);
                     await productoRef.update({ stock: firebase.firestore.FieldValue.increment(1) });
                 }
@@ -1188,7 +1218,7 @@
             }
         }
         
-        // Lógica de pago
+        // --- 6. LÓGICA DE PAGO CON STRIPE ---
         const paymentOptionsModal = document.getElementById('payment-options-modal');
         const confirmOrderModal = document.getElementById('confirm-order-modal');
         const deliveryForm = document.getElementById('delivery-form');
@@ -1197,7 +1227,7 @@
 
         async function pagar() {
             if (!currentUser) {
-                showMessage('Debes iniciar sesión para ver tu carrito.');
+                showMessage('Debes iniciar sesión para proceder al pago.');
                 mostrarAuthModal();
                 return;
             }
@@ -1219,8 +1249,138 @@
         }
 
         function iniciarPagoTarjeta() {
-            showMessage("Opción de pago con tarjeta en desarrollo.");
+            cerrarModalPago();
+            cardPaymentModal.style.display = 'flex';
+
+            // Monta el elemento de tarjeta de Stripe si no se ha hecho
+            if (!cardElement) {
+                const elements = stripe.elements();
+                const style = {
+                    base: {
+                        color: "#32325d",
+                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                        fontSmoothing: "antialiased",
+                        fontSize: "16px",
+                        "::placeholder": {
+                            color: "#aab7c4"
+                        }
+                    },
+                    invalid: {
+                        color: "#fa755a",
+                        iconColor: "#fa755a"
+                    }
+                };
+                cardElement = elements.create('card', { style: style });
+                cardElement.mount('#card-element');
+
+                // Escuchar errores de validación en tiempo real
+                cardElement.on('change', event => {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            }
         }
+        
+        function cerrarModalPagoTarjeta() {
+            cardPaymentModal.style.display = 'none';
+        }
+
+        // Manejar el envío del formulario de pago
+        const paymentForm = document.getElementById('payment-form');
+        paymentForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const paymentButton = document.getElementById('submit-payment');
+            paymentButton.disabled = true;
+
+            try {
+                // Obtener el carrito actual del usuario desde Firestore
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                const carrito = userDoc.data().carrito || [];
+
+                if (carrito.length === 0) {
+                    throw new Error("El carrito está vacío.");
+                }
+
+                // Llamar a la Cloud Function para crear el Payment Intent
+                const createPaymentIntent = functions.httpsCallable('createPaymentIntent');
+                const response = await createPaymentIntent({ productosDelCarrito: carrito });
+                const clientSecret = response.data.clientSecret;
+
+                // Confirmar el pago en el cliente
+                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: `${userDoc.data().nombre} ${userDoc.data().apellido}`,
+                            email: currentUser.email
+                        },
+                    },
+                });
+
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                    throw new Error(error.message);
+                }
+
+                if (paymentIntent.status === 'succeeded') {
+                    // Pago exitoso, ahora registramos el pedido
+                    await registrarPedidoTarjeta(paymentIntent, carrito);
+                    showMessage('¡Pago completado con éxito! Tu pedido ha sido registrado.');
+                    cerrarModalPagoTarjeta();
+                    cardElement.clear(); // Limpiar el formulario de tarjeta
+                    renderizarCarrito(); // Actualizar la vista del carrito (ahora vacío)
+                }
+
+            } catch (err) {
+                console.error("Error en el proceso de pago:", err);
+                showMessage(`Error en el pago: ${err.message}`);
+            } finally {
+                paymentButton.disabled = false;
+            }
+        });
+        
+        async function registrarPedidoTarjeta(paymentIntent, carrito) {
+             await db.runTransaction(async (transaction) => {
+                const userRef = db.collection('usuarios').doc(currentUser.uid);
+                const userDoc = await transaction.get(userRef);
+                if (!userDoc.exists) throw new Error("Usuario no encontrado.");
+                
+                const userData = userDoc.data();
+                
+                // Generar folio
+                const counterRef = db.collection('contadores').doc('pedidos');
+                const counterDoc = await transaction.get(counterRef);
+                const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
+                const folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
+                transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
+
+                const nuevoPedidoRef = db.collection('pedidos').doc();
+                
+                transaction.set(nuevoPedidoRef, {
+                    folio: folioFormateado,
+                    usuarioId: currentUser.uid,
+                    datosCliente: {
+                        nombre: userData.nombre,
+                        apellido: userData.apellido,
+                        telefono: userData.telefono || 'N/A'
+                    },
+                    productos: carrito,
+                    montoTotal: paymentIntent.amount / 100, // Convertir de centavos a pesos
+                    metodoPago: 'Tarjeta',
+                    estado: 'Confirmado', // El pago ya está confirmado
+                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
+                    stripePaymentId: paymentIntent.id
+                });
+
+                // Vaciar el carrito
+                transaction.update(userRef, { carrito: [] });
+            });
+        }
+
 
         function iniciarProcesoDeEntrega(metodoPago) {
             cerrarModalPago();
@@ -1235,6 +1395,7 @@
         
         function mostrarModalConfirmarEntrega() {
             transferInfoModal.style.display = 'none';
+            document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${document.getElementById('payment-method-input').value})`;
             confirmOrderModal.style.display = 'flex';
         }
 
@@ -1284,7 +1445,6 @@
 
                     if (carrito.length === 0) throw new Error('El carrito está vacío.');
 
-                    // Calcular el monto total
                     const montoTotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
 
                     const counterRef = db.collection('contadores').doc('pedidos');
