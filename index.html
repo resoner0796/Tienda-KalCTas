@@ -457,7 +457,34 @@
             font-weight: bold;
         }
         
-        /* ESTILOS PARA EL FORMULARIO DE TARJETA DE STRIPE */
+        /* --- ESTILOS PARA STRIPE --- */
+
+        /* Estilo para el botón de Apple Pay / Google Pay */
+        #payment-request-button {
+            margin-bottom: 20px;
+        }
+        
+        /* Divisor "O" */
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 20px 0;
+        }
+        .separator::before, .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .separator:not(:empty)::before {
+            margin-right: .5em;
+        }
+        .separator:not(:empty)::after {
+            margin-left: .5em;
+        }
+
+        /* Estilo para el formulario de tarjeta */
         #card-element {
             background-color: white;
             padding: 12px;
@@ -743,7 +770,7 @@
             <span class="close-modal" onclick="cerrarModalPago()">&times;</span>
             <h3>Selecciona tu método de pago</h3>
             <div class="button-container">
-                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta</button>
+                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta / Apple Pay</button>
                 <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')">Pagar por Transferencia</button>
                 <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')">Pagar en efectivo</button>
             </div>
@@ -754,9 +781,13 @@
         <div class="payment-modal-content">
             <span class="close-modal" onclick="cerrarModalPagoTarjeta()">&times;</span>
             <h3>Pago con Tarjeta</h3>
+            
+            <div id="payment-request-button"></div>
+            
+            <div class="separator" id="separator-or"><span>O</span></div>
+
             <form id="payment-form" class="auth-form">
-                <div id="card-element">
-                  </div>
+                <div id="card-element"></div>
                 <button type="submit" id="submit-payment" class="btn btn-add">
                     <span id="button-text">Pagar Ahora</span>
                 </button>
@@ -764,7 +795,6 @@
               </form>
         </div>
     </div>
-
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
             <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
@@ -820,7 +850,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
     <script>
         const firebaseConfig = {
-          // Tu configuración de Firebase está aquí, la he omitido por brevedad pero debe estar completa
           apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
           authDomain: "tienda-kalctas.firebaseapp.com",
           projectId: "tienda-kalctas",
@@ -833,14 +862,14 @@
 
         const auth = firebase.auth();
         const db = firebase.firestore();
-        // const functions = firebase.functions(); // <-- Ya no necesitamos esta línea para la llamada a Stripe
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
         // --- CONFIGURACIÓN DE STRIPE ---
-        // Clave pública de Stripe. Asegúrate de que sea la LIVE para cobros reales.
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
-        let cardElement; 
+        let elements;
+        let cardElement;
+        let currentClientSecret; // Variable para guardar el client secret
         const cardPaymentModal = document.getElementById('card-payment-modal');
 
         const alertBox = document.getElementById('alert-box');
@@ -858,12 +887,13 @@
             }
         });
 
-        // ... (Todo el resto de tus funciones como showMessage, mostrarPantalla, auth, etc., permanecen iguales)...
-        // ... (El código de autenticación, carrito, y otros modales está perfecto, lo he omitido aquí para enfocarnos en el pago)
-        // ... (Asegúrate de que el resto del script que no se muestra aquí se mantenga en tu archivo)
-
-        // El código que SÍ PEGAS en tu archivo es el siguiente, desde la inicialización de Firebase
-        // hasta el final. Reemplaza la sección correspondiente en tu script.
+        // ================================================================================= //
+        // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN
+        // (Autenticación, Carrito, Galería, etc. que ya tenías)
+        // La he omitido por brevedad, pero asegúrate de que todo tu código anterior
+        // desde `function showMessage(text)` hasta `async function agregarAlCarrito(productoId)`
+        // se mantenga aquí. Solo he modificado la sección de pago con Stripe.
+        // ================================================================================= //
         
         function showMessage(text) {
             alertText.textContent = text;
@@ -986,7 +1016,6 @@
             }
         }
 
-        // Panel de Mi Cuenta
         const accountPanel = document.getElementById('account-panel');
         const accountInfo = document.getElementById('account-info');
 
@@ -1069,7 +1098,6 @@
             }
         }
         
-        // Modal de Mis Pedidos
         const myOrdersModal = document.getElementById('my-orders-modal');
         const myOrdersList = document.getElementById('my-orders-list');
 
@@ -1144,7 +1172,6 @@
             });
         }
 
-        // Panel lateral del carrito
         const cartPanel = document.getElementById('cart-panel');
         const cartList = document.getElementById('cart-list');
         const cartTotal = document.getElementById('cart-total');
@@ -1227,7 +1254,7 @@
             }
         }
         
-        // --- LÓGICA DE PAGO CON STRIPE ---
+        // --- LÓGICA DE PAGO CON STRIPE (ACTUALIZADA) ---
         const paymentOptionsModal = document.getElementById('payment-options-modal');
         const confirmOrderModal = document.getElementById('confirm-order-modal');
         const deliveryForm = document.getElementById('delivery-form');
@@ -1240,15 +1267,12 @@
                 mostrarAuthModal();
                 return;
             }
-
             const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
             const carrito = userDoc.data().carrito || [];
-
             if (carrito.length === 0) {
                 showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
                 return;
             }
-
             cerrarPanelCarrito();
             paymentOptionsModal.style.display = 'flex';
         }
@@ -1257,120 +1281,166 @@
             paymentOptionsModal.style.display = 'none';
         }
 
-        function iniciarPagoTarjeta() {
+        async function iniciarPagoTarjeta() {
             cerrarModalPago();
             cardPaymentModal.style.display = 'flex';
+            
+            try {
+                // 1. Obtener carrito y total desde Firestore para seguridad
+                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                const carrito = userDoc.data().carrito || [];
+                const total = carrito.reduce((sum, item) => sum + item.precio, 0);
 
-            if (!cardElement) {
-                const elements = stripe.elements();
-                const style = {
-                    base: {
-                        color: "#32325d",
-                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                        fontSmoothing: "antialiased",
-                        fontSize: "16px",
-                        "::placeholder": {
-                            color: "#aab7c4"
-                        }
+                if (total <= 0) {
+                    showMessage("No hay nada que pagar.");
+                    cerrarModalPagoTarjeta();
+                    return;
+                }
+                
+                // 2. Crear un Payment Intent desde tu Cloud Function
+                const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: carrito }),
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
+                
+                currentClientSecret = data.clientSecret; // Guardar el secret
+                elements = stripe.elements({ clientSecret: currentClientSecret }); // Inicializar elements con el secret
+
+                // 3. Configurar el Payment Request Button (Apple Pay / Google Pay)
+                const paymentRequest = stripe.paymentRequest({
+                    country: 'MX',
+                    currency: 'mxn',
+                    total: {
+                        label: 'Total KalCTas',
+                        amount: total * 100, // Stripe espera el monto en centavos
                     },
-                    invalid: {
-                        color: "#fa755a",
-                        iconColor: "#fa755a"
-                    }
-                };
-                cardElement = elements.create('card', { style: style });
-                cardElement.mount('#card-element');
+                    requestPayerName: true,
+                    requestPayerEmail: true,
+                });
 
-                cardElement.on('change', event => {
-                    const displayError = document.getElementById('card-errors');
-                    if (event.error) {
-                        displayError.textContent = event.error.message;
+                const prButton = elements.create('paymentRequestButton', {
+                    paymentRequest: paymentRequest,
+                });
+
+                // Comprobar si el método de pago está disponible
+                const result = await paymentRequest.canMakePayment();
+                if (result) {
+                    prButton.mount('#payment-request-button');
+                    document.getElementById('separator-or').style.display = 'flex';
+                } else {
+                    document.getElementById('payment-request-button').style.display = 'none';
+                    document.getElementById('separator-or').style.display = 'none';
+                }
+
+                // Manejar el evento de pago del botón
+                paymentRequest.on('paymentmethod', async (ev) => {
+                    const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+                        currentClientSecret,
+                        { payment_method: ev.paymentMethod.id },
+                        { handleActions: false }
+                    );
+
+                    if (confirmError) {
+                        ev.complete('fail');
+                        showMessage(`Error en el pago: ${confirmError.message}`);
+                        return;
+                    }
+
+                    if (paymentIntent.status === "requires_action") {
+                        const { error: actionError } = await stripe.confirmCardPayment(currentClientSecret);
+                        if(actionError) {
+                            ev.complete('fail');
+                            showMessage(`Error en la autenticación: ${actionError.message}`);
+                        } else {
+                            // Éxito después de la autenticación
+                             await registrarPedidoTarjeta(paymentIntent, carrito);
+                             ev.complete('success');
+                             showMessage('¡Pago completado con éxito!');
+                             cerrarModalPagoTarjeta();
+                             renderizarCarrito();
+                        }
                     } else {
-                        displayError.textContent = '';
+                        // Éxito inmediato
+                        await registrarPedidoTarjeta(paymentIntent, carrito);
+                        ev.complete('success');
+                        showMessage('¡Pago completado con éxito!');
+                        cerrarModalPagoTarjeta();
+                        renderizarCarrito();
                     }
                 });
+
+
+                // 4. Configurar el formulario de tarjeta tradicional
+                if (!cardElement) {
+                     cardElement = elements.create('card');
+                     cardElement.mount('#card-element');
+                     cardElement.on('change', event => {
+                        document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+                    });
+                } else {
+                    cardElement.update({ clientSecret: currentClientSecret });
+                }
+
+            } catch (error) {
+                console.error("Error al iniciar el pago:", error);
+                showMessage(error.message);
+                cerrarModalPagoTarjeta();
             }
         }
         
         function cerrarModalPagoTarjeta() {
+            // Limpiar el contenido para la próxima vez
+            document.getElementById('payment-request-button').innerHTML = '';
+            document.getElementById('card-errors').textContent = '';
+            if (cardElement) {
+                cardElement.clear();
+            }
             cardPaymentModal.style.display = 'none';
         }
         
-        // ========================================================================= //
-        // <-- INICIO DE LA SECCIÓN CORREGIDA -->
-        // ========================================================================= //
         const paymentForm = document.getElementById('payment-form');
         paymentForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const paymentButton = document.getElementById('submit-payment');
             paymentButton.disabled = true;
-            document.getElementById('card-errors').textContent = ''; // Limpiar errores previos
 
             try {
-                // 1. Obtener el carrito actual del usuario desde Firestore para seguridad
                 const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                 const carrito = userDoc.data().carrito || [];
 
-                if (carrito.length === 0) {
-                    throw new Error("El carrito está vacío.");
-                }
-
-                // 2. Llamar a la Cloud Function usando 'fetch' y la URL pública
-                const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
-                const response = await fetch(functionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ items: carrito }), // Enviar el carrito en el formato correcto
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    // Si la función devuelve un error, lo mostramos
-                    throw new Error(data.error || 'No se pudo iniciar el pago.');
-                }
-                
-                const clientSecret = data.clientSecret;
-
-                // 3. Confirmar el pago en el cliente con el secret recibido
-                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
                     payment_method: {
                         card: cardElement,
                         billing_details: {
                             name: `${userDoc.data().nombre} ${userDoc.data().apellido}`,
                             email: currentUser.email
                         },
-                    },
+                    }
                 });
-
+                
                 if (error) {
-                    // Errores de Stripe (ej: tarjeta rechazada, CVC incorrecto)
                     document.getElementById('card-errors').textContent = error.message;
                     throw new Error(error.message);
                 }
 
-                // 4. Si el pago es exitoso, registrar el pedido en Firestore
                 if (paymentIntent.status === 'succeeded') {
                     await registrarPedidoTarjeta(paymentIntent, carrito);
                     showMessage('¡Pago completado con éxito! Tu pedido ha sido registrado.');
                     cerrarModalPagoTarjeta();
-                    cardElement.clear();
                     renderizarCarrito();
                 }
 
             } catch (err) {
-                console.error("Error en el proceso de pago:", err);
-                showMessage(`Error en el pago: ${err.message}`);
+                console.error("Error en el pago con tarjeta:", err);
             } finally {
                 paymentButton.disabled = false;
             }
         });
-        // ========================================================================= //
-        // <-- FIN DE LA SECCIÓN CORREGIDA -->
-        // ========================================================================= //
-        
+
         async function registrarPedidoTarjeta(paymentIntent, carrito) {
              await db.runTransaction(async (transaction) => {
                 const userRef = db.collection('usuarios').doc(currentUser.uid);
@@ -1396,14 +1466,12 @@
                         telefono: userData.telefono || 'N/A'
                     },
                     productos: carrito,
-                    montoTotal: paymentIntent.amount / 100, // Convertir de centavos a pesos
+                    montoTotal: paymentIntent.amount / 100,
                     metodoPago: 'Tarjeta',
                     estado: 'Confirmado', 
                     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
                     stripePaymentId: paymentIntent.id
                 });
-
-                // Vaciar el carrito
                 transaction.update(userRef, { carrito: [] });
             });
         }
