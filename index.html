@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KalCTas Tienda</title>
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#e67e22"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KalCTas">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* --- Estilos Generales --- */
@@ -889,10 +896,7 @@
 
         // ================================================================================= //
         // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN
-        // (Autenticación, Carrito, Galería, etc. que ya tenías)
-        // La he omitido por brevedad, pero asegúrate de que todo tu código anterior
-        // desde `function showMessage(text)` hasta `async function agregarAlCarrito(productoId)`
-        // se mantenga aquí. Solo he modificado la sección de pago con Stripe.
+        // ... Todo tu código Javascript original se mantiene aquí ...
         // ================================================================================= //
         
         function showMessage(text) {
@@ -1690,6 +1694,19 @@
                 console.error("Error al agregar al carrito:", error);
                 showMessage(error.message || 'Hubo un error al agregar el producto.');
             }
+        }
+
+        // --- REGISTRO DEL SERVICE WORKER ---
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+              .then(registration => {
+                console.log('Service Worker registrado con éxito:', registration);
+              })
+              .catch(error => {
+                console.log('Error al registrar el Service Worker:', error);
+              });
+          });
         }
     </script>
 </body>
