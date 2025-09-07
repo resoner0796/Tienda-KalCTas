@@ -1,0 +1,28 @@
+{
+  "name": "KalCTas Tienda",
+  "short_name": "KalCTas",
+  "description": "La tienda en línea oficial de KalCTas. Encuentra los mejores modelos.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ff9f43",
+  "theme_color": "#e67e22",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}
