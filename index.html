@@ -817,8 +817,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script> <script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+    <script>
         const firebaseConfig = {
+          // Tu configuración de Firebase está aquí, la he omitido por brevedad pero debe estar completa
           apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
           authDomain: "tienda-kalctas.firebaseapp.com",
           projectId: "tienda-kalctas",
@@ -831,14 +833,14 @@
 
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const functions = firebase.functions(); // 4. INICIALIZAR FIREBASE FUNCTIONS
+        // const functions = firebase.functions(); // <-- Ya no necesitamos esta línea para la llamada a Stripe
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
-        // --- 5. CONFIGURACIÓN DE STRIPE ---
-        // TODO: REEMPLAZA CON TU CLAVE PÚBLICA DE STRIPE
+        // --- CONFIGURACIÓN DE STRIPE ---
+        // Clave pública de Stripe. Asegúrate de que sea la LIVE para cobros reales.
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
-        let cardElement; // Variable para el elemento de la tarjeta
+        let cardElement; 
         const cardPaymentModal = document.getElementById('card-payment-modal');
 
         const alertBox = document.getElementById('alert-box');
@@ -856,6 +858,13 @@
             }
         });
 
+        // ... (Todo el resto de tus funciones como showMessage, mostrarPantalla, auth, etc., permanecen iguales)...
+        // ... (El código de autenticación, carrito, y otros modales está perfecto, lo he omitido aquí para enfocarnos en el pago)
+        // ... (Asegúrate de que el resto del script que no se muestra aquí se mantenga en tu archivo)
+
+        // El código que SÍ PEGAS en tu archivo es el siguiente, desde la inicialización de Firebase
+        // hasta el final. Reemplaza la sección correspondiente en tu script.
+        
         function showMessage(text) {
             alertText.textContent = text;
             alertBox.style.display = 'flex';
@@ -1218,7 +1227,7 @@
             }
         }
         
-        // --- 6. LÓGICA DE PAGO CON STRIPE ---
+        // --- LÓGICA DE PAGO CON STRIPE ---
         const paymentOptionsModal = document.getElementById('payment-options-modal');
         const confirmOrderModal = document.getElementById('confirm-order-modal');
         const deliveryForm = document.getElementById('delivery-form');
@@ -1252,7 +1261,6 @@
             cerrarModalPago();
             cardPaymentModal.style.display = 'flex';
 
-            // Monta el elemento de tarjeta de Stripe si no se ha hecho
             if (!cardElement) {
                 const elements = stripe.elements();
                 const style = {
@@ -1273,7 +1281,6 @@
                 cardElement = elements.create('card', { style: style });
                 cardElement.mount('#card-element');
 
-                // Escuchar errores de validación en tiempo real
                 cardElement.on('change', event => {
                     const displayError = document.getElementById('card-errors');
                     if (event.error) {
@@ -1288,16 +1295,19 @@
         function cerrarModalPagoTarjeta() {
             cardPaymentModal.style.display = 'none';
         }
-
-        // Manejar el envío del formulario de pago
+        
+        // ========================================================================= //
+        // <-- INICIO DE LA SECCIÓN CORREGIDA -->
+        // ========================================================================= //
         const paymentForm = document.getElementById('payment-form');
         paymentForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const paymentButton = document.getElementById('submit-payment');
             paymentButton.disabled = true;
+            document.getElementById('card-errors').textContent = ''; // Limpiar errores previos
 
             try {
-                // Obtener el carrito actual del usuario desde Firestore
+                // 1. Obtener el carrito actual del usuario desde Firestore para seguridad
                 const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                 const carrito = userDoc.data().carrito || [];
 
@@ -1305,12 +1315,26 @@
                     throw new Error("El carrito está vacío.");
                 }
 
-                // Llamar a la Cloud Function para crear el Payment Intent
-                const createPaymentIntent = functions.httpsCallable('createPaymentIntent');
-                const response = await createPaymentIntent({ productosDelCarrito: carrito });
-                const clientSecret = response.data.clientSecret;
+                // 2. Llamar a la Cloud Function usando 'fetch' y la URL pública
+                const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ items: carrito }), // Enviar el carrito en el formato correcto
+                });
 
-                // Confirmar el pago en el cliente
+                const data = await response.json();
+
+                if (!response.ok) {
+                    // Si la función devuelve un error, lo mostramos
+                    throw new Error(data.error || 'No se pudo iniciar el pago.');
+                }
+                
+                const clientSecret = data.clientSecret;
+
+                // 3. Confirmar el pago en el cliente con el secret recibido
                 const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
                     payment_method: {
                         card: cardElement,
@@ -1322,17 +1346,18 @@
                 });
 
                 if (error) {
+                    // Errores de Stripe (ej: tarjeta rechazada, CVC incorrecto)
                     document.getElementById('card-errors').textContent = error.message;
                     throw new Error(error.message);
                 }
 
+                // 4. Si el pago es exitoso, registrar el pedido en Firestore
                 if (paymentIntent.status === 'succeeded') {
-                    // Pago exitoso, ahora registramos el pedido
                     await registrarPedidoTarjeta(paymentIntent, carrito);
                     showMessage('¡Pago completado con éxito! Tu pedido ha sido registrado.');
                     cerrarModalPagoTarjeta();
-                    cardElement.clear(); // Limpiar el formulario de tarjeta
-                    renderizarCarrito(); // Actualizar la vista del carrito (ahora vacío)
+                    cardElement.clear();
+                    renderizarCarrito();
                 }
 
             } catch (err) {
@@ -1342,6 +1367,9 @@
                 paymentButton.disabled = false;
             }
         });
+        // ========================================================================= //
+        // <-- FIN DE LA SECCIÓN CORREGIDA -->
+        // ========================================================================= //
         
         async function registrarPedidoTarjeta(paymentIntent, carrito) {
              await db.runTransaction(async (transaction) => {
@@ -1351,7 +1379,6 @@
                 
                 const userData = userDoc.data();
                 
-                // Generar folio
                 const counterRef = db.collection('contadores').doc('pedidos');
                 const counterDoc = await transaction.get(counterRef);
                 const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
@@ -1371,7 +1398,7 @@
                     productos: carrito,
                     montoTotal: paymentIntent.amount / 100, // Convertir de centavos a pesos
                     metodoPago: 'Tarjeta',
-                    estado: 'Confirmado', // El pago ya está confirmado
+                    estado: 'Confirmado', 
                     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
                     stripePaymentId: paymentIntent.id
                 });
