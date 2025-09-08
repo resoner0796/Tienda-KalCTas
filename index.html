@@ -6,44 +6,68 @@
     <title>KalCTas Tienda</title>
 
     <link rel="manifest" href="manifest.webmanifest">
-    <meta name="theme-color" content="#e67e22"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <meta name="theme-color" content="#FFFFFF"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="KalCTas">
     <link rel="apple-touch-icon" href="icon-192x192.png">
+    
     <script src="https://js.stripe.com/v3/"></script>
+    
     <style>
+        /* --- Paleta de Colores y Variables de Diseño --- */
+        :root {
+            --color-background: #f4f7f6; /* Un gris muy claro y suave para el fondo */
+            --color-surface: #ffffff;    /* Blanco para las tarjetas y contenedores principales */
+            --color-primary: #4a69bd;    /* Un azul moderno y confiable para acciones principales */
+            --color-secondary: #6ab04c;   /* Un verde fresco para acciones secundarias */
+            --color-accent: #f0932b;      /* Naranja para botones de pago o destacados */
+            --color-danger: #e74c3c;      /* Rojo para alertas o botones de cerrar sesión */
+            --color-text-primary: #2c3e50; /* Un gris oscuro casi negro para texto principal */
+            --color-text-secondary: #7f8c8d; /* Gris más claro para texto secundario */
+            --color-border: #e0e0e0;     /* Color sutil para bordes */
+            
+            --font-family: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
         /* --- Estilos Generales --- */
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ff9f43;
-            color: #333;
+            font-family: var(--font-family);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            overflow: hidden; /* Evita el scroll global */
+            overflow: hidden; 
         }
 
-        /* --- Contenedor Principal (Bloque Naranja Oscuro) --- */
+        /* --- Contenedor Principal --- */
         .container {
-            background-color: #e67e22;
+            background-color: var(--color-surface);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
             max-width: 450px;
             width: 90%;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
-            color: #ffffff;
+            color: var(--color-text-primary);
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 1s ease-in, transform 1s ease-in;
-            min-height: 80vh; 
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            min-height: 85vh; 
         }
 
         .container.show {
@@ -57,18 +81,18 @@
             width: 100%;
             text-align: center;
             opacity: 0;
-            transform: scale(0.95);
+            transform: scale(0.98);
             transition: opacity 0.5s ease, transform 0.5s ease;
-            max-height: calc(100vh - 100px); /* Ajuste de altura para scroll */
+            max-height: calc(100vh - 100px);
             overflow-y: auto;
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
             position: relative;
             z-index: 10;
         }
 
         .screen::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+            display: none;
         }
 
         .screen.active {
@@ -78,60 +102,97 @@
         }
         
         /* --- Títulos --- */
+        h1, h2, h3 {
+            color: var(--color-text-primary);
+            font-weight: 600;
+        }
+
         h1 {
-            color: #ffffff;
-            font-size: 1.2em;
+            font-size: 1.5em; /* Un poco más grande para destacar */
             margin-bottom: 5px;
             order: 1;
         }
-
-        h2 {
-            display: none;
-        }
         
-        /* Alineación del texto "Bienvenido" */
         .title-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             order: 1;
-            position: absolute; /* Posicionamiento absoluto para moverlo */
-            top: 25%; /* Ajuste de posición */
+            position: absolute;
+            top: 25%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 50; /* Asegura que esté sobre el logo */
+            z-index: 50;
         }
 
         .title-container h1 {
             margin: 0;
-            font-size: 1.2em; /* Tamaño de fuente ajustado */
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            white-space: nowrap; /* Asegura que el texto esté en una sola línea */
+            white-space: nowrap;
         }
 
         .title-container hr {
-            display: none; /* Se elimina la línea blanca */
+            display: none;
         }
 
         /* --- Logo --- */
         .logo {
-            max-width: 310px; /* Tamaño del logo reajustado */
+            max-width: 280px;
             margin-bottom: 30px;
             order: 2;
             transition: all 1s ease-in;
-            box-shadow: none; /* Se elimina el sombreado */
-            margin-top: 100px; /* Ajuste para dar espacio al título */
+            margin-top: 120px;
         }
 
         .logo-small {
             display: block;
-            width: 100px;
+            width: 80px;
             margin: 0 auto 20px auto;
-            cursor: pointer; /* Indica que es interactivo */
-            box-shadow: none; /* Se elimina el sombreado */
+            cursor: pointer;
         }
 
-        /* --- Contenedor de Botones (Menú principal) --- */
+        /* --- Estilo de Botones --- */
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            font-weight: 600; /* Letra más marcada */
+            font-family: var(--font-family);
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            width: 100%;
+            letter-spacing: 0.5px; /* Pequeño espaciado entre letras */
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7; /* Gris para deshabilitado */
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Asignación de nueva paleta a los botones existentes */
+        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); }
+        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); }
+        .btn-kalctas-largas, .btn-checkout { background-color: var(--color-accent); }
+        .btn-volver { background-color: #95a5a6; } /* Un gris neutro */
+        .btn-view { background-color: #34495e; } /* Un gris oscuro para "Ver" */
+        .btn-add {
+            background-color: var(--color-secondary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .btn-logout { background-color: var(--color-danger); }
+
+        /* Contenedor de Botones (Menú principal) */
         .button-container {
             display: flex;
             flex-direction: column;
@@ -140,48 +201,8 @@
             order: 3;
             transition: all 1s ease-in;
         }
-
-        /* --- Estilo de Botones --- */
-        .btn {
-            padding: 15px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #ffffff;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            width: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-kalctas-2-4 { background-color: #ff6b6b; }
-        .btn-kalctas-3-4 { background-color: #48dbfb; }
-        .btn-kalctas-largas { background-color: #f39c12; }
-        .btn-volver { background-color: #576574; }
-        .btn-pedidos { background-color: #3498db; } /* Nuevo estilo para botón de pedidos */
-        .btn-view { background-color: #2e86de; }
-        .btn-add {
-            background-color: #27ae60;
-            display: flex; /* Centrado del texto y emoji */
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        .btn-checkout { background-color: #f39c12; }
         
-        /* --- Iconos de la cabecera --- */
+        /* --- Iconos y Botón de Sesión --- */
         .header-icons {
             position: fixed;
             top: 20px;
@@ -193,40 +214,35 @@
         }
 
         .header-icon {
-            font-size: 2.2em;
-            color: #ffffff;
+            font-size: 2em; /* Ligeramente más pequeño */
+            color: var(--color-text-primary);
             cursor: pointer;
             transition: transform 0.2s ease;
-            line-height: 1; /* Elimina el espacio extra para un mejor centrado visual */
         }
 
         .header-icon:hover {
             transform: scale(1.1);
         }
         
-        .header-icon.cart-icon {
-            /* Añade un efecto de sombreado */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); 
-        }
-
         .auth-button {
             position: fixed;
             top: 20px;
             left: 25px;
-            background-color: transparent;
-            border: 2px solid #ffffff;
-            color: #ffffff;
-            padding: 6px 10px;
-            border-radius: 20px;
+            background-color: var(--color-surface);
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            padding: 8px 16px; /* Más padding */
+            border-radius: 50px; /* Completamente redondo */
             cursor: pointer;
-            font-size: 0.8em;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.2s ease;
             z-index: 100;
         }
 
         .auth-button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: var(--color-primary);
+            color: var(--color-surface);
         }
 
         /* --- Diseño de la galería de modelos --- */
@@ -239,46 +255,54 @@
         }
 
         .model-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
             padding: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
         }
 
         .model-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
         }
 
         .model-card img {
             width: 100%;
             height: auto;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .model-buttons {
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         
         .model-buttons .btn {
             width: calc(50% - 5px);
             padding: 10px;
-            font-size: 0.9em;
+            font-size: 0.8em;
+            font-weight: 500;
         }
 
         .product-price {
-            font-weight: bold;
-            color: #ffffff;
-            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: 1.2em;
             margin-bottom: 5px;
         }
+        
+        .model-card p:not(.product-price) {
+            font-size: 0.9em;
+            color: var(--color-text-secondary);
+        }
 
-        /* --- Modales y alertas --- */
+        /* --- Modales y Alertas --- */
         .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal {
             display: none;
             position: fixed;
@@ -288,7 +312,8 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(44, 62, 80, 0.7); /* Fondo más oscuro y azulado */
+            backdrop-filter: blur(5px); /* Efecto de desenfoque */
             justify-content: center;
             align-items: center;
         }
@@ -298,117 +323,63 @@
             max-height: 90%;
             display: block;
             margin: auto;
+            border-radius: var(--border-radius);
         }
 
         .close-modal {
             position: absolute;
-            top: 20px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
+            top: 15px;
+            right: 25px;
+            color: var(--color-text-secondary);
+            font-size: 35px;
             font-weight: bold;
             transition: 0.3s;
         }
 
         .close-modal:hover,
         .close-modal:focus {
-            color: #bbb;
+            color: var(--color-text-primary);
             text-decoration: none;
             cursor: pointer;
         }
 
-        /* Estilos para el modal de autenticación */
-        .auth-modal-content {
-            background-color: #e67e22;
+        /* Estilos base para contenido de modales */
+        .auth-modal-content, .payment-modal-content, .my-orders-modal-content {
+            background-color: var(--color-surface);
+            color: var(--color-text-primary);
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 80%;
-            max-width: 350px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            width: 90%;
+            max-width: 400px; /* Ancho consistente */
             text-align: left;
             position: relative;
         }
         
-        .payment-modal-content {
-            background-color: #e67e22;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 80%;
-            max-width: 450px;
-            text-align: center;
-            position: relative;
-        }
-
-        .my-orders-modal-content {
-            background-color: #e67e22;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 80%;
-            max-width: 550px;
-            text-align: center;
-            position: relative;
-        }
-
-        .my-orders-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 400px;
-            overflow-y: auto;
-            text-align: left;
-        }
-
-        .my-orders-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        .order-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
-        
-        .order-details {
-            display: none;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            text-align: left;
-        }
-
-        .my-orders-item .status {
-            font-size: 0.8em;
-            padding: 4px 8px;
-            border-radius: 5px;
-            color: #fff;
-        }
-        .my-orders-item .status.Entregado { background-color: #2ecc71; }
-        .my-orders-item .status.Pendiente { background-color: #f1c40f; color: #333; }
-        .my-orders-item .status.Confirmado { background-color: #3498db; }
-        .my-orders-item .status.Cancelado { background-color: #e74c3c; }
-
+        .my-orders-modal-content { max-width: 550px; }
 
         .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
             text-align: center;
-            margin-bottom: 20px;
-            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 25px;
             font-size: 1.5em;
         }
         
+        /* Contenido de modales específicos */
+        .payment-modal-content { text-align: center; }
+        
         .payment-modal-content .info-container {
             text-align: left;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: var(--color-background);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: var(--border-radius);
             margin-top: 20px;
+            border: 1px solid var(--color-border);
         }
+        .payment-modal-content .info-container p { margin: 8px 0; }
+        .payment-modal-content .info-container strong { color: var(--color-primary); }
 
+        /* --- Formularios --- */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -416,23 +387,32 @@
         }
 
         .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
-            border: none;
+            border: 1px solid var(--color-border);
             font-size: 1em;
-            background-color: rgba(255, 255, 255, 0.9);
+            font-family: var(--font-family);
+            background-color: var(--color-background);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.2);
         }
         
         .auth-form label {
             text-align: left;
-            font-weight: bold;
-            margin-top: 10px;
+            font-weight: 500;
+            margin-bottom: -5px;
+            color: var(--color-text-secondary);
         }
 
         .auth-form .btn-auth {
-            background-color: #48dbfb;
+            background-color: var(--color-primary);
             color: #ffffff;
-            font-weight: bold;
+            font-weight: 600;
             padding: 15px;
             border-radius: 8px;
             border: none;
@@ -440,177 +420,129 @@
             transition: background-color 0.2s ease;
         }
 
-        .auth-form .btn-auth:hover {
-            background-color: #2d8ebf;
-        }
+        .auth-form .btn-auth:hover { background-color: #38518e; }
         
         .auth-toggle {
             text-align: center;
             margin-top: 15px;
             font-size: 0.9em;
-            color: #ffffff;
+            color: var(--color-text-secondary);
         }
 
         .auth-toggle a {
-            color: #48dbfb;
+            color: var(--color-primary);
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
         }
 
         .auth-message {
             margin-top: 15px;
-            color: #ff6b6b;
+            color: var(--color-danger);
             text-align: center;
-            font-weight: bold;
+            font-weight: 500;
         }
         
         /* --- ESTILOS PARA STRIPE --- */
-
-        /* Estilo para el botón de Apple Pay / Google Pay */
-        #payment-request-button {
-            margin-bottom: 20px;
-        }
+        #payment-request-button { margin-bottom: 20px; }
         
-        /* Divisor "O" */
         .separator {
             display: flex;
             align-items: center;
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--color-text-secondary);
             margin: 20px 0;
         }
         .separator::before, .separator::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid var(--color-border);
         }
-        .separator:not(:empty)::before {
-            margin-right: .5em;
-        }
-        .separator:not(:empty)::after {
-            margin-left: .5em;
-        }
+        .separator:not(:empty)::before { margin-right: .5em; }
+        .separator:not(:empty)::after { margin-left: .5em; }
 
-        /* Estilo para el formulario de tarjeta */
         #card-element {
             background-color: white;
             padding: 12px;
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             margin-bottom: 20px;
         }
         #card-errors {
-            color: #ff6b6b;
+            color: var(--color-danger);
             margin-top: 10px;
-            font-weight: bold;
+            font-weight: 500;
         }
 
-        /* Estilos para el nuevo mensaje personalizado */
+        /* Alertas personalizadas */
         .alert-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background-color: var(--color-surface);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
             text-align: center;
+            max-width: 320px;
         }
-
-        .alert-text {
-            color: #333;
-        }
-
+        .alert-text { color: var(--color-text-primary); font-size: 1.1em;}
         .alert-button {
-            margin-top: 15px;
-            background-color: #576574;
+            margin-top: 20px;
+            background-color: var(--color-primary);
             color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
         }
 
-        /* Estilos para el panel lateral de Mi Cuenta */
-        .account-panel {
+        /* --- Paneles laterales (Mi Cuenta y Carrito) --- */
+        .account-panel, .cart-panel {
             position: fixed;
             top: 0;
-            left: 0;
             height: 100%;
-            width: 300px;
-            background-color: #e67e22;
-            color: #ffffff;
-            padding: 20px;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
+            width: 320px;
+            background-color: var(--color-surface);
+            color: var(--color-text-primary);
+            padding: 25px;
+            box-shadow: var(--shadow-medium);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 999;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .account-panel.show {
-            transform: translateX(0);
-        }
+        .account-panel { left: 0; transform: translateX(-100%); }
+        .cart-panel { right: 0; transform: translateX(100%); }
+
+        .account-panel.show, .cart-panel.show { transform: translateX(0); }
         
-        .account-panel h3 {
+        .account-panel h3, .cart-panel h3 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
-        .account-info {
-            flex-grow: 1; 
-            overflow-y: auto; 
-        }
+        .account-info { flex-grow: 1; overflow-y: auto; }
         
         .account-info p {
-            margin: 10px 0;
-            font-size: 1.1em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
+            margin: 15px 0;
+            font-size: 1em;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 15px;
         }
 
         .account-info p strong {
             display: block;
-            font-size: 0.9em;
-            font-weight: normal;
-            opacity: 0.8;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: 5px;
         }
 
-        .account-buttons {
+        .account-buttons, .cart-buttons {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-top: auto;
-        }
-
-        .btn-logout {
-            background-color: #e74c3c;
-        }
-
-        .btn-edit-profile {
-            background-color: #48dbfb;
+            margin-top: auto; /* Empuja los botones hacia abajo */
+            padding-top: 20px;
+            border-top: 1px solid var(--color-border);
         }
         
-        /* Estilos para el nuevo panel lateral del carrito */
-        .cart-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            height: 100%;
-            width: 300px;
-            background-color: #e67e22;
-            color: #ffffff;
-            padding: 20px;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .cart-panel.show {
-            transform: translateX(0);
-        }
-        
+        /* Carrito */
         .cart-items {
             list-style: none;
             padding: 0;
@@ -621,27 +553,80 @@
         
         .cart-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--color-border);
         }
+        
+        .cart-item span:first-child { flex-grow: 1; text-align: left; }
+        .cart-item span:nth-child(2) { font-weight: 600; margin: 0 15px; }
+        .cart-item button { 
+            background: none; 
+            border: 1px solid var(--color-danger); 
+            color: var(--color-danger); 
+            font-size: 0.7em; 
+            padding: 4px 8px; 
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cart-item button:hover { background: var(--color-danger); color: white; }
         
         .cart-total {
             text-align: right;
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            padding-top: 10px;
-            border-top: 2px solid rgba(255, 255, 255, 0.5);
+            margin-top: auto;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--color-primary);
         }
 
-        .cart-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: auto;
+        /* Pedidos */
+        .my-orders-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
         }
+
+        .my-orders-item {
+            background-color: var(--color-background);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid var(--color-border);
+        }
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .order-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--color-border);
+            text-align: left;
+            font-size: 0.9em;
+            color: var(--color-text-secondary);
+        }
+        .order-details strong { color: var(--color-text-primary); }
+
+        .my-orders-item .status {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 50px;
+            color: #fff;
+            font-weight: 500;
+        }
+        .my-orders-item .status.Entregado { background-color: var(--color-secondary); }
+        .my-orders-item .status.Pendiente { background-color: #f1c40f; color: var(--color-text-primary); }
+        .my-orders-item .status.Confirmado { background-color: var(--color-primary); }
+        .my-orders-item .status.Cancelado { background-color: var(--color-danger); }
     </style>
 </head>
 <body>
@@ -768,7 +753,7 @@
     <div id="alert-box" class="alert-box">
         <div class="alert-content">
             <p id="alert-text" class="alert-text"></p>
-            <button class="alert-button" onclick="closeAlert()">Aceptar</button>
+            <button class="btn alert-button" onclick="closeAlert()">Aceptar</button>
         </div>
     </div>
 
@@ -876,7 +861,7 @@
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
         let elements;
         let cardElement;
-        let currentClientSecret; // Variable para guardar el client secret
+        let currentClientSecret;
         const cardPaymentModal = document.getElementById('card-payment-modal');
 
         const alertBox = document.getElementById('alert-box');
@@ -1258,7 +1243,6 @@
             }
         }
         
-        // --- LÓGICA DE PAGO CON STRIPE (ACTUALIZADA) ---
         const paymentOptionsModal = document.getElementById('payment-options-modal');
         const confirmOrderModal = document.getElementById('confirm-order-modal');
         const deliveryForm = document.getElementById('delivery-form');
@@ -1290,7 +1274,6 @@
             cardPaymentModal.style.display = 'flex';
             
             try {
-                // 1. Obtener carrito y total desde Firestore para seguridad
                 const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                 const carrito = userDoc.data().carrito || [];
                 const total = carrito.reduce((sum, item) => sum + item.precio, 0);
@@ -1301,7 +1284,6 @@
                     return;
                 }
                 
-                // 2. Crear un Payment Intent desde tu Cloud Function
                 const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
                 const response = await fetch(functionUrl, {
                     method: 'POST',
@@ -1311,16 +1293,15 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
                 
-                currentClientSecret = data.clientSecret; // Guardar el secret
-                elements = stripe.elements({ clientSecret: currentClientSecret }); // Inicializar elements con el secret
+                currentClientSecret = data.clientSecret;
+                elements = stripe.elements({ clientSecret: currentClientSecret });
 
-                // 3. Configurar el Payment Request Button (Apple Pay / Google Pay)
                 const paymentRequest = stripe.paymentRequest({
                     country: 'MX',
                     currency: 'mxn',
                     total: {
                         label: 'Total KalCTas',
-                        amount: total * 100, // Stripe espera el monto en centavos
+                        amount: total * 100,
                     },
                     requestPayerName: true,
                     requestPayerEmail: true,
@@ -1330,7 +1311,6 @@
                     paymentRequest: paymentRequest,
                 });
 
-                // Comprobar si el método de pago está disponible
                 const result = await paymentRequest.canMakePayment();
                 if (result) {
                     prButton.mount('#payment-request-button');
@@ -1340,7 +1320,6 @@
                     document.getElementById('separator-or').style.display = 'none';
                 }
 
-                // Manejar el evento de pago del botón
                 paymentRequest.on('paymentmethod', async (ev) => {
                     const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
                         currentClientSecret,
@@ -1360,7 +1339,6 @@
                             ev.complete('fail');
                             showMessage(`Error en la autenticación: ${actionError.message}`);
                         } else {
-                            // Éxito después de la autenticación
                              await registrarPedidoTarjeta(paymentIntent, carrito);
                              ev.complete('success');
                              showMessage('¡Pago completado con éxito!');
@@ -1368,7 +1346,6 @@
                              renderizarCarrito();
                         }
                     } else {
-                        // Éxito inmediato
                         await registrarPedidoTarjeta(paymentIntent, carrito);
                         ev.complete('success');
                         showMessage('¡Pago completado con éxito!');
@@ -1377,8 +1354,6 @@
                     }
                 });
 
-
-                // 4. Configurar el formulario de tarjeta tradicional
                 if (!cardElement) {
                      cardElement = elements.create('card');
                      cardElement.mount('#card-element');
@@ -1397,7 +1372,6 @@
         }
         
         function cerrarModalPagoTarjeta() {
-            // Limpiar el contenido para la próxima vez
             document.getElementById('payment-request-button').innerHTML = '';
             document.getElementById('card-errors').textContent = '';
             if (cardElement) {
@@ -1696,7 +1670,6 @@
             }
         }
 
-        // --- REGISTRO DEL SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
