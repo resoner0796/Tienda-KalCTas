@@ -685,6 +685,14 @@
             display: none; /* Oculto por defecto */
         }
         
+        /* --- INICIO DE MODIFICACIÓN CSS: CORRECCIÓN DE DISEÑO --- */
+        #pickup-location-fields > div {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Espacio entre los grupos de label/input */
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
+
         .cart-total {
             text-align: right;
             margin-top: auto;
@@ -944,21 +952,25 @@
                 </div>
                 
                 <div id="pickup-location-fields">
-                    <label for="delivery-date">Fecha de entrega:</label>
-                    <input type="date" id="delivery-date" required>
-                    
-                    <label for="delivery-location">Lugar de entrega:</label>
-                    <select id="delivery-location" onchange="toggleOtherLocation()">
-                        <option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
-                        <option value="La Portillo">La Portillo</option>
-                        <option value="Periférico">Periférico</option>
-                        <option value="Smart periférico">Smart periférico</option>
-                        <option value="Soriana Hidalgo">Soriana Hidalgo</option>
-                        <option value="HEB Morelos">HEB Morelos</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                
-                    <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
+                    <div>
+                        <label for="delivery-date">Fecha de entrega:</label>
+                        <input type="date" id="delivery-date" required>
+                    </div>
+                    <div>
+                        <label for="delivery-location">Lugar de entrega:</label>
+                        <select id="delivery-location" onchange="toggleOtherLocation()">
+                            <option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
+                            <option value="La Portillo">La Portillo</option>
+                            <option value="Periférico">Periférico</option>
+                            <option value="Smart periférico">Smart periférico</option>
+                            <option value="Soriana Hidalgo">Soriana Hidalgo</option>
+                            <option value="HEB Morelos">HEB Morelos</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
+                    </div>
                 </div>
                 <label for="delivery-comments">Comentarios (opcional):</label>
                 <textarea id="delivery-comments" placeholder="Ej: Entregar en la entrada principal, tocar el claxon, etc."></textarea>
@@ -1023,17 +1035,11 @@
             
             // --- INICIO DE MODIFICACIÓN JAVASCRIPT: TEMA OSCURO ---
             const themeToggleButton = document.getElementById('theme-toggle-button');
-            const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+            const currentTheme = localStorage.getItem('theme');
 
-            if (currentTheme) {
-                if (currentTheme === 'dark-mode') {
-                    document.body.classList.add('dark-mode');
-                    themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                }
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            if (currentTheme === 'dark-mode') {
                 document.body.classList.add('dark-mode');
                 themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                localStorage.setItem('theme', 'dark-mode');
             }
 
             themeToggleButton.addEventListener('click', () => {
@@ -1142,9 +1148,7 @@
                     telefono: null,
                     carrito: []
                 });
-                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: MENSAJE POST-REGISTRO ---
                 showMessage('¡Cuenta creada con éxito! Te recomendamos ir a "Mi Cuenta" para agregar tu número de teléfono, es importante para contactarte sobre tus entregas.');
-                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
                 cerrarAuthModal();
             } catch (error) {
                 console.error('Error de registro:', error.message);
@@ -1300,7 +1304,6 @@
                     const total = pedido.montoTotal ? pedido.montoTotal.toFixed(2) : '0.00';
                     const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio.toFixed(2)})</li>`).join('');
 
-                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT: VISUALIZACIÓN DE PEDIDOS ---
                     let deliveryDetailsHtml = '';
                     if (pedido.datosEntrega) {
                         if (pedido.datosEntrega.tipo === 'Envío a domicilio') {
@@ -1322,7 +1325,6 @@
                             <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'N/A'}</p>
                         `;
                     }
-                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                     const item = document.createElement('li');
                     item.className = 'my-orders-item';
@@ -1331,7 +1333,6 @@
                         details.style.display = details.style.display === 'block' ? 'none' : 'block';
                     };
                     
-                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT: VISUALIZACIÓN DE PEDIDOS ---
                     item.innerHTML = `
                         <div class="order-summary">
                             <span>${pedido.folio || 'Pedido'}</span>
@@ -1348,7 +1349,6 @@
                             </ul>
                         </div>
                     `;
-                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
                     myOrdersList.appendChild(item);
                 });
 
@@ -1486,12 +1486,10 @@
                 const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                 const carrito = userDoc.data().carrito || [];
 
-                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: COSTO DE ENVÍO EN STRIPE ---
                 const deliveryMethod = document.getElementById('delivery-method').value;
                 const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
                 const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                 const total = subtotal + shippingCost;
-                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                 if (total <= 0) {
                     showMessage("No hay nada que pagar.");
@@ -1500,13 +1498,11 @@
                 }
                 
                 const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
-                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: COSTO DE ENVÍO EN STRIPE ---
                 const response = await fetch(functionUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ items: carrito, shippingCost: shippingCost }), // Envía el costo de envío
                 });
-                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
                 
