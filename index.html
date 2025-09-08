@@ -192,6 +192,12 @@
         }
         .btn-logout { background-color: var(--color-danger); }
 
+        /* --- INICIO DE MODIFICACIÓN CSS --- */
+        #delivery-form .btn-add {
+            gap: 10px; /* Espacio entre el texto y el ícono */
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
+
         /* Contenedor de Botones (Menú principal) */
         .button-container {
             display: flex;
@@ -506,7 +512,6 @@
             box-sizing: border-box; /* Asegura que el padding no aumente el tamaño total */
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS --- */
         .account-panel { 
             left: 0; 
             transform: translateX(-100%); 
@@ -533,7 +538,6 @@
             overflow-y: auto; /* Activa el scroll solo si es necesario */
             padding: 0 25px; /* Padding lateral */
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
         
         .account-info p {
             margin: 15px 0;
@@ -865,6 +869,8 @@
                 
                 <label for="delivery-location">Lugar de entrega:</label>
                 <select id="delivery-location" onchange="toggleOtherLocation()">
+                    <option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
+                    <option value="La Portillo">La Portillo</option>
                     <option value="Periférico">Periférico</option>
                     <option value="Smart periférico">Smart periférico</option>
                     <option value="Soriana Hidalgo">Soriana Hidalgo</option>
@@ -874,8 +880,14 @@
                 
                 <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
 
-                <button type="submit" class="btn-add">Confirmar Pedido</button>
-            </form>
+                <label for="delivery-comments">Comentarios (opcional):</label>
+                <textarea id="delivery-comments" placeholder="Ej: Entregar en la entrada principal, tocar el claxon, etc."></textarea>
+
+                <button type="submit" class="btn btn-add">
+                    <span>Confirmar Pedido</span>
+                    <span>🛒</span>
+                </button>
+                </form>
         </div>
     </div>
 
@@ -1523,6 +1535,18 @@
         function mostrarModalConfirmarEntrega() {
             transferInfoModal.style.display = 'none';
             document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${document.getElementById('payment-method-input').value})`;
+            
+            // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
+            const dateInput = document.getElementById('delivery-date');
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1); // Establece la fecha a mañana
+            const yyyy = tomorrow.getFullYear();
+            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0'); // Meses son 0-11
+            const dd = String(tomorrow.getDate()).padStart(2, '0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`; // Formato YYYY-MM-DD
+            dateInput.value = `${yyyy}-${mm}-${dd}`; // Establece el valor por defecto a mañana
+            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
+            
             confirmOrderModal.style.display = 'flex';
         }
 
@@ -1550,6 +1574,10 @@
             const fechaEntrega = deliveryForm['delivery-date'].value;
             const lugarEntregaSelect = deliveryForm['delivery-location'].value;
             const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
+            
+            // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
+            const comentarios = document.getElementById('delivery-comments').value;
+            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
             
             if (lugarEntregaSelect === 'Otro' && !lugarEntrega.trim()) {
                 showMessage('Por favor, especifica el lugar de entrega.');
@@ -1584,6 +1612,7 @@
 
                     const nuevoPedidoRef = db.collection('pedidos').doc();
                     
+                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
                     transaction.set(nuevoPedidoRef, {
                         folio: folioFormateado,
                         usuarioId: currentUser.uid,
@@ -1597,9 +1626,11 @@
                         metodoPago,
                         fechaEntrega,
                         lugarEntrega,
+                        comentarios: comentarios || null, // Guarda los comentarios o null si está vacío
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                     transaction.update(userRef, { carrito: [] });
                 });
@@ -1613,7 +1644,8 @@
                 showMessage(`Hubo un error al procesar tu pedido: ${error.message}. Intenta de nuevo.`);
             } finally {
                 submitButton.disabled = false;
-                submitButton.textContent = 'Confirmar Pedido';
+                // Vuelve a poner el contenido original del botón
+                submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
             }
         });
 
