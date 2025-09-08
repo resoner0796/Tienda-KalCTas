@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KalCTas Tienda - Edición Halloween</title>
+    <title>KalCTas Tienda</title>
 
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#1a1a2e"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <meta name="theme-color" content="#FFFFFF"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="KalCTas">
@@ -18,43 +19,33 @@
     <script src="https://js.stripe.com/v3/"></script>
     
     <style>
-        /* --- INICIO DE MODIFICACIÓN CSS: TEMA HALLOWEEN --- */
-        /* --- Paleta de Colores y Variables de Diseño HALLOWEEN --- */
+        /* --- Paleta de Colores y Variables de Diseño --- */
         :root {
-            --color-background: #0d0221; /* Morado muy oscuro casi negro */
-            --color-surface: #261c3e;    /* Morado oscuro para contenedores */
-            --color-primary: #f9a03f;    /* Naranja Halloween */
-            --color-secondary: #a75db4;   /* Morado medio */
-            --color-accent: #92e6a7;      /* Verde lima "tóxico" */
-            --color-danger: #e74c3c;
-            --color-text-primary: #fdfdfd; /* Blanco para texto principal */
-            --color-text-secondary: #f9a03f; /* Naranja para texto secundario */
-            --color-border: #4d426d;     /* Borde morado oscuro */
+            --color-background: #f4f7f6; /* Un gris muy claro y suave para el fondo */
+            --color-surface: #ffffff;    /* Blanco para las tarjetas y contenedores principales */
+            --color-primary: #4a69bd;    /* Un azul moderno y confiable para acciones principales */
+            --color-secondary: #6ab04c;   /* Un verde fresco para acciones secundarias */
+            --color-accent: #f0932b;      /* Naranja para botones de pago o destacados */
+            --color-danger: #e74c3c;      /* Rojo para alertas o botones de cerrar sesión */
+            --color-text-primary: #2c3e50; /* Un gris oscuro casi negro para texto principal */
+            --color-text-secondary: #7f8c8d; /* Gris más claro para texto secundario */
+            --color-border: #e0e0e0;     /* Color sutil para bordes */
             
             --font-family: 'Poppins', sans-serif;
-            --font-halloween: 'Creepster', cursive; /* Fuente temática */
             --border-radius: 12px;
-            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
-            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.4);
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
         
-        /* El modo oscuro ahora es el predeterminado para Halloween */
-        body, body.dark-mode {
-            --color-background: #0d0221;
-            --color-surface: #261c3e;
-            --color-primary: #f9a03f;
-            --color-text-primary: #fdfdfd;
-            --color-text-secondary: #f9a03f;
-            --color-border: #4d426d;
-        }
-
-        body.light-mode {
-             --color-background: #f4f7f6;
-            --color-surface: #ffffff;
-            --color-primary: #e67e22; /* Naranja más brillante para tema claro */
-            --color-text-primary: #2c3e50;
-            --color-text-secondary: #e67e22;
-            --color-border: #e0e0e0;
+        body.dark-mode {
+            --color-background: #1a1a2e;
+            --color-surface: #16213e;
+            --color-primary: #5E5DF0;
+            --color-text-primary: #e0e0e0;
+            --color-text-secondary: #a7a7a7;
+            --color-border: #4a4a6a;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         /* Transición suave para el cambio de tema */
@@ -66,7 +57,7 @@
         body {
             margin: 0;
             font-family: var(--font-family);
-            background: linear-gradient(180deg, #0d0221 0%, #261c3e 100%);
+            background-color: var(--color-background);
             color: var(--color-text-primary);
             display: flex;
             justify-content: center;
@@ -81,7 +72,6 @@
             background-color: var(--color-surface);
             padding: 40px;
             border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             max-width: 450px;
             width: 90%;
@@ -94,33 +84,7 @@
             transform: translateY(20px);
             transition: opacity 0.8s ease, transform 0.8s ease;
             min-height: 85vh; 
-            overflow: hidden; /* Para que las telarañas no se salgan */
         }
-        
-        /* Telarañas en las esquinas */
-        .container::before, .container::after {
-            content: '';
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 A100,100 0 0,0 0,100 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L80,0 A80,80 0 0,0 0,80 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L60,0 A60,60 0 0,0 0,60 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L40,0 A40,40 0 0,0 0,40 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L20,0 A20,20 0 0,0 0,20 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='0' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='50' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-            z-index: 0;
-            opacity: 0.5;
-        }
-        
-        .container::before {
-            top: -10px;
-            left: -10px;
-        }
-
-        .container::after {
-            bottom: -10px;
-            right: -10px;
-            transform: rotate(180deg);
-        }
-
 
         .container.show {
             opacity: 1;
@@ -160,13 +124,9 @@
         }
 
         h1 {
-            font-size: 2.5em; /* Fuente temática más grande */
+            font-size: 1.5em; /* Un poco más grande para destacar */
             margin-bottom: 5px;
             order: 1;
-            font-family: var(--font-halloween); /* Aplicando fuente Halloween */
-            letter-spacing: 2px;
-            color: var(--color-primary);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
         }
         
         .title-container {
@@ -184,18 +144,6 @@
         .title-container h1 {
             margin: 0;
             white-space: nowrap;
-            position: relative; /* Para la araña */
-        }
-        
-        /* Araña colgante */
-        .title-container h1::after {
-            content: '🕷️';
-            position: absolute;
-            top: -20px;
-            right: -25px;
-            font-size: 0.5em;
-            transform-origin: top center;
-            animation: swing 4s infinite ease-in-out;
         }
 
         .title-container hr {
@@ -214,12 +162,6 @@
                 transform: scale(1);
             }
         }
-        
-        @keyframes swing {
-            0% { transform: rotate(10deg); }
-            50% { transform: rotate(-10deg); }
-            100% { transform: rotate(10deg); }
-        }
 
         /* --- Logo --- */
         .logo {
@@ -228,8 +170,7 @@
             order: 2;
             transition: all 1s ease-in;
             margin-top: 120px;
-            animation: pulse 2.5s infinite ease-in-out; 
-            filter: drop-shadow(0 0 10px var(--color-primary));
+            animation: pulse 2.5s infinite ease-in-out; /* Aplicación de la animación */
         }
 
         .logo-small {
@@ -242,47 +183,44 @@
         /* --- Estilo de Botones --- */
         .btn {
             padding: 15px 20px;
-            border: 2px solid var(--color-border);
+            border: none;
             border-radius: var(--border-radius);
             font-size: 1em;
-            font-weight: 600; 
+            font-weight: 600; /* Letra más marcada */
             font-family: var(--font-family);
             color: #ffffff;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             width: 100%;
-            letter-spacing: 0.5px; 
-            text-transform: uppercase;
+            letter-spacing: 0.5px; /* Pequeño espaciado entre letras */
         }
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0 15px var(--color-accent);
+            box-shadow: var(--shadow-medium);
         }
 
         .btn:disabled {
-            background-color: #575757; 
+            background-color: #bdc3c7; /* Gris para deshabilitado */
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
-            border-color: #333;
         }
         
         /* Asignación de nueva paleta a los botones existentes */
-        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #111; }
-        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); }
-        .btn-kalctas-largas, .btn-checkout { background-color: var(--color-accent); border-color: var(--color-accent); color: #111; }
-        .btn-volver { background-color: #4a4a6a; border-color: #4a4a6a; } 
-        .btn-view { background-color: #34495e; border-color: #34495e; } 
+        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); }
+        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); }
+        .btn-kalctas-largas, .btn-checkout { background-color: var(--color-accent); }
+        .btn-volver { background-color: #95a5a6; } /* Un gris neutro */
+        .btn-view { background-color: #34495e; } /* Un gris oscuro para "Ver" */
         .btn-add {
             background-color: var(--color-secondary);
-            border-color: var(--color-secondary);
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
         }
-        .btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
+        .btn-logout { background-color: var(--color-danger); }
 
         #delivery-form .btn-add {
             gap: 10px; /* Espacio entre el texto y el ícono */
@@ -310,26 +248,25 @@
         }
 
         .header-icon {
-            font-size: 2em;
+            font-size: 2em; /* Ligeramente más pequeño */
             color: var(--color-text-primary);
             cursor: pointer;
             transition: transform 0.2s ease;
-            filter: drop-shadow(0 0 5px var(--color-primary));
         }
 
         .header-icon:hover {
-            transform: scale(1.1) rotate(10deg);
+            transform: scale(1.1);
         }
         
         .auth-button {
             position: fixed;
             top: 20px;
             left: 25px;
-            background-color: transparent;
+            background-color: var(--color-surface);
             border: 2px solid var(--color-primary);
             color: var(--color-primary);
-            padding: 8px 16px; 
-            border-radius: 50px; 
+            padding: 8px 16px; /* Más padding */
+            border-radius: 50px; /* Completamente redondo */
             cursor: pointer;
             font-size: 0.9em;
             font-weight: 600;
@@ -352,7 +289,7 @@
         }
 
         .model-card {
-            background-color: rgba(0,0,0,0.2);
+            background-color: var(--color-surface);
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius);
             padding: 15px;
@@ -363,7 +300,7 @@
 
         .model-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--color-accent);
+            box-shadow: var(--shadow-medium);
         }
 
         .model-card img {
@@ -409,8 +346,8 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(13, 2, 33, 0.8);
-            backdrop-filter: blur(5px);
+            background-color: rgba(44, 62, 80, 0.7); /* Fondo más oscuro y azulado */
+            backdrop-filter: blur(5px); /* Efecto de desenfoque */
             justify-content: center;
             align-items: center;
         }
@@ -446,10 +383,9 @@
             color: var(--color-text-primary);
             padding: 30px;
             border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             width: 90%;
-            max-width: 400px;
+            max-width: 400px; /* Ancho consistente */
             text-align: left;
             position: relative;
         }
@@ -457,12 +393,10 @@
         .my-orders-modal-content { max-width: 550px; }
 
         .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
-            font-family: var(--font-halloween);
-            letter-spacing: 1px;
-            font-size: 2.2em;
             text-align: center;
             margin-top: 0;
             margin-bottom: 25px;
+            font-size: 1.5em;
         }
         
         /* Contenido de modales específicos */
@@ -493,19 +427,13 @@
             font-size: 1em;
             font-family: var(--font-family);
             background-color: var(--color-background);
-            color: var(--color-text-primary);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .auth-form input::placeholder, .auth-form textarea::placeholder {
-            color: var(--color-text-secondary);
-            opacity: 0.7;
         }
 
         .auth-form input:focus {
             outline: none;
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(249, 160, 63, 0.4);
+            box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.2);
         }
         
         .auth-form label {
@@ -517,7 +445,7 @@
 
         .auth-form .btn-auth {
             background-color: var(--color-primary);
-            color: #111;
+            color: #ffffff;
             font-weight: 600;
             padding: 15px;
             border-radius: 8px;
@@ -526,7 +454,7 @@
             transition: background-color 0.2s ease;
         }
 
-        .auth-form .btn-auth:hover { background-color: #d18228; }
+        .auth-form .btn-auth:hover { background-color: #38518e; }
         
         .auth-toggle {
             text-align: center;
@@ -567,7 +495,7 @@
         .separator:not(:empty)::after { margin-left: .5em; }
 
         #card-element {
-            background-color: var(--color-background);
+            background-color: white;
             padding: 12px;
             border: 1px solid var(--color-border);
             border-radius: 8px;
@@ -592,7 +520,7 @@
         .alert-button {
             margin-top: 20px;
             background-color: var(--color-primary);
-            color: #111;
+            color: #fff;
         }
 
         /* --- Paneles laterales (Mi Cuenta y Carrito) --- */
@@ -630,9 +558,6 @@
             margin: 0; 
             padding: 25px 25px 20px 25px;
             flex-shrink: 0;
-            font-family: var(--font-halloween);
-            font-size: 2.5em;
-            letter-spacing: 1px;
         }
         
         .account-info { 
@@ -760,11 +685,13 @@
             display: none; /* Oculto por defecto */
         }
         
+        /* --- INICIO DE MODIFICACIÓN CSS: CORRECCIÓN DE DISEÑO --- */
         #pickup-location-fields > div {
             display: flex;
             flex-direction: column;
             gap: 15px; /* Espacio entre los grupos de label/input */
         }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .cart-total {
             text-align: right;
@@ -786,7 +713,7 @@
         }
 
         .my-orders-item {
-            background-color: rgba(0,0,0,0.2);
+            background-color: var(--color-background);
             padding: 15px;
             border-radius: var(--border-radius);
             margin-bottom: 10px;
@@ -815,14 +742,13 @@
             font-size: 0.8em;
             padding: 5px 10px;
             border-radius: 50px;
-            color: #111;
+            color: #fff;
             font-weight: 500;
         }
-        .my-orders-item .status.Entregado { background-color: var(--color-accent); }
-        .my-orders-item .status.Pendiente { background-color: #f1c40f; }
-        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: white; }
-        .my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
+        .my-orders-item .status.Entregado { background-color: var(--color-secondary); }
+        .my-orders-item .status.Pendiente { background-color: #f1c40f; color: var(--color-text-primary); }
+        .my-orders-item .status.Confirmado { background-color: var(--color-primary); }
+        .my-orders-item .status.Cancelado { background-color: var(--color-danger); }
     </style>
 </head>
 <body>
@@ -830,12 +756,12 @@
     <div class="container" id="main-container">
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-            <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎃</a>
+            <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
         </div>
 
         <main id="pantalla-principal" class="screen active">
             <div class="title-container">
-                <h1>¡Boo! ¡Bienvenido a KalCTas!</h1>
+                <h1>¡Bienvenido a KalCTas!</h1>
             </div>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
@@ -884,7 +810,7 @@
         <div class="account-buttons">
             <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
-            <button class="btn btn-theme" id="theme-toggle-button">Cambiar Tema 👻</button>
+            <button class="btn btn-theme" id="theme-toggle-button">Cambiar Tema 🌙</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
     </div>
@@ -1107,6 +1033,7 @@
                  generarGaleria(activeScreen.id);
             }
             
+            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: TEMA OSCURO ---
             const themeToggleButton = document.getElementById('theme-toggle-button');
             const currentTheme = localStorage.getItem('theme');
 
@@ -1126,6 +1053,7 @@
                 }
                 localStorage.setItem('theme', theme);
             });
+            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
         });
 
         // ================================================================================= //
