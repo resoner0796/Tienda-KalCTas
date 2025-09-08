@@ -591,12 +591,10 @@
             flex-shrink: 0;
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: TEMA OSCURO --- */
         .btn-theme {
             background-color: var(--color-border);
             color: var(--color-text-primary);
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
         
         /* Carrito */
         .cart-items {
@@ -1302,6 +1300,30 @@
                     const total = pedido.montoTotal ? pedido.montoTotal.toFixed(2) : '0.00';
                     const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio.toFixed(2)})</li>`).join('');
 
+                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT: VISUALIZACIÓN DE PEDIDOS ---
+                    let deliveryDetailsHtml = '';
+                    if (pedido.datosEntrega) {
+                        if (pedido.datosEntrega.tipo === 'Envío a domicilio') {
+                            deliveryDetailsHtml = `
+                                <p><strong>Tipo de entrega:</strong> Envío a domicilio</p>
+                                <p><strong>Dirección:</strong> ${pedido.datosEntrega.calle}, ${pedido.datosEntrega.colonia}</p>
+                                ${pedido.datosEntrega.descripcion ? `<p><strong>Descripción:</strong> ${pedido.datosEntrega.descripcion}</p>` : ''}
+                            `;
+                        } else if (pedido.datosEntrega.tipo === 'Punto medio') {
+                            deliveryDetailsHtml = `
+                                <p><strong>Tipo de entrega:</strong> Punto medio</p>
+                                <p><strong>Lugar de encuentro:</strong> ${pedido.datosEntrega.lugar}</p>
+                                <p><strong>Fecha programada:</strong> ${pedido.datosEntrega.fecha}</p>
+                            `;
+                        }
+                    } else { // Fallback para pedidos antiguos
+                        deliveryDetailsHtml = `
+                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'N/A'}</p>
+                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'N/A'}</p>
+                        `;
+                    }
+                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
+
                     const item = document.createElement('li');
                     item.className = 'my-orders-item';
                     item.onclick = function() {
@@ -1309,6 +1331,7 @@
                         details.style.display = details.style.display === 'block' ? 'none' : 'block';
                     };
                     
+                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT: VISUALIZACIÓN DE PEDIDOS ---
                     item.innerHTML = `
                         <div class="order-summary">
                             <span>${pedido.folio || 'Pedido'}</span>
@@ -1317,15 +1340,15 @@
                         <div class="order-details">
                             <p><strong>Total:</strong> $${total}</p>
                             <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
-                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'N/A'}</p>
-                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'N/A'}</p>
-                            ${pedido.estado === 'Cancelado' && pedido.motivoCancelacion ? `<p><strong>Motivo de cancelación:</strong> ${pedido.motivoCancelacion}</p>` : ''}
+                            ${deliveryDetailsHtml}
+                            ${pedido.comentarios ? `<p><strong>Comentarios:</strong> ${pedido.comentarios}</p>` : ''}
                             <p><strong>Productos:</strong></p>
                             <ul>
                                 ${productosHtml}
                             </ul>
                         </div>
                     `;
+                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
                     myOrdersList.appendChild(item);
                 });
 
