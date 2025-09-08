@@ -497,26 +497,43 @@
             width: 320px;
             background-color: var(--color-surface);
             color: var(--color-text-primary);
-            padding: 25px;
             box-shadow: var(--shadow-medium);
             transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 999;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            /* Se elimina el gap para un control más preciso con padding */
+            box-sizing: border-box; /* Asegura que el padding no aumente el tamaño total */
+        }
+        
+        /* --- INICIO DE MODIFICACIÓN CSS --- */
+        .account-panel { 
+            left: 0; 
+            transform: translateX(-100%); 
         }
 
-        .account-panel { left: 0; transform: translateX(-100%); }
-        .cart-panel { right: 0; transform: translateX(100%); }
+        .cart-panel { 
+            right: 0; 
+            transform: translateX(100%); 
+        }
 
-        .account-panel.show, .cart-panel.show { transform: translateX(0); }
+        .account-panel.show, .cart-panel.show { 
+            transform: translateX(0); 
+        }
         
         .account-panel h3, .cart-panel h3 {
             text-align: center;
-            margin-bottom: 10px;
+            margin: 0; /* Se quita el margen para que el padding del panel lo controle */
+            padding: 25px 25px 20px 25px; /* Padding superior, laterales e inferior */
+            flex-shrink: 0; /* Evita que el título se encoja */
         }
-
-        .account-info { flex-grow: 1; overflow-y: auto; }
+        
+        .account-info { 
+            flex-grow: 1; /* Permite que esta área crezca */
+            overflow-y: auto; /* Activa el scroll solo si es necesario */
+            padding: 0 25px; /* Padding lateral */
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
         
         .account-info p {
             margin: 15px 0;
@@ -538,25 +555,26 @@
             flex-direction: column;
             gap: 10px;
             margin-top: auto; /* Empuja los botones hacia abajo */
-            padding-top: 20px;
+            padding: 20px 25px 25px 25px; /* Padding alrededor de los botones */
             border-top: 1px solid var(--color-border);
+            flex-shrink: 0; /* Evita que el contenedor de botones se encoja */
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS --- */
         /* Carrito */
         .cart-items {
             list-style: none;
             padding: 0;
             margin: 0;
             overflow-y: auto;
-            flex-grow: 1;
+            flex-grow: 1; /* Permite que la lista crezca y tenga scroll */
+            padding: 0 25px; /* Padding lateral consistente */
         }
         
         .cart-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 15px 5px;
+            padding: 15px 0; /* Se quita padding lateral, ya lo tiene el contenedor padre */
             border-bottom: 1px solid var(--color-border);
         }
 
@@ -610,8 +628,8 @@
             font-size: 1.3em;
             font-weight: 700;
             color: var(--color-primary);
+            padding: 0 25px 20px 25px; /* Padding para alinear con el resto */
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         /* Pedidos */
         .my-orders-list {
@@ -1237,8 +1255,6 @@
                 carrito.forEach((producto, index) => {
                     const listItem = document.createElement('li');
                     listItem.className = 'cart-item';
-
-                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
                     listItem.innerHTML = `
                         <img src="${producto.imagenUrl}" alt="${producto.nombre}" class="cart-item-img" onclick="verImagen('${producto.imagenUrl}')">
                         <div class="cart-item-details">
@@ -1247,8 +1263,6 @@
                         </div>
                         <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
                     `;
-                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
-
                     cartList.appendChild(listItem);
                     total += producto.precio;
                 });
