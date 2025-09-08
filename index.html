@@ -542,6 +542,7 @@
             border-top: 1px solid var(--color-border);
         }
         
+        /* --- INICIO DE MODIFICACIÓN CSS --- */
         /* Carrito */
         .cart-items {
             list-style: none;
@@ -554,12 +555,42 @@
         .cart-item {
             display: flex;
             align-items: center;
-            padding: 15px 0;
+            gap: 15px;
+            padding: 15px 5px;
             border-bottom: 1px solid var(--color-border);
         }
+
+        .cart-item-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .cart-item-img:hover {
+            transform: scale(1.08);
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
         
-        .cart-item span:first-child { flex-grow: 1; text-align: left; }
-        .cart-item span:nth-child(2) { font-weight: 600; margin: 0 15px; }
+        .cart-item-details .name {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .cart-item-details .price {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+        
         .cart-item button { 
             background: none; 
             border: 1px solid var(--color-danger); 
@@ -569,6 +600,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
+            margin-left: auto;
         }
         .cart-item button:hover { background: var(--color-danger); color: white; }
         
@@ -579,6 +611,7 @@
             font-weight: 700;
             color: var(--color-primary);
         }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         /* Pedidos */
         .my-orders-list {
@@ -1204,11 +1237,18 @@
                 carrito.forEach((producto, index) => {
                     const listItem = document.createElement('li');
                     listItem.className = 'cart-item';
+
+                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
                     listItem.innerHTML = `
-                        <span>${producto.nombre}</span>
-                        <span>$${producto.precio.toFixed(2)}</span>
+                        <img src="${producto.imagenUrl}" alt="${producto.nombre}" class="cart-item-img" onclick="verImagen('${producto.imagenUrl}')">
+                        <div class="cart-item-details">
+                            <span class="name">${producto.nombre}</span>
+                            <span class="price">$${producto.precio.toFixed(2)}</span>
+                        </div>
                         <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
                     `;
+                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
+
                     cartList.appendChild(listItem);
                     total += producto.precio;
                 });
