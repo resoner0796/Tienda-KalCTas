@@ -86,7 +86,21 @@
             overflow: hidden; 
         }
         
-        .container::before, .container::after {
+        /* --- INICIO DE MODIFICACIÓN CSS: TELARAÑAS --- */
+        /* Aplicar posición relativa y overflow para que las telarañas se contengan */
+        .auth-modal-content, .payment-modal-content, .my-orders-modal-content,
+        .account-panel, .cart-panel {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Selector combinado para aplicar telarañas a todos los contenedores */
+        .container::before, .container::after,
+        .auth-modal-content::before, .auth-modal-content::after,
+        .payment-modal-content::before, .payment-modal-content::after,
+        .my-orders-modal-content::before, .my-orders-modal-content::after,
+        .account-panel::before, .account-panel::after,
+        .cart-panel::before, .cart-panel::after {
             content: '';
             position: absolute;
             width: 150px;
@@ -98,16 +112,19 @@
             opacity: 0.5;
         }
         
-        .container::before {
+        .container::before, .auth-modal-content::before, .payment-modal-content::before, 
+        .my-orders-modal-content::before, .account-panel::before, .cart-panel::before {
             top: -10px;
             left: -10px;
         }
 
-        .container::after {
+        .container::after, .auth-modal-content::after, .payment-modal-content::after,
+        .my-orders-modal-content::after, .account-panel::after, .cart-panel::after {
             bottom: -10px;
             right: -10px;
             transform: rotate(180deg);
         }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .container.show {
             opacity: 1;
@@ -147,8 +164,9 @@
         }
 
         h1 {
-            /* --- INICIO DE MODIFICACIÓN CSS --- */
-            font-size: 2.2em; /* Ajuste de tamaño para que quepa el texto */
+            /* --- INICIO DE MODIFICACIÓN CSS: TAMAÑO DE TEXTO BIENVENIDA --- */
+            font-size: 1.9em; 
+            line-height: 1.2;
             /* --- FIN DE MODIFICACIÓN CSS --- */
             margin-bottom: 5px;
             order: 1;
@@ -172,7 +190,7 @@
 
         .title-container h1 {
             margin: 0;
-            white-space: nowrap;
+            /* white-space: nowrap; ya no es necesario */
             position: relative;
         }
         
@@ -281,17 +299,18 @@
             z-index: 100;
         }
 
-        /* --- INICIO DE MODIFICACIÓN CSS: ARAÑA COLGANTE --- */
         .cart-icon-wrapper {
             position: relative;
         }
         
+        /* --- INICIO DE MODIFICACIÓN CSS: ARAÑA COLGANTE MÁS GRANDE --- */
         .cart-icon-wrapper::after {
             content: '🕷️';
             position: absolute;
-            font-size: 24px;
-            top: 25px; /* Ajusta para que cuelgue de abajo */
+            font-size: 70px; /* Aumentamos el tamaño */
+            top: 35px; /* Ajustamos la posición vertical */
             left: 50%;
+            transform: translateX(-50%); /* Centramos horizontalmente */
             transform-origin: top center;
             animation: swing 4s infinite ease-in-out;
         }
@@ -303,6 +322,9 @@
             cursor: pointer;
             transition: transform 0.2s ease;
             filter: drop-shadow(0 0 5px var(--color-primary));
+            /* --- INICIO DE MODIFICACIÓN CSS: ELIMINAR LÍNEA BAJO CALABAZA --- */
+            text-decoration: none;
+            /* --- FIN DE MODIFICACIÓN CSS --- */
         }
 
         .header-icon:hover {
@@ -419,6 +441,7 @@
             font-size: 35px;
             font-weight: bold;
             transition: 0.3s;
+            z-index: 2; /* Para que esté por encima de la telaraña */
         }
 
         .close-modal:hover,
@@ -439,7 +462,7 @@
             width: 90%;
             max-width: 400px;
             text-align: left;
-            position: relative;
+            /* position: relative; ya se añadió arriba */
         }
         
         .my-orders-modal-content { max-width: 550px; }
@@ -451,6 +474,7 @@
             text-align: center;
             margin-top: 0;
             margin-bottom: 25px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         /* Contenido de modales específicos */
@@ -463,6 +487,7 @@
             border-radius: var(--border-radius);
             margin-top: 20px;
             border: 1px solid var(--color-border);
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         .payment-modal-content .info-container p { margin: 8px 0; }
         .payment-modal-content .info-container strong { color: var(--color-primary); }
@@ -472,6 +497,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
 
         .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
@@ -521,6 +547,7 @@
             margin-top: 15px;
             font-size: 0.9em;
             color: var(--color-text-secondary);
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
 
         .auth-toggle a {
@@ -537,7 +564,7 @@
         }
         
         /* --- ESTILOS PARA STRIPE --- */
-        #payment-request-button { margin-bottom: 20px; }
+        #payment-request-button { margin-bottom: 20px; position: relative; z-index: 1; }
         
         .separator {
             display: flex;
@@ -545,6 +572,7 @@
             text-align: center;
             color: var(--color-text-secondary);
             margin: 20px 0;
+            position: relative; z-index: 1;
         }
         .separator::before, .separator::after {
             content: '';
@@ -597,6 +625,7 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box; 
+            /* position: relative y overflow ya se añadieron arriba */
         }
         
         .account-panel { 
@@ -621,12 +650,14 @@
             font-family: var(--font-halloween);
             font-size: 2.5em;
             letter-spacing: 1px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .account-info { 
             flex-grow: 1; 
             overflow-y: auto; 
-            padding: 0 25px; 
+            padding: 0 25px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .account-info p {
@@ -652,6 +683,7 @@
             padding: 20px 25px 25px 25px; 
             border-top: 1px solid var(--color-border);
             flex-shrink: 0;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .btn-theme {
@@ -667,6 +699,7 @@
             overflow-y: auto;
             flex-grow: 1; 
             padding: 0 25px; 
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .cart-item {
@@ -725,6 +758,7 @@
             padding: 15px 25px;
             border-top: 1px solid var(--color-border);
             border-bottom: 1px solid var(--color-border);
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .delivery-options label {
@@ -761,6 +795,7 @@
             font-weight: 700;
             color: var(--color-primary);
             padding: 20px 25px 20px 25px; /* Padding ajustado */
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
 
         /* Pedidos */
@@ -771,6 +806,7 @@
             max-height: 400px;
             overflow-y: auto;
             text-align: left;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
 
         .my-orders-item {
@@ -824,8 +860,8 @@
 
         <main id="pantalla-principal" class="screen active">
             <div class="title-container">
-                <h1>¡Boo! ¡Bienvenido a KalCTas!</h1>
-            </div>
+                <h1>¡Boo!<br>¡Bienvenido a KalCTas!</h1>
+                </div>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
                 <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
@@ -1095,27 +1131,27 @@
                  generarGaleria(activeScreen.id);
             }
             
-            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: TEMA OSCURO ---
             const themeToggleButton = document.getElementById('theme-toggle-button');
-            const currentTheme = localStorage.getItem('theme');
+            if (themeToggleButton) { // Check if button exists before adding listener
+                const currentTheme = localStorage.getItem('theme');
 
-            if (currentTheme === 'dark-mode') {
-                document.body.classList.add('dark-mode');
-                themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-            }
-
-            themeToggleButton.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                let theme = 'light-mode';
-                if (document.body.classList.contains('dark-mode')) {
-                    theme = 'dark-mode';
+                if (currentTheme === 'dark-mode') {
+                    document.body.classList.add('dark-mode');
                     themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                } else {
-                    themeToggleButton.textContent = 'Cambiar a Tema Oscuro 🌙';
                 }
-                localStorage.setItem('theme', theme);
-            });
-            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
+
+                themeToggleButton.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    let theme = 'light-mode';
+                    if (document.body.classList.contains('dark-mode')) {
+                        theme = 'dark-mode';
+                        themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
+                    } else {
+                        themeToggleButton.textContent = 'Cambiar a Tema Oscuro 🌙';
+                    }
+                    localStorage.setItem('theme', theme);
+                });
+            }
         });
 
         // ================================================================================= //
@@ -1917,8 +1953,8 @@
                         <div class="model-buttons">
                             <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
                             <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
-                                ${producto.stock <= 0 ? 'Agotado' : 'Agregar 🛍️'}
-                            </button>
+                                ${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎃'}
+                                </button>
                         </div>
                     `;
                     contenedor.appendChild(card);
