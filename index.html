@@ -37,7 +37,6 @@
             --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: TEMA OSCURO --- */
         body.dark-mode {
             --color-background: #1a1a2e;
             --color-surface: #16213e;
@@ -53,7 +52,6 @@
         body, .container, .auth-modal-content, .model-card, .account-panel, .cart-panel, .auth-form input, .btn, .auth-button {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         /* --- Estilos Generales --- */
         body {
@@ -593,6 +591,13 @@
             flex-shrink: 0;
         }
         
+        /* --- INICIO DE MODIFICACIÓN CSS: TEMA OSCURO --- */
+        .btn-theme {
+            background-color: var(--color-border);
+            color: var(--color-text-primary);
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
+        
         /* Carrito */
         .cart-items {
             list-style: none;
@@ -655,7 +660,6 @@
         }
         .cart-item button:hover { background: var(--color-danger); color: white; }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: LÓGICA DE ENVÍO --- */
         .delivery-options {
             padding: 15px 25px;
             border-top: 1px solid var(--color-border);
@@ -682,7 +686,6 @@
         #home-delivery-fields {
             display: none; /* Oculto por defecto */
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
         
         .cart-total {
             text-align: right;
@@ -747,7 +750,6 @@
     <div class="container" id="main-container">
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-            <a href="#" class="header-icon" id="theme-toggle-button">🌙</a>
             <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
         </div>
 
@@ -802,6 +804,7 @@
         <div class="account-buttons">
             <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
+            <button class="btn btn-theme" id="theme-toggle-button">Cambiar Tema 🌙</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
     </div>
@@ -1025,13 +1028,13 @@
             const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
 
             if (currentTheme) {
-                document.body.classList.add(currentTheme);
                 if (currentTheme === 'dark-mode') {
-                    themeToggleButton.textContent = '☀️';
+                    document.body.classList.add('dark-mode');
+                    themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
                 }
             } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.body.classList.add('dark-mode');
-                themeToggleButton.textContent = '☀️';
+                themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
                 localStorage.setItem('theme', 'dark-mode');
             }
 
@@ -1040,9 +1043,9 @@
                 let theme = 'light-mode';
                 if (document.body.classList.contains('dark-mode')) {
                     theme = 'dark-mode';
-                    themeToggleButton.textContent = '☀️';
+                    themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
                 } else {
-                    themeToggleButton.textContent = '🌙';
+                    themeToggleButton.textContent = 'Cambiar a Tema Oscuro 🌙';
                 }
                 localStorage.setItem('theme', theme);
             });
@@ -1141,7 +1144,9 @@
                     telefono: null,
                     carrito: []
                 });
-                showMessage('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
+                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: MENSAJE POST-REGISTRO ---
+                showMessage('¡Cuenta creada con éxito! Te recomendamos ir a "Mi Cuenta" para agregar tu número de teléfono, es importante para contactarte sobre tus entregas.');
+                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
                 cerrarAuthModal();
             } catch (error) {
                 console.error('Error de registro:', error.message);
@@ -1365,10 +1370,8 @@
 
                 const carrito = userDoc.data().carrito || [];
                 
-                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
                 const deliveryMethod = document.getElementById('delivery-method').value;
                 const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
-                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
@@ -1392,13 +1395,11 @@
                     subtotal += producto.precio;
                 });
                 
-                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
                 const total = subtotal + shippingCost;
                 cartTotal.innerHTML = `
                     ${shippingCost > 0 ? `Subtotal: $${subtotal.toFixed(2)}<br>Envío: $${shippingCost.toFixed(2)}<br>` : ''}
                     <strong>Total: $${total.toFixed(2)}</strong>
                 `;
-                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
             } catch (error) {
                 console.error("Error al renderizar el carrito:", error);
@@ -1461,7 +1462,13 @@
             try {
                 const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                 const carrito = userDoc.data().carrito || [];
-                const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+
+                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: COSTO DE ENVÍO EN STRIPE ---
+                const deliveryMethod = document.getElementById('delivery-method').value;
+                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
+                const total = subtotal + shippingCost;
+                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                 if (total <= 0) {
                     showMessage("No hay nada que pagar.");
@@ -1470,11 +1477,13 @@
                 }
                 
                 const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
+                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: COSTO DE ENVÍO EN STRIPE ---
                 const response = await fetch(functionUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: carrito }),
+                    body: JSON.stringify({ items: carrito, shippingCost: shippingCost }), // Envía el costo de envío
                 });
+                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
                 
@@ -1486,7 +1495,7 @@
                     currency: 'mxn',
                     total: {
                         label: 'Total KalCTas',
-                        amount: total * 100,
+                        amount: total * 100, // Usa el total que incluye el envío
                     },
                     requestPayerName: true,
                     requestPayerEmail: true,
@@ -1664,7 +1673,6 @@
             dateInput.min = `${yyyy}-${mm}-${dd}`;
             dateInput.value = `${yyyy}-${mm}-${dd}`;
 
-            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
             const deliveryMethod = document.getElementById('delivery-method').value;
             const homeDeliveryFields = document.getElementById('home-delivery-fields');
             const pickupLocationFields = document.getElementById('pickup-location-fields');
@@ -1674,7 +1682,7 @@
                 pickupLocationFields.style.display = 'none';
                 document.getElementById('delivery-street').required = true;
                 document.getElementById('delivery-neighborhood').required = true;
-                document.getElementById('delivery-date').required = false; // Elige si la fecha sigue siendo requerida para envíos a domicilio
+                document.getElementById('delivery-date').required = false; 
             } else {
                 homeDeliveryFields.style.display = 'none';
                 pickupLocationFields.style.display = 'block';
@@ -1682,7 +1690,6 @@
                 document.getElementById('delivery-neighborhood').required = false;
                 document.getElementById('delivery-date').required = true;
             }
-            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
             confirmOrderModal.style.display = 'flex';
         }
@@ -1710,7 +1717,6 @@
             const metodoPago = document.getElementById('payment-method-input').value;
             const comentarios = document.getElementById('delivery-comments').value;
 
-            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
             const deliveryMethod = document.getElementById('delivery-method').value;
             let montoTotal;
             let datosEntrega = {};
@@ -1731,7 +1737,6 @@
                     fecha: document.getElementById('delivery-date').value
                 };
             }
-            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
             let folioFormateado;
 
@@ -1747,11 +1752,9 @@
 
                     if (carrito.length === 0) throw new Error('El carrito está vacío.');
                     
-                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
                     const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
                     const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
                     montoTotal = subtotal + shippingCost;
-                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                     const counterRef = db.collection('contadores').doc('pedidos');
                     const counterDoc = await transaction.get(counterRef);
@@ -1774,7 +1777,7 @@
                         productos: carrito,
                         montoTotal: montoTotal,
                         metodoPago,
-                        datosEntrega, // Objeto con toda la info de entrega
+                        datosEntrega, 
                         comentarios: comentarios || null, 
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
