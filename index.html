@@ -158,24 +158,42 @@
         }
         
         /* --- Títulos --- */
-        h1, h2, h3 {
+        h2, h3 { /* h1 se estiliza por separado ahora */
             color: var(--color-text-primary);
             font-weight: 600;
         }
+        
+        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
+        @keyframes blink {
+            50% { opacity: 0.2; }
+        }
 
         h1 {
-            /* --- INICIO DE MODIFICACIÓN CSS: TAMAÑO DE TEXTO BIENVENIDA --- */
-            font-size: 1.9em; 
-            line-height: 1.2;
-            /* --- FIN DE MODIFICACIÓN CSS --- */
-            margin-bottom: 5px;
-            order: 1;
-            font-family: var(--font-halloween); 
+            font-family: var(--font-halloween);
             letter-spacing: 2px;
             color: var(--color-primary);
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 15px; /* Espacio añadido */
+            line-height: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        
+
+        .boo-text {
+            font-size: 2.8em;
+            animation: blink 1.5s infinite;
+        }
+
+        .welcome-text {
+            font-size: 1.4em;
+            font-family: var(--font-family);
+            font-weight: 500;
+            white-space: nowrap; /* Asegura que se mantenga en una línea */
+            margin-top: 5px;
+        }
+        /* --- FIN DE CAMBIOS SOLICITADOS --- */
+
         .title-container {
             display: flex;
             flex-direction: column;
@@ -190,7 +208,6 @@
 
         .title-container h1 {
             margin: 0;
-            /* white-space: nowrap; ya no es necesario */
             position: relative;
         }
         
@@ -303,18 +320,18 @@
             position: relative;
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: ARAÑA COLGANTE MÁS GRANDE --- */
+        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
         .cart-icon-wrapper::after {
             content: '🕷️';
             position: absolute;
-            font-size: 70px; /* Aumentamos el tamaño */
-            top: 35px; /* Ajustamos la posición vertical */
-            left: 50%;
-            transform: translateX(-50%); /* Centramos horizontalmente */
+            font-size: 45px; /* Tamaño reducido */
+            top: 35px;
+            left: 40%; /* Movida a la izquierda */
+            transform: translateX(-50%);
             transform-origin: top center;
             animation: swing 4s infinite ease-in-out;
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
+        /* --- FIN DE CAMBIOS SOLICITADOS --- */
 
         .header-icon {
             font-size: 2em;
@@ -322,9 +339,7 @@
             cursor: pointer;
             transition: transform 0.2s ease;
             filter: drop-shadow(0 0 5px var(--color-primary));
-            /* --- INICIO DE MODIFICACIÓN CSS: ELIMINAR LÍNEA BAJO CALABAZA --- */
             text-decoration: none;
-            /* --- FIN DE MODIFICACIÓN CSS --- */
         }
 
         .header-icon:hover {
@@ -390,12 +405,14 @@
             margin-top: 15px;
         }
         
+        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
         .model-buttons .btn {
             width: calc(50% - 5px);
             padding: 10px;
-            font-size: 0.8em;
+            font-size: 0.75em; /* Tamaño de fuente reducido */
             font-weight: 500;
         }
+        /* --- FIN DE CAMBIOS SOLICITADOS --- */
 
         .product-price {
             font-weight: 700;
@@ -860,7 +877,10 @@
 
         <main id="pantalla-principal" class="screen active">
             <div class="title-container">
-                <h1>¡Boo!<br>¡Bienvenido a KalCTas!</h1>
+                <h1>
+                    <span class="boo-text">¡Boo! 👻</span>
+                    <span class="welcome-text">Bienvenido a KalCTas</span>
+                </h1>
                 </div>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
