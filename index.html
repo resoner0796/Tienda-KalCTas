@@ -134,6 +134,20 @@
             display: none;
         }
 
+        /* --- INICIO DE MODIFICACIÓN CSS --- */
+        /* Animación para el logo */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
         /* --- Logo --- */
         .logo {
             max-width: 280px;
@@ -141,7 +155,9 @@
             order: 2;
             transition: all 1s ease-in;
             margin-top: 120px;
+            animation: pulse 2.5s infinite ease-in-out; /* Aplicación de la animación */
         }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .logo-small {
             display: block;
@@ -192,11 +208,9 @@
         }
         .btn-logout { background-color: var(--color-danger); }
 
-        /* --- INICIO DE MODIFICACIÓN CSS --- */
         #delivery-form .btn-add {
             gap: 10px; /* Espacio entre el texto y el ícono */
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         /* Contenedor de Botones (Menú principal) */
         .button-container {
@@ -1536,7 +1550,6 @@
             transferInfoModal.style.display = 'none';
             document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${document.getElementById('payment-method-input').value})`;
             
-            // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
             const dateInput = document.getElementById('delivery-date');
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1); // Establece la fecha a mañana
@@ -1545,7 +1558,6 @@
             const dd = String(tomorrow.getDate()).padStart(2, '0');
             dateInput.min = `${yyyy}-${mm}-${dd}`; // Formato YYYY-MM-DD
             dateInput.value = `${yyyy}-${mm}-${dd}`; // Establece el valor por defecto a mañana
-            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
             
             confirmOrderModal.style.display = 'flex';
         }
@@ -1575,9 +1587,7 @@
             const lugarEntregaSelect = deliveryForm['delivery-location'].value;
             const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
             
-            // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
             const comentarios = document.getElementById('delivery-comments').value;
-            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
             
             if (lugarEntregaSelect === 'Otro' && !lugarEntrega.trim()) {
                 showMessage('Por favor, especifica el lugar de entrega.');
@@ -1612,7 +1622,6 @@
 
                     const nuevoPedidoRef = db.collection('pedidos').doc();
                     
-                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT ---
                     transaction.set(nuevoPedidoRef, {
                         folio: folioFormateado,
                         usuarioId: currentUser.uid,
@@ -1630,7 +1639,6 @@
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                     transaction.update(userRef, { carrito: [] });
                 });
