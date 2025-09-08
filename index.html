@@ -174,20 +174,22 @@
             color: var(--color-primary);
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
             margin-bottom: 15px;
-            line-height: 1.2; /* Ajuste para mejor espaciado */
+            line-height: 1.2;
         }
 
         .boo-text {
-            font-size: 3.5em; /* Ligeramente más grande para destacar */
+            font-size: 2.6em; /* Tamaño de fuente reducido */
             animation: blink 1.5s infinite;
             display: block;
+            white-space: nowrap; /* Asegura que se mantenga en una sola línea */
         }
 
         .welcome-text {
-            font-size: 1.6em; /* Tamaño ajustado para ser más pequeño */
-            font-family: var(--font-halloween); /* Misma fuente que "Boo" */
+            font-size: 1.1em; /* Tamaño de fuente reducido */
+            font-family: var(--font-halloween);
             display: block;
-            margin-top: 10px; /* Espacio entre las dos líneas */
+            margin-top: 8px;
+            white-space: nowrap; /* Asegura que se mantenga en una sola línea */
         }
         /* --- FIN DE CORRECCIONES SOLICITADAS --- */
 
@@ -197,7 +199,7 @@
             align-items: center;
             order: 1;
             position: absolute;
-            top: 25%;
+            top: 22%; /* Movido un poco más arriba */
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 50;
@@ -321,9 +323,9 @@
         .cart-icon-wrapper::after {
             content: '🕷️';
             position: absolute;
-            font-size: 35px; /* Tamaño reducido */
+            font-size: 35px; /* Tamaño ya está bien */
             top: 35px;
-            left: 20%; /* Movida más a la izquierda */
+            left: 15%; /* Movida un poco más a la izquierda */
             transform: translateX(-50%);
             transform-origin: top center;
             animation: swing 4s infinite ease-in-out;
