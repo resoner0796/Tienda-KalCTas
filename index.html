@@ -36,6 +36,24 @@
             --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.08);
             --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
+        
+        /* --- INICIO DE MODIFICACIÓN CSS: TEMA OSCURO --- */
+        body.dark-mode {
+            --color-background: #1a1a2e;
+            --color-surface: #16213e;
+            --color-primary: #5E5DF0;
+            --color-text-primary: #e0e0e0;
+            --color-text-secondary: #a7a7a7;
+            --color-border: #4a4a6a;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Transición suave para el cambio de tema */
+        body, .container, .auth-modal-content, .model-card, .account-panel, .cart-panel, .auth-form input, .btn, .auth-button {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         /* --- Estilos Generales --- */
         body {
@@ -134,7 +152,6 @@
             display: none;
         }
 
-        /* --- INICIO DE MODIFICACIÓN CSS --- */
         /* Animación para el logo */
         @keyframes pulse {
             0% {
@@ -157,7 +174,6 @@
             margin-top: 120px;
             animation: pulse 2.5s infinite ease-in-out; /* Aplicación de la animación */
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .logo-small {
             display: block;
@@ -522,8 +538,7 @@
             z-index: 999;
             display: flex;
             flex-direction: column;
-            /* Se elimina el gap para un control más preciso con padding */
-            box-sizing: border-box; /* Asegura que el padding no aumente el tamaño total */
+            box-sizing: border-box; 
         }
         
         .account-panel { 
@@ -542,15 +557,15 @@
         
         .account-panel h3, .cart-panel h3 {
             text-align: center;
-            margin: 0; /* Se quita el margen para que el padding del panel lo controle */
-            padding: 25px 25px 20px 25px; /* Padding superior, laterales e inferior */
-            flex-shrink: 0; /* Evita que el título se encoja */
+            margin: 0; 
+            padding: 25px 25px 20px 25px;
+            flex-shrink: 0;
         }
         
         .account-info { 
-            flex-grow: 1; /* Permite que esta área crezca */
-            overflow-y: auto; /* Activa el scroll solo si es necesario */
-            padding: 0 25px; /* Padding lateral */
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 0 25px; 
         }
         
         .account-info p {
@@ -572,10 +587,10 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-top: auto; /* Empuja los botones hacia abajo */
-            padding: 20px 25px 25px 25px; /* Padding alrededor de los botones */
+            margin-top: auto; 
+            padding: 20px 25px 25px 25px; 
             border-top: 1px solid var(--color-border);
-            flex-shrink: 0; /* Evita que el contenedor de botones se encoja */
+            flex-shrink: 0;
         }
         
         /* Carrito */
@@ -584,15 +599,15 @@
             padding: 0;
             margin: 0;
             overflow-y: auto;
-            flex-grow: 1; /* Permite que la lista crezca y tenga scroll */
-            padding: 0 25px; /* Padding lateral consistente */
+            flex-grow: 1; 
+            padding: 0 25px; 
         }
         
         .cart-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 15px 0; /* Se quita padding lateral, ya lo tiene el contenedor padre */
+            padding: 15px 0;
             border-bottom: 1px solid var(--color-border);
         }
 
@@ -640,13 +655,42 @@
         }
         .cart-item button:hover { background: var(--color-danger); color: white; }
         
+        /* --- INICIO DE MODIFICACIÓN CSS: LÓGICA DE ENVÍO --- */
+        .delivery-options {
+            padding: 15px 25px;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .delivery-options label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .delivery-options select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            font-family: var(--font-family);
+        }
+
+        #home-delivery-fields {
+            display: none; /* Oculto por defecto */
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
+        
         .cart-total {
             text-align: right;
             margin-top: auto;
             font-size: 1.3em;
             font-weight: 700;
             color: var(--color-primary);
-            padding: 0 25px 20px 25px; /* Padding para alinear con el resto */
+            padding: 20px 25px 20px 25px; /* Padding ajustado */
         }
 
         /* Pedidos */
@@ -703,6 +747,7 @@
     <div class="container" id="main-container">
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
+            <a href="#" class="header-icon" id="theme-toggle-button">🌙</a>
             <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
         </div>
 
@@ -765,6 +810,13 @@
         <span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
         <h3>Tu Carrito</h3>
         <ul class="cart-items" id="cart-list"></ul>
+        <div class="delivery-options">
+            <label for="delivery-method">Forma de entrega:</label>
+            <select id="delivery-method" onchange="renderizarCarrito()">
+                <option value="punto-medio">Punto medio ($0.00)</option>
+                <option value="domicilio">Entrega a domicilio ($60.00)</option>
+            </select>
+        </div>
         <div class="cart-total" id="cart-total"></div>
         <div class="cart-buttons">
             <button class="btn btn-checkout" onclick="pagar()">Pagar</button>
@@ -878,22 +930,35 @@
             <h3 id="confirm-order-title"></h3>
             <form id="delivery-form" class="auth-form">
                 <input type="hidden" id="payment-method-input">
-                <label for="delivery-date">Fecha de entrega:</label>
-                <input type="date" id="delivery-date" required>
                 
-                <label for="delivery-location">Lugar de entrega:</label>
-                <select id="delivery-location" onchange="toggleOtherLocation()">
-                    <option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
-                    <option value="La Portillo">La Portillo</option>
-                    <option value="Periférico">Periférico</option>
-                    <option value="Smart periférico">Smart periférico</option>
-                    <option value="Soriana Hidalgo">Soriana Hidalgo</option>
-                    <option value="HEB Morelos">HEB Morelos</option>
-                    <option value="Otro">Otro</option>
-                </select>
-                
-                <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
+                <div id="home-delivery-fields">
+                    <label for="delivery-street">Calle y número:</label>
+                    <input type="text" id="delivery-street">
+                    
+                    <label for="delivery-neighborhood">Colonia:</label>
+                    <input type="text" id="delivery-neighborhood">
 
+                    <label for="delivery-description">Descripción (opcional):</label>
+                    <textarea id="delivery-description" placeholder="Ej: Casa color azul, portón negro..."></textarea>
+                </div>
+                
+                <div id="pickup-location-fields">
+                    <label for="delivery-date">Fecha de entrega:</label>
+                    <input type="date" id="delivery-date" required>
+                    
+                    <label for="delivery-location">Lugar de entrega:</label>
+                    <select id="delivery-location" onchange="toggleOtherLocation()">
+                        <option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
+                        <option value="La Portillo">La Portillo</option>
+                        <option value="Periférico">Periférico</option>
+                        <option value="Smart periférico">Smart periférico</option>
+                        <option value="Soriana Hidalgo">Soriana Hidalgo</option>
+                        <option value="HEB Morelos">HEB Morelos</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                
+                    <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
+                </div>
                 <label for="delivery-comments">Comentarios (opcional):</label>
                 <textarea id="delivery-comments" placeholder="Ej: Entregar en la entrada principal, tocar el claxon, etc."></textarea>
 
@@ -954,6 +1019,34 @@
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                  generarGaleria(activeScreen.id);
             }
+            
+            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: TEMA OSCURO ---
+            const themeToggleButton = document.getElementById('theme-toggle-button');
+            const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+
+            if (currentTheme) {
+                document.body.classList.add(currentTheme);
+                if (currentTheme === 'dark-mode') {
+                    themeToggleButton.textContent = '☀️';
+                }
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.body.classList.add('dark-mode');
+                themeToggleButton.textContent = '☀️';
+                localStorage.setItem('theme', 'dark-mode');
+            }
+
+            themeToggleButton.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                let theme = 'light-mode';
+                if (document.body.classList.contains('dark-mode')) {
+                    theme = 'dark-mode';
+                    themeToggleButton.textContent = '☀️';
+                } else {
+                    themeToggleButton.textContent = '🌙';
+                }
+                localStorage.setItem('theme', theme);
+            });
+            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
         });
 
         // ================================================================================= //
@@ -1271,13 +1364,19 @@
                 if (!userDoc.exists) return;
 
                 const carrito = userDoc.data().carrito || [];
+                
+                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
+                const deliveryMethod = document.getElementById('delivery-method').value;
+                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
+
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
                     cartTotal.textContent = 'Total: $0.00';
                     return;
                 }
 
-                let total = 0;
+                let subtotal = 0;
                 carrito.forEach((producto, index) => {
                     const listItem = document.createElement('li');
                     listItem.className = 'cart-item';
@@ -1290,10 +1389,16 @@
                         <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
                     `;
                     cartList.appendChild(listItem);
-                    total += producto.precio;
+                    subtotal += producto.precio;
                 });
-
-                cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+                
+                // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
+                const total = subtotal + shippingCost;
+                cartTotal.innerHTML = `
+                    ${shippingCost > 0 ? `Subtotal: $${subtotal.toFixed(2)}<br>Envío: $${shippingCost.toFixed(2)}<br>` : ''}
+                    <strong>Total: $${total.toFixed(2)}</strong>
+                `;
+                // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
             } catch (error) {
                 console.error("Error al renderizar el carrito:", error);
@@ -1552,13 +1657,33 @@
             
             const dateInput = document.getElementById('delivery-date');
             const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1); // Establece la fecha a mañana
+            tomorrow.setDate(tomorrow.getDate() + 1);
             const yyyy = tomorrow.getFullYear();
-            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0'); // Meses son 0-11
+            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
             const dd = String(tomorrow.getDate()).padStart(2, '0');
-            dateInput.min = `${yyyy}-${mm}-${dd}`; // Formato YYYY-MM-DD
-            dateInput.value = `${yyyy}-${mm}-${dd}`; // Establece el valor por defecto a mañana
-            
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+            dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
+            const deliveryMethod = document.getElementById('delivery-method').value;
+            const homeDeliveryFields = document.getElementById('home-delivery-fields');
+            const pickupLocationFields = document.getElementById('pickup-location-fields');
+
+            if (deliveryMethod === 'domicilio') {
+                homeDeliveryFields.style.display = 'block';
+                pickupLocationFields.style.display = 'none';
+                document.getElementById('delivery-street').required = true;
+                document.getElementById('delivery-neighborhood').required = true;
+                document.getElementById('delivery-date').required = false; // Elige si la fecha sigue siendo requerida para envíos a domicilio
+            } else {
+                homeDeliveryFields.style.display = 'none';
+                pickupLocationFields.style.display = 'block';
+                document.getElementById('delivery-street').required = false;
+                document.getElementById('delivery-neighborhood').required = false;
+                document.getElementById('delivery-date').required = true;
+            }
+            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
+
             confirmOrderModal.style.display = 'flex';
         }
 
@@ -1583,18 +1708,30 @@
             submitButton.textContent = 'Procesando...';
 
             const metodoPago = document.getElementById('payment-method-input').value;
-            const fechaEntrega = deliveryForm['delivery-date'].value;
-            const lugarEntregaSelect = deliveryForm['delivery-location'].value;
-            const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
-            
             const comentarios = document.getElementById('delivery-comments').value;
-            
-            if (lugarEntregaSelect === 'Otro' && !lugarEntrega.trim()) {
-                showMessage('Por favor, especifica el lugar de entrega.');
-                submitButton.disabled = false;
-                submitButton.textContent = 'Confirmar Pedido';
-                return;
+
+            // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
+            const deliveryMethod = document.getElementById('delivery-method').value;
+            let montoTotal;
+            let datosEntrega = {};
+
+            if (deliveryMethod === 'domicilio') {
+                datosEntrega = {
+                    tipo: 'Envío a domicilio',
+                    calle: document.getElementById('delivery-street').value,
+                    colonia: document.getElementById('delivery-neighborhood').value,
+                    descripcion: document.getElementById('delivery-description').value || null
+                };
+            } else {
+                const lugarEntregaSelect = document.getElementById('delivery-location').value;
+                const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
+                datosEntrega = {
+                    tipo: 'Punto medio',
+                    lugar: lugarEntrega,
+                    fecha: document.getElementById('delivery-date').value
+                };
             }
+            // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
             let folioFormateado;
 
@@ -1609,8 +1746,12 @@
                     const carrito = userData.carrito || [];
 
                     if (carrito.length === 0) throw new Error('El carrito está vacío.');
-
-                    const montoTotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
+                    
+                    // --- INICIO DE MODIFICACIÓN JAVASCRIPT: LÓGICA DE ENVÍO ---
+                    const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
+                    const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                    montoTotal = subtotal + shippingCost;
+                    // --- FIN DE MODIFICACIÓN JAVASCRIPT ---
 
                     const counterRef = db.collection('contadores').doc('pedidos');
                     const counterDoc = await transaction.get(counterRef);
@@ -1633,9 +1774,8 @@
                         productos: carrito,
                         montoTotal: montoTotal,
                         metodoPago,
-                        fechaEntrega,
-                        lugarEntrega,
-                        comentarios: comentarios || null, // Guarda los comentarios o null si está vacío
+                        datosEntrega, // Objeto con toda la info de entrega
+                        comentarios: comentarios || null, 
                         estado: 'Pendiente',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
                     });
@@ -1652,7 +1792,6 @@
                 showMessage(`Hubo un error al procesar tu pedido: ${error.message}. Intenta de nuevo.`);
             } finally {
                 submitButton.disabled = false;
-                // Vuelve a poner el contenido original del botón
                 submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
             }
         });
