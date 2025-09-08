@@ -163,7 +163,7 @@
             font-weight: 600;
         }
         
-        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
+        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
         @keyframes blink {
             50% { opacity: 0.2; }
         }
@@ -173,26 +173,23 @@
             letter-spacing: 2px;
             color: var(--color-primary);
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-            margin-bottom: 15px; /* Espacio añadido */
-            line-height: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin-bottom: 15px;
+            line-height: 1.2; /* Ajuste para mejor espaciado */
         }
 
         .boo-text {
-            font-size: 2.8em;
+            font-size: 3.5em; /* Ligeramente más grande para destacar */
             animation: blink 1.5s infinite;
+            display: block;
         }
 
         .welcome-text {
-            font-size: 1.4em;
-            font-family: var(--font-family);
-            font-weight: 500;
-            white-space: nowrap; /* Asegura que se mantenga en una línea */
-            margin-top: 5px;
+            font-size: 1.6em; /* Tamaño ajustado para ser más pequeño */
+            font-family: var(--font-halloween); /* Misma fuente que "Boo" */
+            display: block;
+            margin-top: 10px; /* Espacio entre las dos líneas */
         }
-        /* --- FIN DE CAMBIOS SOLICITADOS --- */
+        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
 
         .title-container {
             display: flex;
@@ -320,18 +317,18 @@
             position: relative;
         }
         
-        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
+        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
         .cart-icon-wrapper::after {
             content: '🕷️';
             position: absolute;
-            font-size: 45px; /* Tamaño reducido */
+            font-size: 35px; /* Tamaño reducido */
             top: 35px;
-            left: 40%; /* Movida a la izquierda */
+            left: 20%; /* Movida más a la izquierda */
             transform: translateX(-50%);
             transform-origin: top center;
             animation: swing 4s infinite ease-in-out;
         }
-        /* --- FIN DE CAMBIOS SOLICITADOS --- */
+        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
 
         .header-icon {
             font-size: 2em;
@@ -405,14 +402,12 @@
             margin-top: 15px;
         }
         
-        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
         .model-buttons .btn {
             width: calc(50% - 5px);
             padding: 10px;
-            font-size: 0.75em; /* Tamaño de fuente reducido */
+            font-size: 0.75em; 
             font-weight: 500;
         }
-        /* --- FIN DE CAMBIOS SOLICITADOS --- */
 
         .product-price {
             font-weight: 700;
