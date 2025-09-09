@@ -65,7 +65,6 @@
             overflow: hidden; 
         }
 
-        /* --- INICIO DE MODIFICACIÓN CSS: EFECTO NIEVE --- */
         .snow {
             position: fixed;
             top: 0;
@@ -90,7 +89,6 @@
             0% { transform: translateY(-10vh) translateX(0); }
             100% { transform: translateY(110vh) translateX(15px); }
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
 
         /* --- Contenedor Principal --- */
@@ -114,7 +112,6 @@
             overflow: hidden; 
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: LUCES NAVIDEÑAS --- */
         .auth-modal-content, .payment-modal-content, .my-orders-modal-content,
         .account-panel, .cart-panel, .container {
             position: relative;
@@ -164,14 +161,12 @@
         .light.green { --light-color: #8aff8a; animation-delay: 0.6s; }
         .light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
         .light.purple { --light-color: #d48aff; animation-delay: 1s; }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .container.show {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* --- Transiciones de pantalla --- */
         .screen {
             display: none;
             width: 100%;
@@ -197,13 +192,11 @@
             transform: scale(1);
         }
         
-        /* --- Títulos --- */
         h2, h3 { 
             color: var(--color-text-primary);
             font-weight: 600;
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: TÍTULOS NAVIDEÑOS --- */
         h1 {
             font-family: var(--font-christmas);
             letter-spacing: 2px;
@@ -226,7 +219,6 @@
             margin-top: 5px; 
             white-space: nowrap; 
         }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .title-container {
             display: flex;
@@ -249,14 +241,12 @@
             display: none;
         }
 
-        /* Animaciones */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
-        /* --- Logo --- */
         .logo {
             max-width: 280px;
             margin-bottom: 30px;
@@ -288,35 +278,58 @@
             width: 100%;
             letter-spacing: 0.5px; 
             text-transform: uppercase;
-            position: relative; /* Necesario para el efecto nieve */
-            overflow: visible; /* Necesario para el efecto nieve */
+            position: relative;
+            overflow: visible; /* Clave para que la nieve se vea */
         }
         
-        /* --- INICIO MODIFICACIÓN CSS: EFECTO NIEVE EN BOTONES --- */
+        /* --- INICIO MEJORA CSS: EFECTO NIEVE EN BOTONES --- */
+        .btn span {
+            position: relative;
+            z-index: 2; /* Asegura que el texto esté sobre la nieve */
+        }
+
+        /* Capa principal de nieve */
         .btn::before {
             content: '';
             position: absolute;
-            top: -10px; /* Ajustar posición vertical */
-            left: 10%;
-            width: 80%;
-            height: 15px; /* Altura de la nieve */
-            background-color: var(--color-accent);
-            border-radius: 10px 10px 4px 4px / 20px 20px 4px 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            top: -8px;
+            left: 5%;
+            width: 90%;
+            height: 12px;
+            background: var(--color-accent);
+            border-radius: 6px 6px 10px 10px / 8px 8px 12px 12px; /* Forma más orgánica */
+            box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.15); /* Sombra interna para dar profundidad */
             transition: top 0.2s ease;
-            z-index: -1;
+            z-index: 1;
         }
         
-        .btn:hover::before {
-            top: -13px;
+        /* Segunda capa de nieve para dar más volumen */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 20%;
+            width: 60%;
+            height: 10px;
+            background: var(--color-accent);
+            border-radius: 8px 8px 4px 4px / 10px 10px 5px 5px; /* Forma diferente */
+            box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+            transition: top 0.2s ease;
+            z-index: 1;
         }
         
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 15px var(--color-secondary);
         }
-        /* --- FIN MODIFICACIÓN CSS --- */
 
+        .btn:hover::before {
+            top: -10px;
+        }
+        .btn:hover::after {
+            top: -14px;
+        }
+        /* --- FIN MEJORA CSS --- */
 
         .btn:disabled {
             background-color: #575757; 
@@ -324,6 +337,10 @@
             transform: none;
             box-shadow: none;
             border-color: #333;
+        }
+        
+        .btn:disabled::before, .btn:disabled::after {
+            display: none; /* Ocultar nieve en botones deshabilitados */
         }
         
         /* Asignación de nueva paleta a los botones existentes */
@@ -341,24 +358,21 @@
             text-align: center;
         }
         .btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
-        .btn-add span { z-index: 1; position: relative; } /* Para que el texto esté sobre la nieve */
         
         #delivery-form .btn-add {
             gap: 10px;
         }
 
-        /* Contenedor de Botones (Menú principal) */
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Aumentado para el efecto nieve */
+            gap: 20px;
             width: 100%;
             order: 3;
             transition: all 1s ease-in;
-            margin-top: 15px; /* Espacio extra */
+            margin-top: 15px;
         }
         
-        /* --- Iconos y Botón de Sesión --- */
         .header-icons {
             position: fixed;
             top: 20px;
@@ -403,7 +417,6 @@
             color: var(--color-surface);
         }
 
-        /* --- Diseño de la galería de modelos --- */
         .model-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -438,7 +451,7 @@
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin-top: 20px; /* Aumentado para efecto nieve */
+            margin-top: 20px;
         }
         
         .model-buttons .btn {
@@ -460,7 +473,6 @@
             color: var(--color-text-secondary);
         }
 
-        /* --- Modales y Alertas --- */
         .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal {
             display: none;
             position: fixed;
@@ -502,11 +514,10 @@
             cursor: pointer;
         }
 
-        /* Estilos base para contenido de modales */
         .auth-modal-content, .payment-modal-content, .my-orders-modal-content {
             background-color: var(--color-surface);
             color: var(--color-text-primary);
-            padding: 40px 30px 30px 30px; /* Padding superior para las luces */
+            padding: 40px 30px 30px 30px;
             border-radius: var(--border-radius);
             border: 2px solid var(--color-border);
             box-shadow: var(--shadow-medium);
@@ -522,12 +533,11 @@
             letter-spacing: 1px;
             font-size: 2.2em;
             text-align: center;
-            margin-top: 10px; /* Espacio para luces */
+            margin-top: 10px;
             margin-bottom: 25px;
             position: relative; z-index: 1;
         }
         
-        /* Contenido de modales específicos */
         .payment-modal-content { text-align: center; }
         
         .payment-modal-content .info-container {
@@ -542,7 +552,6 @@
         .payment-modal-content .info-container p { margin: 8px 0; }
         .payment-modal-content .info-container strong { color: var(--color-secondary); }
 
-        /* --- Formularios --- */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -588,7 +597,7 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            margin-top: 10px; /* Espacio para nieve */
+            margin-top: 10px;
         }
 
         .auth-form .btn-auth:hover { background-color: #b83232; }
@@ -614,7 +623,6 @@
             font-weight: 500;
         }
         
-        /* --- ESTILOS PARA STRIPE --- */
         #payment-request-button { margin-bottom: 20px; position: relative; z-index: 1; }
         
         .separator {
@@ -646,7 +654,6 @@
             font-weight: 500;
         }
 
-        /* Alertas personalizadas */
         .alert-content {
             background-color: var(--color-surface);
             padding: 30px;
@@ -662,7 +669,6 @@
             color: #fff;
         }
 
-        /* --- Paneles laterales (Mi Cuenta y Carrito) --- */
         .account-panel, .cart-panel {
             position: fixed;
             top: 0;
@@ -695,7 +701,7 @@
         .account-panel h3, .cart-panel h3 {
             text-align: center;
             margin: 0; 
-            padding: 45px 25px 20px 25px; /* Padding para luces */
+            padding: 45px 25px 20px 25px;
             flex-shrink: 0;
             font-family: var(--font-christmas);
             font-size: 2.5em;
@@ -741,7 +747,6 @@
             color: var(--color-text-primary);
         }
         
-        /* Carrito */
         .cart-items {
             list-style: none;
             padding: 0;
@@ -829,13 +834,13 @@
         }
 
         #home-delivery-fields {
-            display: none; /* Oculto por defecto */
+            display: none;
         }
         
         #pickup-location-fields > div {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Espacio entre los grupos de label/input */
+            gap: 15px;
         }
 
         .cart-total {
@@ -844,11 +849,10 @@
             font-size: 1.3em;
             font-weight: 700;
             color: var(--color-secondary);
-            padding: 20px 25px 20px 25px; /* Padding ajustado */
+            padding: 20px 25px 20px 25px;
             position: relative; z-index: 1;
         }
 
-        /* Pedidos */
         .my-orders-list {
             list-style: none;
             padding: 0;
@@ -1190,8 +1194,11 @@
                 <p><strong>Banco:</strong> BBVA</p>
                 <p><strong>Nombre:</strong> KalCTas</p>
                 <p><strong>Concepto:</strong> [Tu nombre de usuario]</p>
-                <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
-                <p style="font-size: 1.2em;">8137055588</p>
+                <p style="margin-top: 15px; font-weight: bold; text-align: center;">Una vez transferido, envía tu comprobante:</p>
+                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp" style="width: 100%; justify-content: center; box-sizing: border-box; margin-top: 10px; font-size: 1em;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+                    Enviar Comprobante
+                </a>
             </div>
             <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega('Transferencia')"><span>Continuar</span></button>
         </div>
@@ -1303,20 +1310,18 @@
                  generarGaleria(activeScreen.id);
             }
 
-            // --- INICIO DE LÓGICA PARA NIEVE ---
             const snowContainer = document.getElementById('snow-container');
             const numberOfSnowflakes = 40;
             for (let i = 0; i < numberOfSnowflakes; i++) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Duración entre 5 y 10s
+                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
                 snowflake.style.animationDelay = `${Math.random() * 5}s`;
                 snowflake.style.opacity = Math.random();
-                snowflake.style.width = snowflake.style.height = `${Math.random() * 4 + 2}px`; // Tamaño entre 2 y 6px
+                snowflake.style.width = snowflake.style.height = `${Math.random() * 4 + 2}px`;
                 snowContainer.appendChild(snowflake);
             }
-            // --- FIN DE LÓGICA PARA NIEVE ---
         });
 
         // ================================================================================= //
@@ -1333,7 +1338,6 @@
         }
         
         function mostrarPantalla(idDePantalla) {
-            // Animación de nieve entre pantallas
             const snowContainer = document.getElementById('snow-container');
             snowContainer.style.opacity = '0';
             setTimeout(() => {
@@ -1348,7 +1352,7 @@
                     }
                 }
                 snowContainer.style.opacity = '1';
-            }, 300); // Coincide con la transición
+            }, 300);
         }
         
         auth.onAuthStateChanged(user => {
