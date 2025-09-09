@@ -910,11 +910,13 @@
               </form>
         </div>
     </div>
+
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
             <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
             <h3>Detalles de la Transferencia</h3>
             <div class="info-container">
+                <p id="transfer-total-amount" style="font-size: 1.2em; font-weight: bold; text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;"></p>
                 <p><strong>Cuenta CLABE:</strong> 012822015052928359</p>
                 <p><strong>Banco:</strong> BBVA</p>
                 <p><strong>Nombre:</strong> KalCTas</p>
@@ -1687,14 +1689,34 @@
             return orderId; 
         }
 
-        function iniciarProcesoDeEntrega(metodoPago) {
+        // --- INICIO DE LA FUNCIÓN MODIFICADA ---
+        async function iniciarProcesoDeEntrega(metodoPago) {
             cerrarModalPago();
             if (metodoPago === 'Transferencia') {
+                try {
+                    // Obtener el carrito y calcular el total
+                    const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+                    if (userDoc.exists) {
+                        const carrito = userDoc.data().carrito || [];
+                        const deliveryMethod = document.getElementById('delivery-method').value;
+                        const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                        const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
+                        const total = subtotal + shippingCost;
+                        
+                        // Actualizar el elemento en el modal de transferencia
+                        const totalElement = document.getElementById('transfer-total-amount');
+                        totalElement.innerHTML = `<strong>Total a Pagar:</strong> $${total.toFixed(2)}`;
+                    }
+                } catch (error) {
+                    console.error("Error al obtener el total para la transferencia:", error);
+                    document.getElementById('transfer-total-amount').textContent = 'No se pudo cargar el total.';
+                }
                 transferInfoModal.style.display = 'flex';
             } else if (metodoPago === 'Efectivo') {
                 mostrarModalConfirmarEntrega(metodoPago);
             }
         }
+        // --- FIN DE LA FUNCIÓN MODIFICADA ---
         
         function mostrarModalConfirmarEntrega(metodoPago, orderId = null) {
             transferInfoModal.style.display = 'none';
