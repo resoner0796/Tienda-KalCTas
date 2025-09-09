@@ -1125,7 +1125,7 @@
                 <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
                 <p style="font-size: 1.2em;">8137055588</p>
             </div>
-            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega()">Continuar</button>
+            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega('Transferencia')">Continuar</button>
         </div>
     </div>
     
@@ -1766,7 +1766,20 @@
                 });
 
                 if (!cardElement) {
-                     cardElement = elements.create('card');
+                     // INICIO DE CAMBIOS SOLICITADOS
+                     cardElement = elements.create('card', {
+                        style: {
+                            base: {
+                                color: '#fdfdfd', // Color de texto blanco
+                                fontFamily: '"Poppins", sans-serif',
+                                fontSize: '16px',
+                                '::placeholder': {
+                                    color: 'rgba(249, 160, 63, 0.7)' // Naranja pálido para el placeholder
+                                }
+                            }
+                        }
+                     });
+                     // FIN DE CAMBIOS SOLICITADOS
                      cardElement.mount('#card-element');
                      cardElement.on('change', event => {
                         document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
