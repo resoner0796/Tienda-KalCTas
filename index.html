@@ -864,27 +864,24 @@
         /* --- INICIO DE CAMBIOS SOLICITADOS --- */
         /* --- Footer Social --- */
         .footer-social {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            order: 4; /* Para que aparezca después de los botones de categoría */
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            padding: 10px 0;
-            z-index: 100;
+            margin-top: 25px; /* Espacio superior */
         }
 
         .social-btn {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 15px;
+            padding: 6px 12px; /* Tamaño reducido */
             border-radius: 50px;
             color: white;
             text-decoration: none;
-            font-size: 0.9em;
+            font-size: 0.8em; /* Tamaño de fuente reducido */
             font-weight: 500;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -904,8 +901,21 @@
         }
 
         .social-btn svg {
-            width: 20px;
-            height: 20px;
+            width: 18px; /* Ícono reducido */
+            height: 18px; /* Ícono reducido */
+        }
+        
+        /* Estilos para los botones sociales en el panel de cuenta */
+        .account-buttons .footer-social {
+            margin-top: 10px;
+            flex-direction: column; /* Para que se apilen verticalmente */
+            padding: 0;
+            order: 0; /* Reiniciar el orden para el panel */
+        }
+        .account-buttons .social-btn {
+            width: 100%;
+            justify-content: center;
+            box-sizing: border-box; /* Asegura que el padding se incluya en el width */
         }
         /* --- FIN DE CAMBIOS SOLICITADOS --- */
     </style>
@@ -939,7 +949,17 @@
                     KalCTas Largas
                 </button>
             </div>
-        </main>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+                    ¡Síguenos!
+                </a>
+                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+                    ¡Contáctanos!
+                </a>
+            </div>
+            </main>
 
         <section id="pantalla-2-4" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
@@ -975,7 +995,17 @@
             <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
             <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
-        </div>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+                    ¡Síguenos!
+                </a>
+                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+                    ¡Contáctanos!
+                </a>
+            </div>
+            </div>
     </div>
 
     <div id="cart-panel" class="cart-panel">
@@ -1154,16 +1184,6 @@
         </div>
     </div>
 
-    <div class="footer-social">
-        <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-            ¡Síguenos!
-        </a>
-        <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
-            ¡Contáctanos!
-        </a>
-    </div>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
