@@ -133,20 +133,22 @@
             font-weight: 600;
         }
         
-        .main-title-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 40px;
+        /* --- INICIO DE CAMBIOS --- */
+        /* Contenedor para el logo y el título principal */
+        #pantalla-principal > div:first-of-type {
+            position: relative; /* Base para el posicionamiento absoluto del título */
+            margin-bottom: 40px; /* Mantiene el espacio debajo del logo */
         }
 
         h1.main-title {
-            font-size: 1.1em; /* <-- MODIFICADO: Tamaño aún más pequeño */
-            margin-bottom: -60px; /* <-- MODIFICADO: Mueve el texto más hacia abajo */
+            font-size: 1.1em;
             color: var(--color-text-primary);
-            position: relative;
-            z-index: 1;
+            position: absolute;   /* Posicionamiento absoluto sobre el logo */
+            top: 25px;            /* Ajusta esta distancia para bajar el texto */
+            left: 0;              /* Centrado horizontal */
+            right: 0;             /* Centrado horizontal */
+            z-index: 1;           /* Asegura que esté por encima del logo */
+            margin: 0;            /* Resetea márgenes */
         }
 
         /* --- Nueva Animación para el Logo --- */
@@ -157,10 +159,11 @@
         }
 
         .logo {
-            max-width: 300px; /* <-- MODIFICADO: Tamaño incrementado */
+            max-width: 300px;
             animation: pulse 2.5s infinite ease-in-out;
-            margin-bottom: 40px;
+            margin-bottom: 0; /* El margen ahora está en el contenedor padre */
         }
+        /* --- FIN DE CAMBIOS --- */
 
         .logo-small {
             display: block;
