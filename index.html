@@ -133,11 +133,20 @@
             font-weight: 600;
         }
         
+        .main-title-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
         h1.main-title {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            margin-top: 20px;
+            font-size: 1.5em; /* Tamaño reducido */
+            margin-bottom: -15px; /* Sube el texto para que quede más cerca del logo */
             color: var(--color-text-primary);
+            position: relative; /* Asegura que esté en el flujo normal del documento */
+            z-index: 1;
         }
 
         /* --- Nueva Animación para el Logo --- */
@@ -156,7 +165,7 @@
         .logo-small {
             display: block;
             width: 80px;
-            margin: 0 auto: 20px;
+            margin: 0 auto 20px auto; /* Centrado correcto */
             cursor: pointer;
         }
 
@@ -691,19 +700,19 @@
         .account-buttons .footer-social { 
             margin-top: 10px; 
             padding: 0;
-            flex-direction: row; /* Íconos uno al lado del otro */
-            justify-content: center; /* Centrar los íconos */
+            flex-direction: row;
+            justify-content: center;
         }
         .account-buttons .social-btn { 
-            width: auto; /* Ancho automático para que se ajuste al ícono */
-            padding: 10px; /* Padding circular */
-            border-radius: 50%; /* Forma de círculo */
+            width: auto;
+            padding: 10px;
+            border-radius: 50%;
         }
         .account-buttons .social-btn span {
-            display: none; /* Ocultar texto */
+            display: none;
         }
         .account-buttons .social-btn svg {
-            margin: 0; /* Sin margen en el ícono */
+            margin: 0;
         }
     </style>
 </head>
