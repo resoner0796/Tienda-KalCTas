@@ -816,7 +816,7 @@
             <label for="delivery-method">Forma de entrega:</label>
             <select id="delivery-method" onchange="renderizarCarrito()">
                 <option value="punto-medio">Punto medio ($0.00)</option>
-                <option value="domicilio">Entrega a domicilio ($60.00)</option>
+                <option value="domicilio">Entrega a domicilio ($70.00)</option>
             </select>
         </div>
         <div class="cart-total" id="cart-total"></div>
@@ -1396,7 +1396,7 @@
                 const carrito = userDoc.data().carrito || [];
                 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
 
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
@@ -1489,7 +1489,7 @@
                 const carrito = userDoc.data().carrito || [];
 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
                 const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                 const total = subtotal + shippingCost;
 
@@ -1798,7 +1798,7 @@
                         if (carrito.length === 0) throw new Error('El carrito está vacío.');
                         
                         const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
-                        const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                        const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
                         const montoTotal = subtotal + shippingCost;
 
                         const counterRef = db.collection('contadores').doc('pedidos');
