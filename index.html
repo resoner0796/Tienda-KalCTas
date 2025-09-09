@@ -115,7 +115,7 @@
         #pantalla-principal.screen.active {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: space-between;
         }
 
         .screen::-webkit-scrollbar {
@@ -133,24 +133,11 @@
             font-weight: 600;
         }
         
-        .main-title-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
         h1.main-title {
-            font-size: 1.6em; /* Tamaño reducido */
-            position: absolute; /* Posicionamiento sobre el logo */
-            top: 45%; /* Ajuste vertical */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            color: white;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            width: 100%;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            margin-top: 20px;
+            color: var(--color-text-primary);
         }
 
         /* --- Nueva Animación para el Logo --- */
@@ -163,12 +150,13 @@
         .logo {
             max-width: 275px;
             animation: pulse 2.5s infinite ease-in-out;
+            margin-bottom: 40px;
         }
 
         .logo-small {
             display: block;
             width: 80px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto: 20px;
             cursor: pointer;
         }
 
@@ -246,7 +234,6 @@
             flex-direction: column;
             gap: 20px;
             width: 100%;
-            margin-top: auto;
         }
         
         .header-icons {
@@ -701,8 +688,23 @@
         .social-btn.whatsapp { background-color: #25D366; }
         .social-btn svg { width: 18px; height: 18px; }
         
-        .account-buttons .footer-social { margin-top: 10px; flex-direction: column; padding: 0; }
-        .account-buttons .social-btn { width: 100%; justify-content: center; box-sizing: border-box; }
+        .account-buttons .footer-social { 
+            margin-top: 10px; 
+            padding: 0;
+            flex-direction: row; /* Íconos uno al lado del otro */
+            justify-content: center; /* Centrar los íconos */
+        }
+        .account-buttons .social-btn { 
+            width: auto; /* Ancho automático para que se ajuste al ícono */
+            padding: 10px; /* Padding circular */
+            border-radius: 50%; /* Forma de círculo */
+        }
+        .account-buttons .social-btn span {
+            display: none; /* Ocultar texto */
+        }
+        .account-buttons .social-btn svg {
+            margin: 0; /* Sin margen en el ícono */
+        }
     </style>
 </head>
 <body>
@@ -716,7 +718,7 @@
 
         <main id="pantalla-principal" class="screen active">
             
-            <div class="main-title-container">
+            <div>
                 <h1 class="main-title">¡Bienvenido a KalCTas!</h1>
                 <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             </div>
@@ -736,9 +738,11 @@
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+                    <span>¡Síguenos!</span>
                 </a>
                 <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+                    <span>¡Contáctanos!</span>
                 </a>
             </div>
         </main>
@@ -784,11 +788,9 @@
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-                    ¡Síguenos!
                 </a>
                 <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
-                    ¡Contáctanos!
                 </a>
             </div>
         </div>
