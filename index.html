@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KalCTas Tienda - Edición Halloween</title>
+    <title>KalCTas Tienda - Edición Navideña</title>
 
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#1a1a2e"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,32 +18,32 @@
     <script src="https://js.stripe.com/v3/"></script>
     
     <style>
-        /* --- Paleta de Colores y Variables de Diseño HALLOWEEN --- */
+        /* --- Paleta de Colores y Variables de Diseño NAVIDEÑA --- */
         :root {
-            --color-background: #0d0221; /* Morado muy oscuro casi negro */
-            --color-surface: #261c3e;    /* Morado oscuro para contenedores */
-            --color-primary: #f9a03f;    /* Naranja Halloween */
-            --color-secondary: #a75db4;   /* Morado medio */
-            --color-accent: #92e6a7;      /* Verde lima "tóxico" */
+            --color-background: #0a2f35; /* Verde pino oscuro */
+            --color-surface: #1d576b;    /* Azul verdoso oscuro */
+            --color-primary: #d94545;    /* Rojo navideño */
+            --color-secondary: #f0c475;   /* Dorado / Amarillo cálido */
+            --color-accent: #ffffff;      /* Blanco nieve */
             --color-danger: #e74c3c;
             --color-text-primary: #fdfdfd; /* Blanco para texto principal */
-            --color-text-secondary: #f9a03f; /* Naranja para texto secundario */
-            --color-border: #4d426d;     /* Borde morado oscuro */
+            --color-text-secondary: #f0c475; /* Dorado para texto secundario */
+            --color-border: #f0c475;     /* Borde dorado */
             
             --font-family: 'Poppins', sans-serif;
-            --font-halloween: 'Creepster', cursive; /* Fuente temática */
+            --font-christmas: 'Mountains of Christmas', cursive; /* Fuente temática */
             --border-radius: 12px;
             --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
             --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
         
         body, body.dark-mode {
-            --color-background: #0d0221;
-            --color-surface: #261c3e;
-            --color-primary: #f9a03f;
+            --color-background: #0a2f35;
+            --color-surface: #1d576b;
+            --color-primary: #d94545;
             --color-text-primary: #fdfdfd;
-            --color-text-secondary: #f9a03f;
-            --color-border: #4d426d;
+            --color-text-secondary: #f0c475;
+            --color-border: #f0c475;
         }
 
         /* Transición suave para el cambio de tema */
@@ -55,7 +55,7 @@
         body {
             margin: 0;
             font-family: var(--font-family);
-            background: linear-gradient(180deg, #0d0221 0%, #261c3e 100%);
+            background: linear-gradient(180deg, #0a2f35 0%, #1d576b 100%);
             color: var(--color-text-primary);
             display: flex;
             justify-content: center;
@@ -64,6 +64,34 @@
             text-align: center;
             overflow: hidden; 
         }
+
+        /* --- INICIO DE MODIFICACIÓN CSS: EFECTO NIEVE --- */
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1001; /* Por encima de todo */
+        }
+
+        .snowflake {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0); }
+            100% { transform: translateY(110vh) translateX(15px); }
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
+
 
         /* --- Contenedor Principal --- */
         .container {
@@ -86,44 +114,56 @@
             overflow: hidden; 
         }
         
-        /* --- INICIO DE MODIFICACIÓN CSS: TELARAÑAS --- */
-        /* Aplicar posición relativa y overflow para que las telarañas se contengan */
+        /* --- INICIO DE MODIFICACIÓN CSS: LUCES NAVIDEÑAS --- */
         .auth-modal-content, .payment-modal-content, .my-orders-modal-content,
-        .account-panel, .cart-panel {
+        .account-panel, .cart-panel, .container {
             position: relative;
             overflow: hidden;
         }
         
-        /* Selector combinado para aplicar telarañas a todos los contenedores */
-        .container::before, .container::after,
-        .auth-modal-content::before, .auth-modal-content::after,
-        .payment-modal-content::before, .payment-modal-content::after,
-        .my-orders-modal-content::before, .my-orders-modal-content::after,
-        .account-panel::before, .account-panel::after,
-        .cart-panel::before, .cart-panel::after {
-            content: '';
+        .lights {
             position: absolute;
-            width: 150px;
-            height: 150px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 A100,100 0 0,0 0,100 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L80,0 A80,80 0 0,0 0,80 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L60,0 A60,60 0 0,0 0,60 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L40,0 A40,40 0 0,0 0,40 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L20,0 A20,20 0 0,0 0,20 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='0' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='50' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-            z-index: 0;
-            opacity: 0.5;
-        }
-        
-        .container::before, .auth-modal-content::before, .payment-modal-content::before, 
-        .my-orders-modal-content::before, .account-panel::before, .cart-panel::before {
-            top: -10px;
-            left: -10px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            text-align: center;
+            white-space: nowrap;
+            z-index: 20;
         }
 
-        .container::after, .auth-modal-content::after, .payment-modal-content::after,
-        .my-orders-modal-content::after, .account-panel::after, .cart-panel::after {
-            bottom: -10px;
-            right: -10px;
-            transform: rotate(180deg);
+        .lights .light {
+            position: relative;
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #fff;
+            margin: 0 10px;
+            border-radius: 50%;
+            animation: flash 1.2s infinite;
         }
+        
+        .lights .light::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 2px;
+            width: 6px;
+            height: 8px;
+            background: #444;
+            border-radius: 3px;
+        }
+
+        @keyframes flash {
+            0%, 100% { background: rgba(255,255,255,0.4); box-shadow: none; }
+            50% { background: var(--light-color); box-shadow: 0 0 10px var(--light-color), 0 0 20px var(--light-color); }
+        }
+
+        .light.red { --light-color: #ff5e5e; animation-delay: 0.2s; }
+        .light.yellow { --light-color: #ffff8a; animation-delay: 0.4s; }
+        .light.green { --light-color: #8aff8a; animation-delay: 0.6s; }
+        .light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
+        .light.purple { --light-color: #d48aff; animation-delay: 1s; }
         /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .container.show {
@@ -158,18 +198,14 @@
         }
         
         /* --- Títulos --- */
-        h2, h3 { /* h1 se estiliza por separado ahora */
+        h2, h3 { 
             color: var(--color-text-primary);
             font-weight: 600;
         }
         
-        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
-        @keyframes blink {
-            50% { opacity: 0.2; }
-        }
-
+        /* --- INICIO DE MODIFICACIÓN CSS: TÍTULOS NAVIDEÑOS --- */
         h1 {
-            font-family: var(--font-halloween);
+            font-family: var(--font-christmas);
             letter-spacing: 2px;
             color: var(--color-primary);
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
@@ -177,21 +213,20 @@
             line-height: 1.2;
         }
 
-        .boo-text {
-            font-size: 1.6em; /* Tercera reducción de tamaño */
-            animation: blink 1.5s infinite;
+        .jojo-text {
+            font-size: 1.6em; 
             display: block;
             white-space: nowrap; 
         }
 
         .welcome-text {
-            font-size: 0.7em; /* Tercera reducción de tamaño */
-            font-family: var(--font-halloween);
+            font-size: 0.7em; 
+            font-family: var(--font-christmas);
             display: block;
             margin-top: 5px; 
             white-space: nowrap; 
         }
-        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
+        /* --- FIN DE MODIFICACIÓN CSS --- */
 
         .title-container {
             display: flex;
@@ -199,7 +234,7 @@
             align-items: center;
             order: 1;
             position: absolute;
-            top: 20%; /* Movido un poco más arriba */
+            top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 50;
@@ -220,12 +255,6 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        
-        @keyframes swing {
-            0% { transform: rotate(10deg); }
-            50% { transform: rotate(-10deg); }
-            100% { transform: rotate(10deg); }
-        }
 
         /* --- Logo --- */
         .logo {
@@ -235,7 +264,7 @@
             transition: all 1s ease-in;
             margin-top: 120px;
             animation: pulse 2.5s infinite ease-in-out; 
-            filter: drop-shadow(0 0 10px var(--color-primary));
+            filter: drop-shadow(0 0 10px var(--color-secondary));
         }
 
         .logo-small {
@@ -259,12 +288,35 @@
             width: 100%;
             letter-spacing: 0.5px; 
             text-transform: uppercase;
+            position: relative; /* Necesario para el efecto nieve */
+            overflow: visible; /* Necesario para el efecto nieve */
         }
-
+        
+        /* --- INICIO MODIFICACIÓN CSS: EFECTO NIEVE EN BOTONES --- */
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -10px; /* Ajustar posición vertical */
+            left: 10%;
+            width: 80%;
+            height: 15px; /* Altura de la nieve */
+            background-color: var(--color-accent);
+            border-radius: 10px 10px 4px 4px / 20px 20px 4px 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: top 0.2s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover::before {
+            top: -13px;
+        }
+        
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0 15px var(--color-accent);
+            box-shadow: 0 0 15px var(--color-secondary);
         }
+        /* --- FIN MODIFICACIÓN CSS --- */
+
 
         .btn:disabled {
             background-color: #575757; 
@@ -275,21 +327,22 @@
         }
         
         /* Asignación de nueva paleta a los botones existentes */
-        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #111; }
-        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); }
-        .btn-kalctas-largas, .btn-checkout { background-color: var(--color-accent); border-color: var(--color-accent); color: #111; }
+        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); color: #111; }
+        .btn-kalctas-largas, .btn-checkout { background-color: #2e8b57; border-color: #2e8b57; color: #fff; } /* Verde navideño */
         .btn-volver { background-color: #4a4a6a; border-color: #4a4a6a; } 
         .btn-view { background-color: #34495e; border-color: #34495e; } 
         .btn-add {
-            background-color: var(--color-secondary);
-            border-color: var(--color-secondary);
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
         }
         .btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
-
+        .btn-add span { z-index: 1; position: relative; } /* Para que el texto esté sobre la nieve */
+        
         #delivery-form .btn-add {
             gap: 10px;
         }
@@ -298,10 +351,11 @@
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px; /* Aumentado para el efecto nieve */
             width: 100%;
             order: 3;
             transition: all 1s ease-in;
+            margin-top: 15px; /* Espacio extra */
         }
         
         /* --- Iconos y Botón de Sesión --- */
@@ -314,30 +368,13 @@
             transition: all 1s ease-in;
             z-index: 100;
         }
-
-        .cart-icon-wrapper {
-            position: relative;
-        }
         
-        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
-        .cart-icon-wrapper::after {
-            content: '🕷️';
-            position: absolute;
-            font-size: 35px; /* Tamaño ya está bien */
-            top: 35px;
-            left: 15%; /* Movida un poco más a la izquierda */
-            transform: translateX(-50%);
-            transform-origin: top center;
-            animation: swing 4s infinite ease-in-out;
-        }
-        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
-
         .header-icon {
             font-size: 2em;
             color: var(--color-text-primary);
             cursor: pointer;
             transition: transform 0.2s ease;
-            filter: drop-shadow(0 0 5px var(--color-primary));
+            filter: drop-shadow(0 0 5px var(--color-secondary));
             text-decoration: none;
         }
 
@@ -350,8 +387,8 @@
             top: 20px;
             left: 25px;
             background-color: transparent;
-            border: 2px solid var(--color-primary);
-            color: var(--color-primary);
+            border: 2px solid var(--color-secondary);
+            color: var(--color-secondary);
             padding: 8px 16px; 
             border-radius: 50px; 
             cursor: pointer;
@@ -362,7 +399,7 @@
         }
 
         .auth-button:hover {
-            background-color: var(--color-primary);
+            background-color: var(--color-secondary);
             color: var(--color-surface);
         }
 
@@ -387,7 +424,7 @@
 
         .model-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--color-accent);
+            box-shadow: 0 0 20px var(--color-secondary);
         }
 
         .model-card img {
@@ -401,7 +438,7 @@
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 20px; /* Aumentado para efecto nieve */
         }
         
         .model-buttons .btn {
@@ -413,7 +450,7 @@
 
         .product-price {
             font-weight: 700;
-            color: var(--color-primary);
+            color: var(--color-secondary);
             font-size: 1.2em;
             margin-bottom: 5px;
         }
@@ -433,7 +470,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(13, 2, 33, 0.8);
+            background-color: rgba(10, 47, 53, 0.8);
             backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
@@ -455,7 +492,7 @@
             font-size: 35px;
             font-weight: bold;
             transition: 0.3s;
-            z-index: 2; /* Para que esté por encima de la telaraña */
+            z-index: 25; 
         }
 
         .close-modal:hover,
@@ -469,26 +506,25 @@
         .auth-modal-content, .payment-modal-content, .my-orders-modal-content {
             background-color: var(--color-surface);
             color: var(--color-text-primary);
-            padding: 30px;
+            padding: 40px 30px 30px 30px; /* Padding superior para las luces */
             border-radius: var(--border-radius);
             border: 2px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             width: 90%;
             max-width: 400px;
             text-align: left;
-            /* position: relative; ya se añadió arriba */
         }
         
         .my-orders-modal-content { max-width: 550px; }
 
         .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
-            font-family: var(--font-halloween);
+            font-family: var(--font-christmas);
             letter-spacing: 1px;
             font-size: 2.2em;
             text-align: center;
-            margin-top: 0;
+            margin-top: 10px; /* Espacio para luces */
             margin-bottom: 25px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         
         /* Contenido de modales específicos */
@@ -501,17 +537,17 @@
             border-radius: var(--border-radius);
             margin-top: 20px;
             border: 1px solid var(--color-border);
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         .payment-modal-content .info-container p { margin: 8px 0; }
-        .payment-modal-content .info-container strong { color: var(--color-primary); }
+        .payment-modal-content .info-container strong { color: var(--color-secondary); }
 
         /* --- Formularios --- */
         .auth-form {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
 
         .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
@@ -533,7 +569,7 @@
         .auth-form input:focus {
             outline: none;
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(249, 160, 63, 0.4);
+            box-shadow: 0 0 0 3px rgba(217, 69, 69, 0.4);
         }
         
         .auth-form label {
@@ -545,23 +581,24 @@
 
         .auth-form .btn-auth {
             background-color: var(--color-primary);
-            color: #111;
+            color: #fff;
             font-weight: 600;
             padding: 15px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            margin-top: 10px; /* Espacio para nieve */
         }
 
-        .auth-form .btn-auth:hover { background-color: #d18228; }
+        .auth-form .btn-auth:hover { background-color: #b83232; }
         
         .auth-toggle {
             text-align: center;
             margin-top: 15px;
             font-size: 0.9em;
             color: var(--color-text-secondary);
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
 
         .auth-toggle a {
@@ -622,7 +659,7 @@
         .alert-button {
             margin-top: 20px;
             background-color: var(--color-primary);
-            color: #111;
+            color: #fff;
         }
 
         /* --- Paneles laterales (Mi Cuenta y Carrito) --- */
@@ -639,7 +676,6 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box; 
-            /* position: relative y overflow ya se añadió arriba */
         }
         
         .account-panel { 
@@ -659,19 +695,19 @@
         .account-panel h3, .cart-panel h3 {
             text-align: center;
             margin: 0; 
-            padding: 25px 25px 20px 25px;
+            padding: 45px 25px 20px 25px; /* Padding para luces */
             flex-shrink: 0;
-            font-family: var(--font-halloween);
+            font-family: var(--font-christmas);
             font-size: 2.5em;
             letter-spacing: 1px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         
         .account-info { 
             flex-grow: 1; 
             overflow-y: auto; 
             padding: 0 25px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         
         .account-info p {
@@ -692,12 +728,12 @@
         .account-buttons, .cart-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             margin-top: auto; 
             padding: 20px 25px 25px 25px; 
             border-top: 1px solid var(--color-border);
             flex-shrink: 0;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         
         .btn-theme {
@@ -713,7 +749,7 @@
             overflow-y: auto;
             flex-grow: 1; 
             padding: 0 25px; 
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         
         .cart-item {
@@ -772,7 +808,7 @@
             padding: 15px 25px;
             border-top: 1px solid var(--color-border);
             border-bottom: 1px solid var(--color-border);
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
         
         .delivery-options label {
@@ -807,9 +843,9 @@
             margin-top: auto;
             font-size: 1.3em;
             font-weight: 700;
-            color: var(--color-primary);
+            color: var(--color-secondary);
             padding: 20px 25px 20px 25px; /* Padding ajustado */
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
 
         /* Pedidos */
@@ -820,7 +856,7 @@
             max-height: 400px;
             overflow-y: auto;
             text-align: left;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+            position: relative; z-index: 1;
         }
 
         .my-orders-item {
@@ -856,23 +892,22 @@
             color: #111;
             font-weight: 500;
         }
-        .my-orders-item .status.Entregado { background-color: var(--color-accent); }
+        .my-orders-item .status.Entregado { background-color: #2e8b57; color: white; }
         .my-orders-item .status.Pendiente { background-color: #f1c40f; }
-        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: white; }
+        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: #111; }
         .my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
 
-        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
         .footer-social {
-            order: 4; /* Para que aparezca después de los botones de categoría */
+            order: 4;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin-top: 25px; /* Espacio superior */
-            position: relative; /* Cambiado de fixed a relative */
-            bottom: auto; /* Reiniciar bottom */
-            padding: 0; /* Reiniciar padding */
+            margin-top: 25px;
+            position: relative;
+            bottom: auto;
+            padding: 0;
             z-index: 10;
         }
 
@@ -880,11 +915,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 12px; /* Tamaño reducido */
+            padding: 6px 12px;
             border-radius: 50px;
             color: white;
             text-decoration: none;
-            font-size: 0.8em; /* Tamaño de fuente reducido */
+            font-size: 0.8em;
             font-weight: 500;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -904,8 +939,8 @@
         }
 
         .social-btn svg {
-            width: 18px; /* Ícono reducido */
-            height: 18px; /* Ícono reducido */
+            width: 18px;
+            height: 18px;
         }
         
         .account-buttons .footer-social {
@@ -913,43 +948,55 @@
             flex-direction: column; 
             padding: 0;
             order: 0;
-            position: relative; /* Asegurar que no sea fixed aquí */
+            position: relative;
         }
         .account-buttons .social-btn {
             width: 100%;
             justify-content: center;
             box-sizing: border-box; 
         }
-        /* --- FIN DE CAMBIOS SOLICITADOS --- */
     </style>
 </head>
 <body>
 
+    <div class="snow" id="snow-container"></div>
+
     <div class="container" id="main-container">
+        <div class="lights">
+            <div class="light red"></div>
+            <div class="light yellow"></div>
+            <div class="light green"></div>
+            <div class="light blue"></div>
+            <div class="light purple"></div>
+            <div class="light red"></div>
+            <div class="light yellow"></div>
+            <div class="light green"></div>
+            <div class="light blue"></div>
+            <div class="light purple"></div>
+        </div>
+
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-            <div class="cart-icon-wrapper">
-                <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎃</a>
-            </div>
-            </div>
+             <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎁</a>
+        </div>
 
         <main id="pantalla-principal" class="screen active">
             <div class="title-container">
                 <h1>
-                    <span class="boo-text">¡Boo! 👻</span>
+                    <span class="jojo-text">¡Jo, Jo, Jo! 🎅</span>
                     <span class="welcome-text">Bienvenido a KalCTas</span>
                 </h1>
-                </div>
+            </div>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
                 <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
-                    KalCTas 2/4
+                    <span>KalCTas 2/4</span>
                 </button>
                 <button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
-                    KalCTas 3/4
+                    <span>KalCTas 3/4</span>
                 </button>
                 <button class="btn btn-kalctas-largas" onclick="mostrarPantalla('pantalla-largas')">
-                    KalCTas Largas
+                    <span>KalCTas Largas</span>
                 </button>
             </div>
             <div class="footer-social">
@@ -968,7 +1015,7 @@
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
             <div class="model-grid" id="grid-2-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
+                <span>Volver</span>
             </button>
         </section>
 
@@ -976,7 +1023,7 @@
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
             <div class="model-grid" id="grid-3-4"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
+                <span>Volver</span>
             </button>
         </section>
 
@@ -984,20 +1031,23 @@
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
             <div class="model-grid" id="grid-largas"></div>
             <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
+                <span>Volver</span>
             </button>
         </section>
     </div>
 
     <div id="account-panel" class="account-panel">
+        <div class="lights">
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div>
+        </div>
         <span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
         <h3>Mi Cuenta</h3>
         <div class="account-info" id="account-info">
         </div>
         <div class="account-buttons">
-            <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
-            <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
-            <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()"><span>Mis pedidos</span></button>
+            <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()"><span>Editar mis datos</span></button>
+            <button class="btn btn-logout" onclick="cerrarSesion()"><span>Cerrar Sesión</span></button>
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
@@ -1012,6 +1062,9 @@
     </div>
 
     <div id="cart-panel" class="cart-panel">
+        <div class="lights">
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div>
+        </div>
         <span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
         <h3>Tu Carrito</h3>
         <ul class="cart-items" id="cart-list"></ul>
@@ -1024,8 +1077,8 @@
         </div>
         <div class="cart-total" id="cart-total"></div>
         <div class="cart-buttons">
-            <button class="btn btn-checkout" onclick="pagar()">Pagar</button>
-            <button class="btn btn-volver" onclick="cerrarPanelCarrito()">Cerrar</button>
+            <button class="btn btn-checkout" onclick="pagar()"><span>Pagar</span></button>
+            <button class="btn btn-volver" onclick="cerrarPanelCarrito()"><span>Cerrar</span></button>
         </div>
     </div>
     
@@ -1036,13 +1089,16 @@
 
     <div id="edit-profile-modal" class="edit-profile-modal">
         <div class="auth-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            </div>
             <span class="close-modal" onclick="cerrarModalEditarDatos()">&times;</span>
             <h3>Editar Mis Datos</h3>
             <form id="edit-profile-form" class="auth-form">
                 <input type="text" id="edit-nombre" placeholder="Nombre" required>
                 <input type="text" id="edit-apellido" placeholder="Apellido" required>
                 <input type="tel" id="edit-telefono" placeholder="Teléfono de contacto (Opcional)">
-                <button type="submit" class="btn-auth">Guardar Cambios</button>
+                <button type="submit" class="btn btn-auth"><span>Guardar Cambios</span></button>
                 <p id="edit-message" class="auth-message"></p>
             </form>
         </div>
@@ -1050,13 +1106,16 @@
 
     <div id="auth-modal" class="auth-modal">
         <div class="auth-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            </div>
             <span class="close-modal" onclick="cerrarAuthModal()">&times;</span>
             <div id="login-form-container">
                 <h3>Iniciar Sesión</h3>
                 <form id="login-form" class="auth-form">
                     <input type="email" id="login-email" placeholder="Correo electrónico" required>
                     <input type="password" id="login-password" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth">Entrar</button>
+                    <button type="submit" class="btn-auth"><span>Entrar</span></button>
                     <p id="login-message" class="auth-message"></p>
                 </form>
                 <p class="auth-toggle">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro()">Regístrate</a></p>
@@ -1068,7 +1127,7 @@
                     <input type="text" id="register-apellido" placeholder="Apellido" required>
                     <input type="email" id="register-email" placeholder="Correo electrónico" required>
                     <input type="password" id="register-password" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth">Registrarme</button>
+                    <button type="submit" class="btn-auth"><span>Registrarme</span></button>
                     <p id="register-message" class="auth-message"></p>
                 </form>
                 <p class="auth-toggle">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia Sesión</a></p>
@@ -1079,24 +1138,30 @@
     <div id="alert-box" class="alert-box">
         <div class="alert-content">
             <p id="alert-text" class="alert-text"></p>
-            <button class="btn alert-button" onclick="closeAlert()">Aceptar</button>
+            <button class="btn alert-button" onclick="closeAlert()"><span>Aceptar</span></button>
         </div>
     </div>
 
     <div id="payment-options-modal" class="payment-options-modal">
         <div class="payment-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            </div>
             <span class="close-modal" onclick="cerrarModalPago()">&times;</span>
             <h3>Selecciona tu método de pago</h3>
             <div class="button-container">
-                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta / Apple Pay</button>
-                <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')">Pagar por Transferencia</button>
-                <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')">Pagar en efectivo</button>
+                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()"><span>Pago con Tarjeta / Apple Pay</span></button>
+                <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')"><span>Pagar por Transferencia</span></button>
+                <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')"><span>Pagar en efectivo</span></button>
             </div>
         </div>
     </div>
     
     <div id="card-payment-modal" class="auth-modal">
         <div class="payment-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            </div>
             <span class="close-modal" onclick="cerrarModalPagoTarjeta()">&times;</span>
             <h3>Pago con Tarjeta</h3>
             
@@ -1115,6 +1180,9 @@
     </div>
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            </div>
             <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
             <h3>Detalles de la Transferencia</h3>
             <div class="info-container">
@@ -1125,12 +1193,15 @@
                 <p style="margin-top: 15px; font-weight: bold;">Una vez transferido, manda captura vía WhatsApp al:</p>
                 <p style="font-size: 1.2em;">8137055588</p>
             </div>
-            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega('Transferencia')">Continuar</button>
+            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega('Transferencia')"><span>Continuar</span></button>
         </div>
     </div>
     
     <div id="confirm-order-modal" class="confirm-order-modal">
         <div class="payment-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            </div>
             <span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
             <h3 id="confirm-order-title"></h3>
             <form id="delivery-form" class="auth-form">
@@ -1174,7 +1245,7 @@
 
                 <button type="submit" class="btn btn-add">
                     <span>Confirmar Pedido</span>
-                    <span>🛒</span>
+                    <span>🎄</span>
                 </button>
                 </form>
         </div>
@@ -1182,6 +1253,9 @@
 
     <div id="my-orders-modal" class="my-orders-modal">
         <div class="my-orders-modal-content">
+            <div class="lights">
+                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div>
+            </div>
             <span class="close-modal" onclick="cerrarModalMisPedidos()">&times;</span>
             <h3>Mis Pedidos</h3>
             <ul class="my-orders-list" id="my-orders-list"></ul>
@@ -1209,7 +1283,6 @@
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
-        // --- CONFIGURACIÓN DE STRIPE ---
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
         let elements;
         let cardElement;
@@ -1229,32 +1302,25 @@
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                  generarGaleria(activeScreen.id);
             }
-            
-            const themeToggleButton = document.getElementById('theme-toggle-button');
-            if (themeToggleButton) { 
-                const currentTheme = localStorage.getItem('theme');
 
-                if (currentTheme === 'dark-mode') {
-                    document.body.classList.add('dark-mode');
-                    themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                }
-
-                themeToggleButton.addEventListener('click', () => {
-                    document.body.classList.toggle('dark-mode');
-                    let theme = 'light-mode';
-                    if (document.body.classList.contains('dark-mode')) {
-                        theme = 'dark-mode';
-                        themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                    } else {
-                        themeToggleButton.textContent = 'Cambiar a Tema Oscuro 🌙';
-                    }
-                    localStorage.setItem('theme', theme);
-                });
+            // --- INICIO DE LÓGICA PARA NIEVE ---
+            const snowContainer = document.getElementById('snow-container');
+            const numberOfSnowflakes = 40;
+            for (let i = 0; i < numberOfSnowflakes; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Duración entre 5 y 10s
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.opacity = Math.random();
+                snowflake.style.width = snowflake.style.height = `${Math.random() * 4 + 2}px`; // Tamaño entre 2 y 6px
+                snowContainer.appendChild(snowflake);
             }
+            // --- FIN DE LÓGICA PARA NIEVE ---
         });
 
         // ================================================================================= //
-        // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN
+        // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN (SIN CAMBIOS)
         // ================================================================================= //
         
         function showMessage(text) {
@@ -1267,17 +1333,22 @@
         }
         
         function mostrarPantalla(idDePantalla) {
-            pantallas.forEach(pantalla => {
-                pantalla.classList.remove('active');
-            });
-
-            const pantallaActiva = document.getElementById(idDePantalla);
-            if (pantallaActiva) {
-                pantallaActiva.classList.add('active');
-                if (idDePantalla.startsWith('pantalla-')) {
-                    generarGaleria(idDePantalla);
+            // Animación de nieve entre pantallas
+            const snowContainer = document.getElementById('snow-container');
+            snowContainer.style.opacity = '0';
+            setTimeout(() => {
+                pantallas.forEach(pantalla => {
+                    pantalla.classList.remove('active');
+                });
+                const pantallaActiva = document.getElementById(idDePantalla);
+                if (pantallaActiva) {
+                    pantallaActiva.classList.add('active');
+                    if (idDePantalla.startsWith('pantalla-')) {
+                        generarGaleria(idDePantalla);
+                    }
                 }
-            }
+                snowContainer.style.opacity = '1';
+            }, 300); // Coincide con la transición
         }
         
         auth.onAuthStateChanged(user => {
@@ -1766,20 +1837,18 @@
                 });
 
                 if (!cardElement) {
-                     // INICIO DE CAMBIOS SOLICITADOS
                      cardElement = elements.create('card', {
                         style: {
                             base: {
-                                color: '#fdfdfd', // Color de texto blanco
+                                color: '#fdfdfd',
                                 fontFamily: '"Poppins", sans-serif',
                                 fontSize: '16px',
                                 '::placeholder': {
-                                    color: 'rgba(249, 160, 63, 0.7)' // Naranja pálido para el placeholder
+                                    color: 'rgba(240, 196, 117, 0.7)' // Dorado pálido
                                 }
                             }
                         }
                      });
-                     // FIN DE CAMBIOS SOLICITADOS
                      cardElement.mount('#card-element');
                      cardElement.on('change', event => {
                         document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
@@ -2076,9 +2145,9 @@
                         <p class="product-price">$${producto.precio.toFixed(2)}</p>
                         <p>${producto.nombre}</p>
                         <div class="model-buttons">
-                            <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
+                            <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')"><span>Ver</span></button>
                             <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
-                                ${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎃'}
+                                <span>${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎁'}</span>
                                 </button>
                         </div>
                     `;
