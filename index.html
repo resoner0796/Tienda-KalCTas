@@ -1,2192 +1,2155 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KalCTas Tienda - Edición Halloween</title>
-
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#1a1a2e"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="KalCTas">
-    <link rel="apple-touch-icon" href="icon-192x192.png">
-    
-    <script src="https://js.stripe.com/v3/"></script>
-    
-    <style>
-        /* --- Paleta de Colores y Variables de Diseño HALLOWEEN --- */
-        :root {
-            --color-background: #0d0221; /* Morado muy oscuro casi negro */
-            --color-surface: #261c3e;    /* Morado oscuro para contenedores */
-            --color-primary: #f9a03f;    /* Naranja Halloween */
-            --color-secondary: #a75db4;   /* Morado medio */
-            --color-accent: #92e6a7;      /* Verde lima "tóxico" */
-            --color-danger: #e74c3c;
-            --color-text-primary: #fdfdfd; /* Blanco para texto principal */
-            --color-text-secondary: #f9a03f; /* Naranja para texto secundario */
-            --color-border: #4d426d;     /* Borde morado oscuro */
-            
-            --font-family: 'Poppins', sans-serif;
-            --font-halloween: 'Creepster', cursive; /* Fuente temática */
-            --border-radius: 12px;
-            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
-            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-        
-        body, body.dark-mode {
-            --color-background: #0d0221;
-            --color-surface: #261c3e;
-            --color-primary: #f9a03f;
-            --color-text-primary: #fdfdfd;
-            --color-text-secondary: #f9a03f;
-            --color-border: #4d426d;
-        }
-
-        /* Transición suave para el cambio de tema */
-        body, .container, .auth-modal-content, .model-card, .account-panel, .cart-panel, .auth-form input, .btn, .auth-button {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-
-        /* --- Estilos Generales --- */
-        body {
-            margin: 0;
-            font-family: var(--font-family);
-            background: linear-gradient(180deg, #0d0221 0%, #261c3e 100%);
-            color: var(--color-text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            overflow: hidden; 
-        }
-
-        /* --- Contenedor Principal --- */
-        .container {
-            background-color: var(--color-surface);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
-            box-shadow: var(--shadow-medium);
-            max-width: 450px;
-            width: 90%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            color: var(--color-text-primary);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-            min-height: 85vh; 
-            overflow: hidden; 
-        }
-        
-        /* --- INICIO DE MODIFICACIÓN CSS: TELARAÑAS --- */
-        /* Aplicar posición relativa y overflow para que las telarañas se contengan */
-        .auth-modal-content, .payment-modal-content, .my-orders-modal-content,
-        .account-panel, .cart-panel {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Selector combinado para aplicar telarañas a todos los contenedores */
-        .container::before, .container::after,
-        .auth-modal-content::before, .auth-modal-content::after,
-        .payment-modal-content::before, .payment-modal-content::after,
-        .my-orders-modal-content::before, .my-orders-modal-content::after,
-        .account-panel::before, .account-panel::after,
-        .cart-panel::before, .cart-panel::after {
-            content: '';
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 A100,100 0 0,0 0,100 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L80,0 A80,80 0 0,0 0,80 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L60,0 A60,60 0 0,0 0,60 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L40,0 A40,40 0 0,0 0,40 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L20,0 A20,20 0 0,0 0,20 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='0' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='50' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-            z-index: 0;
-            opacity: 0.5;
-        }
-        
-        .container::before, .auth-modal-content::before, .payment-modal-content::before, 
-        .my-orders-modal-content::before, .account-panel::before, .cart-panel::before {
-            top: -10px;
-            left: -10px;
-        }
-
-        .container::after, .auth-modal-content::after, .payment-modal-content::after,
-        .my-orders-modal-content::after, .account-panel::after, .cart-panel::after {
-            bottom: -10px;
-            right: -10px;
-            transform: rotate(180deg);
-        }
-        /* --- FIN DE MODIFICACIÓN CSS --- */
-
-        .container.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- Transiciones de pantalla --- */
-        .screen {
-            display: none;
-            width: 100%;
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.98);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            position: relative;
-            z-index: 10;
-        }
-
-        .screen::-webkit-scrollbar {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-            opacity: 1;
-            transform: scale(1);
-        }
-        
-        /* --- Títulos --- */
-        h2, h3 { /* h1 se estiliza por separado ahora */
-            color: var(--color-text-primary);
-            font-weight: 600;
-        }
-        
-        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
-        @keyframes blink {
-            50% { opacity: 0.2; }
-        }
-
-        h1 {
-            font-family: var(--font-halloween);
-            letter-spacing: 2px;
-            color: var(--color-primary);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
-
-        .boo-text {
-            font-size: 1.6em; /* Tercera reducción de tamaño */
-            animation: blink 1.5s infinite;
-            display: block;
-            white-space: nowrap; 
-        }
-
-        .welcome-text {
-            font-size: 0.7em; /* Tercera reducción de tamaño */
-            font-family: var(--font-halloween);
-            display: block;
-            margin-top: 5px; 
-            white-space: nowrap; 
-        }
-        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
-
-        .title-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            order: 1;
-            position: absolute;
-            top: 20%; /* Movido un poco más arriba */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
-        }
-
-        .title-container h1 {
-            margin: 0;
-            position: relative;
-        }
-        
-        .title-container hr {
-            display: none;
-        }
-
-        /* Animaciones */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes swing {
-            0% { transform: rotate(10deg); }
-            50% { transform: rotate(-10deg); }
-            100% { transform: rotate(10deg); }
-        }
-
-        /* --- Logo --- */
-        .logo {
-            max-width: 280px;
-            margin-bottom: 30px;
-            order: 2;
-            transition: all 1s ease-in;
-            margin-top: 120px;
-            animation: pulse 2.5s infinite ease-in-out; 
-            filter: drop-shadow(0 0 10px var(--color-primary));
-        }
-
-        .logo-small {
-            display: block;
-            width: 80px;
-            margin: 0 auto 20px auto;
-            cursor: pointer;
-        }
-
-        /* --- Estilo de Botones --- */
-        .btn {
-            padding: 15px 20px;
-            border: 2px solid var(--color-border);
-            border-radius: var(--border-radius);
-            font-size: 1em;
-            font-weight: 600; 
-            font-family: var(--font-family);
-            color: #ffffff;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-            width: 100%;
-            letter-spacing: 0.5px; 
-            text-transform: uppercase;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 15px var(--color-accent);
-        }
-
-        .btn:disabled {
-            background-color: #575757; 
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-            border-color: #333;
-        }
-        
-        /* Asignación de nueva paleta a los botones existentes */
-        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #111; }
-        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); }
-        .btn-kalctas-largas, .btn-checkout { background-color: var(--color-accent); border-color: var(--color-accent); color: #111; }
-        .btn-volver { background-color: #4a4a6a; border-color: #4a4a6a; } 
-        .btn-view { background-color: #34495e; border-color: #34495e; } 
-        .btn-add {
-            background-color: var(--color-secondary);
-            border-color: var(--color-secondary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        .btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
-
-        #delivery-form .btn-add {
-            gap: 10px;
-        }
-
-        /* Contenedor de Botones (Menú principal) */
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            order: 3;
-            transition: all 1s ease-in;
-        }
-        
-        /* --- Iconos y Botón de Sesión --- */
-        .header-icons {
-            position: fixed;
-            top: 20px;
-            right: 25px;
-            display: flex;
-            gap: 15px;
-            transition: all 1s ease-in;
-            z-index: 100;
-        }
-
-        .cart-icon-wrapper {
-            position: relative;
-        }
-        
-        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
-        .cart-icon-wrapper::after {
-            content: '🕷️';
-            position: absolute;
-            font-size: 35px; /* Tamaño ya está bien */
-            top: 35px;
-            left: 15%; /* Movida un poco más a la izquierda */
-            transform: translateX(-50%);
-            transform-origin: top center;
-            animation: swing 4s infinite ease-in-out;
-        }
-        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
-
-        .header-icon {
-            font-size: 2em;
-            color: var(--color-text-primary);
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            filter: drop-shadow(0 0 5px var(--color-primary));
-            text-decoration: none;
-        }
-
-        .header-icon:hover {
-            transform: scale(1.1) rotate(10deg);
-        }
-        
-        .auth-button {
-            position: fixed;
-            top: 20px;
-            left: 25px;
-            background-color: transparent;
-            border: 2px solid var(--color-primary);
-            color: var(--color-primary);
-            padding: 8px 16px; 
-            border-radius: 50px; 
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            z-index: 100;
-        }
-
-        .auth-button:hover {
-            background-color: var(--color-primary);
-            color: var(--color-surface);
-        }
-
-        /* --- Diseño de la galería de modelos --- */
-        .model-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-            width: 100%;
-        }
-
-        .model-card {
-            background-color: rgba(0,0,0,0.2);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            box-shadow: var(--shadow-soft);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-        }
-
-        .model-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--color-accent);
-        }
-
-        .model-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .model-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-        
-        .model-buttons .btn {
-            width: calc(50% - 5px);
-            padding: 10px;
-            font-size: 0.75em; 
-            font-weight: 500;
-        }
-
-        .product-price {
-            font-weight: 700;
-            color: var(--color-primary);
-            font-size: 1.2em;
-            margin-bottom: 5px;
-        }
-        
-        .model-card p:not(.product-price) {
-            font-size: 0.9em;
-            color: var(--color-text-secondary);
-        }
-
-        /* --- Modales y Alertas --- */
-        .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(13, 2, 33, 0.8);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content-img {
-            max-width: 90%;
-            max-height: 90%;
-            display: block;
-            margin: auto;
-            border-radius: var(--border-radius);
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            color: var(--color-text-secondary);
-            font-size: 35px;
-            font-weight: bold;
-            transition: 0.3s;
-            z-index: 2; /* Para que esté por encima de la telaraña */
-        }
-
-        .close-modal:hover,
-        .close-modal:focus {
-            color: var(--color-text-primary);
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Estilos base para contenido de modales */
-        .auth-modal-content, .payment-modal-content, .my-orders-modal-content {
-            background-color: var(--color-surface);
-            color: var(--color-text-primary);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
-            box-shadow: var(--shadow-medium);
-            width: 90%;
-            max-width: 400px;
-            text-align: left;
-            /* position: relative; ya se añadió arriba */
-        }
-        
-        .my-orders-modal-content { max-width: 550px; }
-
-        .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
-            font-family: var(--font-halloween);
-            letter-spacing: 1px;
-            font-size: 2.2em;
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 25px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        
-        /* Contenido de modales específicos */
-        .payment-modal-content { text-align: center; }
-        
-        .payment-modal-content .info-container {
-            text-align: left;
-            background-color: var(--color-background);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-top: 20px;
-            border: 1px solid var(--color-border);
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        .payment-modal-content .info-container p { margin: 8px 0; }
-        .payment-modal-content .info-container strong { color: var(--color-primary); }
-
-        /* --- Formularios --- */
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-
-        .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
-            font-size: 1em;
-            font-family: var(--font-family);
-            background-color: var(--color-background);
-            color: var(--color-text-primary);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .auth-form input::placeholder, .auth-form textarea::placeholder {
-            color: var(--color-text-secondary);
-            opacity: 0.7;
-        }
-
-        .auth-form input:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(249, 160, 63, 0.4);
-        }
-        
-        .auth-form label {
-            text-align: left;
-            font-weight: 500;
-            margin-bottom: -5px;
-            color: var(--color-text-secondary);
-        }
-
-        .auth-form .btn-auth {
-            background-color: var(--color-primary);
-            color: #111;
-            font-weight: 600;
-            padding: 15px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .auth-form .btn-auth:hover { background-color: #d18228; }
-        
-        .auth-toggle {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: var(--color-text-secondary);
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-
-        .auth-toggle a {
-            color: var(--color-primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .auth-message {
-            margin-top: 15px;
-            color: var(--color-danger);
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        /* --- ESTILOS PARA STRIPE --- */
-        #payment-request-button { margin-bottom: 20px; position: relative; z-index: 1; }
-        
-        .separator {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--color-text-secondary);
-            margin: 20px 0;
-            position: relative; z-index: 1;
-        }
-        .separator::before, .separator::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--color-border);
-        }
-        .separator:not(:empty)::before { margin-right: .5em; }
-        .separator:not(:empty)::after { margin-left: .5em; }
-
-        #card-element {
-            background-color: var(--color-background);
-            padding: 12px;
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        #card-errors {
-            color: var(--color-danger);
-            margin-top: 10px;
-            font-weight: 500;
-        }
-
-        /* Alertas personalizadas */
-        .alert-content {
-            background-color: var(--color-surface);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-medium);
-            text-align: center;
-            max-width: 320px;
-        }
-        .alert-text { color: var(--color-text-primary); font-size: 1.1em;}
-        .alert-button {
-            margin-top: 20px;
-            background-color: var(--color-primary);
-            color: #111;
-        }
-
-        /* --- Paneles laterales (Mi Cuenta y Carrito) --- */
-        .account-panel, .cart-panel {
-            position: fixed;
-            top: 0;
-            height: 100%;
-            width: 320px;
-            background-color: var(--color-surface);
-            color: var(--color-text-primary);
-            box-shadow: var(--shadow-medium);
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box; 
-            /* position: relative y overflow ya se añadió arriba */
-        }
-        
-        .account-panel { 
-            left: 0; 
-            transform: translateX(-100%); 
-        }
-
-        .cart-panel { 
-            right: 0; 
-            transform: translateX(100%); 
-        }
-
-        .account-panel.show, .cart-panel.show { 
-            transform: translateX(0); 
-        }
-        
-        .account-panel h3, .cart-panel h3 {
-            text-align: center;
-            margin: 0; 
-            padding: 25px 25px 20px 25px;
-            flex-shrink: 0;
-            font-family: var(--font-halloween);
-            font-size: 2.5em;
-            letter-spacing: 1px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        
-        .account-info { 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            padding: 0 25px;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        
-        .account-info p {
-            margin: 15px 0;
-            font-size: 1em;
-            border-bottom: 1px solid var(--color-border);
-            padding-bottom: 15px;
-        }
-
-        .account-info p strong {
-            display: block;
-            font-size: 0.8em;
-            font-weight: 600;
-            color: var(--color-text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .account-buttons, .cart-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: auto; 
-            padding: 20px 25px 25px 25px; 
-            border-top: 1px solid var(--color-border);
-            flex-shrink: 0;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        
-        .btn-theme {
-            background-color: var(--color-border);
-            color: var(--color-text-primary);
-        }
-        
-        /* Carrito */
-        .cart-items {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow-y: auto;
-            flex-grow: 1; 
-            padding: 0 25px; 
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        
-        .cart-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .cart-item-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .cart-item-img:hover {
-            transform: scale(1.08);
-        }
-
-        .cart-item-details {
-            flex-grow: 1;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .cart-item-details .name {
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-        
-        .cart-item-details .price {
-            font-size: 0.9em;
-            font-weight: 600;
-            color: var(--color-text-secondary);
-        }
-        
-        .cart-item button { 
-            background: none; 
-            border: 1px solid var(--color-danger); 
-            color: var(--color-danger); 
-            font-size: 0.7em; 
-            padding: 4px 8px; 
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-left: auto;
-        }
-        .cart-item button:hover { background: var(--color-danger); color: white; }
-        
-        .delivery-options {
-            padding: 15px 25px;
-            border-top: 1px solid var(--color-border);
-            border-bottom: 1px solid var(--color-border);
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-        
-        .delivery-options label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            text-align: left;
-        }
-        
-        .delivery-options select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
-            background-color: var(--color-background);
-            color: var(--color-text-primary);
-            font-family: var(--font-family);
-        }
-
-        #home-delivery-fields {
-            display: none; /* Oculto por defecto */
-        }
-        
-        #pickup-location-fields > div {
-            display: flex;
-            flex-direction: column;
-            gap: 15px; /* Espacio entre los grupos de label/input */
-        }
-
-        .cart-total {
-            text-align: right;
-            margin-top: auto;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: var(--color-primary);
-            padding: 20px 25px 20px 25px; /* Padding ajustado */
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-
-        /* Pedidos */
-        .my-orders-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 400px;
-            overflow-y: auto;
-            text-align: left;
-            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
-        }
-
-        .my-orders-item {
-            background-color: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
-            cursor: pointer;
-            border: 1px solid var(--color-border);
-        }
-        .order-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-        
-        .order-details {
-            display: none;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--color-border);
-            text-align: left;
-            font-size: 0.9em;
-            color: var(--color-text-secondary);
-        }
-        .order-details strong { color: var(--color-text-primary); }
-
-        .my-orders-item .status {
-            font-size: 0.8em;
-            padding: 5px 10px;
-            border-radius: 50px;
-            color: #111;
-            font-weight: 500;
-        }
-        .my-orders-item .status.Entregado { background-color: var(--color-accent); }
-        .my-orders-item .status.Pendiente { background-color: #f1c40f; }
-        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: white; }
-        .my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
-
-        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
-        .footer-social {
-            order: 4; /* Para que aparezca después de los botones de categoría */
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 25px; /* Espacio superior */
-            position: relative; /* Cambiado de fixed a relative */
-            bottom: auto; /* Reiniciar bottom */
-            padding: 0; /* Reiniciar padding */
-            z-index: 10;
-        }
-
-        .social-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px; /* Tamaño reducido */
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-size: 0.8em; /* Tamaño de fuente reducido */
-            font-weight: 500;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .social-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-        }
-
-        .social-btn.facebook {
-            background-color: #1877F2;
-        }
-
-        .social-btn.whatsapp {
-            background-color: #25D366;
-        }
-
-        .social-btn svg {
-            width: 18px; /* Ícono reducido */
-            height: 18px; /* Ícono reducido */
-        }
-        
-        .account-buttons .footer-social {
-            margin-top: 10px;
-            flex-direction: column; 
-            padding: 0;
-            order: 0;
-            position: relative; /* Asegurar que no sea fixed aquí */
-        }
-        .account-buttons .social-btn {
-            width: 100%;
-            justify-content: center;
-            box-sizing: border-box; 
-        }
-        /* --- FIN DE CAMBIOS SOLICITADOS --- */
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KalCTas Tienda - Edición Navideña</title>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#1a1a2e"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KalCTas">
+<link rel="apple-touch-icon" href="icon-192x192.png">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+/* --- Paleta de Colores y Variables de Diseño NAVIDEÑA --- */
+:root {
+--color-background: #0a2f35; /* Verde pino oscuro */
+--color-surface: #1d576b; /* Azul verdoso oscuro */
+--color-primary: #d94545; /* Rojo navideño */
+--color-secondary: #f0c475; /* Dorado / Amarillo cálido */
+--color-accent: #ffffff; /* Blanco nieve */
+--color-danger: #e74c3c;
+--color-text-primary: #fdfdfd; /* Blanco para texto principal */
+--color-text-secondary: #f0c475; /* Dorado para texto secundario */
+--color-border: #f0c475; /* Borde dorado */
+--font-family: 'Poppins', sans-serif;
+--font-christmas: 'Mountains of Christmas', cursive; /* Fuente temática */
+--border-radius: 12px;
+--shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
+--shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+body, body.dark-mode {
+--color-background: #0a2f35;
+--color-surface: #1d576b;
+--color-primary: #d94545;
+--color-text-primary: #fdfdfd;
+--color-text-secondary: #f0c475;
+--color-border: #f0c475;
+}
+
+/* Transición suave para el cambio de tema */
+body, .container, .auth-modal-content, .model-card, .account-panel, .cart-panel, .auth-form input, .btn, .auth-button {
+transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* --- Estilos Generales --- */
+body {
+margin: 0;
+font-family: var(--font-family);
+background: linear-gradient(180deg, #0a2f35 0%, #1d576b 100%);
+color: var(--color-text-primary);
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+text-align: center;
+overflow: hidden;
+}
+
+.snow {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: 1001;
+}
+
+.snowflake {
+position: absolute;
+width: 8px;
+height: 8px;
+background: white;
+border-radius: 50%;
+opacity: 0.8;
+animation: fall linear infinite;
+}
+
+@keyframes fall {
+0% { transform: translateY(-10vh) translateX(0); }
+100% { transform: translateY(110vh) translateX(15px); }
+}
+
+
+/* --- Contenedor Principal --- */
+.container {
+background-color: var(--color-surface);
+padding: 40px;
+border-radius: var(--border-radius);
+border: 2px solid var(--color-border);
+box-shadow: var(--shadow-medium);
+max-width: 450px;
+width: 90%;
+display: flex;
+flex-direction: column;
+align-items: center;
+position: relative;
+color: var(--color-text-primary);
+opacity: 0;
+transform: translateY(20px);
+transition: opacity 0.8s ease, transform 0.8s ease;
+min-height: 85vh;
+overflow: hidden;
+}
+.auth-modal-content, .payment-modal-content, .my-orders-modal-content,
+.account-panel, .cart-panel, .container {
+position: relative;
+overflow: hidden;
+}
+.lights {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 40px;
+text-align: center;
+white-space: nowrap;
+z-index: 20;
+}
+
+.lights .light {
+position: relative;
+display: inline-block;
+width: 10px;
+height: 20px;
+background: #fff;
+margin: 0 10px;
+border-radius: 50%;
+animation: flash 1.2s infinite;
+}
+.lights .light::before {
+content: '';
+position: absolute;
+top: -5px;
+left: 2px;
+width: 6px;
+height: 8px;
+background: #444;
+border-radius: 3px;
+}
+
+@keyframes flash {
+0%, 100% { background: rgba(255,255,255,0.4); box-shadow: none; }
+50% { background: var(--light-color); box-shadow: 0 0 10px var(--light-color), 0 0 20px var(--light-color); }
+}
+
+.light.red { --light-color: #ff5e5e; animation-delay: 0.2s; }
+.light.yellow { --light-color: #ffff8a; animation-delay: 0.4s; }
+.light.green { --light-color: #8aff8a; animation-delay: 0.6s; }
+.light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
+.light.purple { --light-color: #d48aff; animation-delay: 1s; }
+
+.container.show {
+opacity: 1;
+transform: translateY(0);
+}
+
+.screen {
+display: none;
+width: 100%;
+text-align: center;
+opacity: 0;
+transform: scale(0.98);
+transition: opacity 0.5s ease, transform 0.5s ease;
+max-height: calc(100vh - 100px);
+overflow-y: auto;
+-ms-overflow-style: none;
+scrollbar-width: none;
+position: relative;
+z-index: 10;
+}
+
+.screen::-webkit-scrollbar {
+display: none;
+}
+
+.screen.active {
+display: block;
+opacity: 1;
+transform: scale(1);
+}
+h2, h3 {
+color: var(--color-text-primary);
+font-weight: 600;
+}
+h1 {
+font-family: var(--font-christmas);
+letter-spacing: 2px;
+color: var(--color-primary);
+text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+margin-bottom: 15px;
+line-height: 1.2;
+}
+
+.jojo-text {
+font-size: 1.6em;
+display: block;
+white-space: nowrap;
+}
+
+.welcome-text {
+font-size: 0.7em;
+font-family: var(--font-christmas);
+display: block;
+margin-top: 5px;
+white-space: nowrap;
+}
+
+.title-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+order: 1;
+position: absolute;
+top: 20%;
+left: 50%;
+transform: translate(-50%, -50%);
+z-index: 50;
+}
+
+.title-container h1 {
+margin: 0;
+position: relative;
+}
+.title-container hr {
+display: none;
+}
+
+@keyframes pulse {
+0% { transform: scale(1); }
+50% { transform: scale(1.05); }
+100% { transform: scale(1); }
+}
+
+.logo {
+max-width: 280px;
+margin-bottom: 30px;
+order: 2;
+transition: all 1s ease-in;
+margin-top: 120px;
+animation: pulse 2.5s infinite ease-in-out;
+filter: drop-shadow(0 0 10px var(--color-secondary));
+}
+
+.logo-small {
+display: block;
+width: 80px;
+margin: 0 auto 20px auto;
+cursor: pointer;
+}
+
+/* --- Estilo de Botones --- */
+.btn {
+padding: 15px 20px;
+border: 2px solid var(--color-border);
+border-radius: var(--border-radius);
+font-size: 1em;
+font-weight: 600;
+font-family: var(--font-family);
+color: #ffffff;
+cursor: pointer;
+transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+width: 100%;
+letter-spacing: 0.5px;
+text-transform: uppercase;
+position: relative;
+overflow: visible;
+}
+/* --- INICIO NUEVA MEJORA CSS: EFECTO NIEVE 3D EN BOTONES --- */
+.btn span {
+position: relative;
+z-index: 2;
+}
+
+/* Se eliminó la capa ::after para un enfoque más limpio y realista */
+.btn::before {
+content: '';
+position: absolute;
+left: -2px; /* Ligeramente más ancho que el botón */
+top: -12px;
+width: calc(100% + 4px);
+height: 20px;
+background: linear-gradient(to top, rgba(255,255,255,0.8) 0%, white 40%);
+z-index: 1;
+/* La magia del efecto 3D con clip-path */
+clip-path: polygon(
+0% 100%, 100% 100%, 100% 25%,
+90% 15%, 80% 20%, 70% 10%, 60% 22%,
+50% 8%, 40% 18%, 30% 5%, 20% 15%,
+10% 10%, 0% 20%
+);
+/* Sombra para dar volumen */
+filter: drop-shadow(0 -3px 2px rgba(0,0,0,0.15));
+transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 0 15px var(--color-secondary);
+}
+
+.btn:hover::before {
+top: -14px; /* La nieve se "levanta" un poco */
+}
+/* --- FIN NUEVA MEJORA CSS --- */
+
+.btn:disabled {
+background-color: #575757;
+cursor: not-allowed;
+transform: none;
+box-shadow: none;
+border-color: #333;
+}
+.btn:disabled::before {
+display: none;
+}
+/* Asignación de nueva paleta a los botones existentes */
+.btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); color: #111; }
+.btn-kalctas-largas, .btn-checkout { background-color: #2e8b57; border-color: #2e8b57; color: #fff; }
+.btn-volver { background-color: #4a4a6a; border-color: #4a4a6a; }
+.btn-view { background-color: #34495e; border-color: #34495e; }
+.btn-add {
+background-color: var(--color-primary);
+border-color: var(--color-primary);
+display: flex;
+justify-content: center;
+align-items: center;
+text-align: center;
+}
+.btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
+#delivery-form .btn-add {
+gap: 10px;
+}
+
+.button-container {
+display: flex;
+flex-direction: column;
+gap: 20px;
+width: 100%;
+order: 3;
+transition: all 1s ease-in;
+margin-top: 15px;
+}
+.header-icons {
+position: fixed;
+top: 20px;
+right: 25px;
+display: flex;
+gap: 15px;
+transition: all 1s ease-in;
+z-index: 100;
+}
+.header-icon {
+font-size: 2em;
+color: var(--color-text-primary);
+cursor: pointer;
+transition: transform 0.2s ease;
+filter: drop-shadow(0 0 5px var(--color-secondary));
+text-decoration: none;
+}
+
+.header-icon:hover {
+transform: scale(1.1) rotate(10deg);
+}
+.auth-button {
+position: fixed;
+top: 20px;
+left: 25px;
+background-color: transparent;
+border: 2px solid var(--color-secondary);
+color: var(--color-secondary);
+padding: 8px 16px;
+border-radius: 50px;
+cursor: pointer;
+font-size: 0.9em;
+font-weight: 600;
+transition: all 0.2s ease;
+z-index: 100;
+}
+
+.auth-button:hover {
+background-color: var(--color-secondary);
+color: var(--color-surface);
+}
+
+.model-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 20px;
+margin-top: 20px;
+width: 100%;
+}
+
+.model-card {
+background-color: rgba(0,0,0,0.2);
+border: 1px solid var(--color-border);
+border-radius: var(--border-radius);
+padding: 15px;
+box-shadow: var(--shadow-soft);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+text-align: center;
+}
+
+.model-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 0 20px var(--color-secondary);
+}
+
+.model-card img {
+width: 100%;
+height: auto;
+border-radius: 8px;
+margin-bottom: 15px;
+}
+.model-buttons {
+display: flex;
+gap: 10px;
+justify-content: center;
+margin-top: 20px;
+}
+.model-buttons .btn {
+width: calc(50% - 5px);
+padding: 10px;
+font-size: 0.75em;
+font-weight: 500;
+}
+
+.product-price {
+font-weight: 700;
+color: var(--color-secondary);
+font-size: 1.2em;
+margin-bottom: 5px;
+}
+.model-card p:not(.product-price) {
+font-size: 0.9em;
+color: var(--color-text-secondary);
+}
+
+.image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal {
+display: none;
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(10, 47, 53, 0.8);
+backdrop-filter: blur(5px);
+justify-content: center;
+align-items: center;
+}
+
+.modal-content-img {
+max-width: 90%;
+max-height: 90%;
+display: block;
+margin: auto;
+border-radius: var(--border-radius);
+}
+
+.close-modal {
+position: absolute;
+top: 15px;
+right: 25px;
+color: var(--color-text-secondary);
+font-size: 35px;
+font-weight: bold;
+transition: 0.3s;
+z-index: 25;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+color: var(--color-text-primary);
+text-decoration: none;
+cursor: pointer;
+}
+
+.auth-modal-content, .payment-modal-content, .my-orders-modal-content {
+background-color: var(--color-surface);
+color: var(--color-text-primary);
+padding: 40px 30px 30px 30px;
+border-radius: var(--border-radius);
+border: 2px solid var(--color-border);
+box-shadow: var(--shadow-medium);
+width: 90%;
+max-width: 400px;
+text-align: left;
+}
+.my-orders-modal-content { max-width: 550px; }
+
+.auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
+font-family: var(--font-christmas);
+letter-spacing: 1px;
+font-size: 2.2em;
+text-align: center;
+margin-top: 10px;
+margin-bottom: 25px;
+position: relative; z-index: 1;
+}
+.payment-modal-content { text-align: center; }
+.payment-modal-content .info-container {
+text-align: left;
+background-color: var(--color-background);
+padding: 20px;
+border-radius: var(--border-radius);
+margin-top: 20px;
+border: 1px solid var(--color-border);
+position: relative; z-index: 1;
+}
+.payment-modal-content .info-container p { margin: 8px 0; }
+.payment-modal-content .info-container strong { color: var(--color-secondary); }
+
+.auth-form {
+display: flex;
+flex-direction: column;
+gap: 15px;
+position: relative; z-index: 1;
+}
+
+.auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
+padding: 14px;
+border-radius: 8px;
+border: 1px solid var(--color-border);
+font-size: 1em;
+font-family: var(--font-family);
+background-color: var(--color-background);
+color: var(--color-text-primary);
+transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.auth-form input::placeholder, .auth-form textarea::placeholder {
+color: var(--color-text-secondary);
+opacity: 0.7;
+}
+
+.auth-form input:focus {
+outline: none;
+border-color: var(--color-primary);
+box-shadow: 0 0 0 3px rgba(217, 69, 69, 0.4);
+}
+.auth-form label {
+text-align: left;
+font-weight: 500;
+margin-bottom: -5px;
+color: var(--color-text-secondary);
+}
+
+.auth-form .btn-auth {
+background-color: var(--color-primary);
+color: #fff;
+font-weight: 600;
+padding: 15px;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+transition: background-color 0.2s ease;
+margin-top: 10px;
+}
+
+.auth-form .btn-auth:hover { background-color: #b83232; }
+.auth-toggle {
+text-align: center;
+margin-top: 15px;
+font-size: 0.9em;
+color: var(--color-text-secondary);
+position: relative; z-index: 1;
+}
+
+.auth-toggle a {
+color: var(--color-primary);
+text-decoration: none;
+font-weight: 600;
+}
+
+.auth-message {
+margin-top: 15px;
+color: var(--color-danger);
+text-align: center;
+font-weight: 500;
+}
+#payment-request-button { margin-bottom: 20px; position: relative; z-index: 1; }
+.separator {
+display: flex;
+align-items: center;
+text-align: center;
+color: var(--color-text-secondary);
+margin: 20px 0;
+position: relative; z-index: 1;
+}
+.separator::before, .separator::after {
+content: '';
+flex: 1;
+border-bottom: 1px solid var(--color-border);
+}
+.separator:not(:empty)::before { margin-right: .5em; }
+.separator:not(:empty)::after { margin-left: .5em; }
+
+#card-element {
+background-color: var(--color-background);
+padding: 12px;
+border: 1px solid var(--color-border);
+border-radius: 8px;
+margin-bottom: 20px;
+}
+#card-errors {
+color: var(--color-danger);
+margin-top: 10px;
+font-weight: 500;
+}
+
+.alert-content {
+background-color: var(--color-surface);
+padding: 30px;
+border-radius: var(--border-radius);
+box-shadow: var(--shadow-medium);
+text-align: center;
+max-width: 320px;
+}
+.alert-text { color: var(--color-text-primary); font-size: 1.1em;}
+.alert-button {
+margin-top: 20px;
+background-color: var(--color-primary);
+color: #fff;
+}
+
+.account-panel, .cart-panel {
+position: fixed;
+top: 0;
+height: 100%;
+width: 320px;
+background-color: var(--color-surface);
+color: var(--color-text-primary);
+box-shadow: var(--shadow-medium);
+transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+z-index: 999;
+display: flex;
+flex-direction: column;
+box-sizing: border-box;
+}
+.account-panel {
+left: 0;
+transform: translateX(-100%);
+}
+
+.cart-panel {
+right: 0;
+transform: translateX(100%);
+}
+
+.account-panel.show, .cart-panel.show {
+transform: translateX(0);
+}
+.account-panel h3, .cart-panel h3 {
+text-align: center;
+margin: 0;
+padding: 45px 25px 20px 25px;
+flex-shrink: 0;
+font-family: var(--font-christmas);
+font-size: 2.5em;
+letter-spacing: 1px;
+position: relative; z-index: 1;
+}
+.account-info {
+flex-grow: 1;
+overflow-y: auto;
+padding: 0 25px;
+position: relative; z-index: 1;
+}
+.account-info p {
+margin: 15px 0;
+font-size: 1em;
+border-bottom: 1px solid var(--color-border);
+padding-bottom: 15px;
+}
+
+.account-info p strong {
+display: block;
+font-size: 0.8em;
+font-weight: 600;
+color: var(--color-text-secondary);
+margin-bottom: 5px;
+}
+
+.account-buttons, .cart-buttons {
+display: flex;
+flex-direction: column;
+gap: 15px;
+margin-top: auto;
+padding: 20px 25px 25px 25px;
+border-top: 1px solid var(--color-border);
+flex-shrink: 0;
+position: relative; z-index: 1;
+}
+.btn-theme {
+background-color: var(--color-border);
+color: var(--color-text-primary);
+}
+.cart-items {
+list-style: none;
+padding: 0;
+margin: 0;
+overflow-y: auto;
+flex-grow: 1;
+padding: 0 25px;
+position: relative; z-index: 1;
+}
+.cart-item {
+display: flex;
+align-items: center;
+gap: 15px;
+padding: 15px 0;
+border-bottom: 1px solid var(--color-border);
+}
+
+.cart-item-img {
+width: 50px;
+height: 50px;
+border-radius: 8px;
+object-fit: cover;
+cursor: pointer;
+transition: transform 0.2s ease;
+}
+
+.cart-item-img:hover {
+transform: scale(1.08);
+}
+
+.cart-item-details {
+flex-grow: 1;
+text-align: left;
+display: flex;
+flex-direction: column;
+}
+.cart-item-details .name {
+font-size: 0.9em;
+font-weight: 500;
+}
+.cart-item-details .price {
+font-size: 0.9em;
+font-weight: 600;
+color: var(--color-text-secondary);
+}
+.cart-item button {
+background: none;
+border: 1px solid var(--color-danger);
+color: var(--color-danger);
+font-size: 0.7em;
+padding: 4px 8px;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.2s ease;
+margin-left: auto;
+}
+.cart-item button:hover { background: var(--color-danger); color: white; }
+.delivery-options {
+padding: 15px 25px;
+border-top: 1px solid var(--color-border);
+border-bottom: 1px solid var(--color-border);
+position: relative; z-index: 1;
+}
+.delivery-options label {
+display: block;
+margin-bottom: 10px;
+font-weight: 600;
+text-align: left;
+}
+.delivery-options select {
+width: 100%;
+padding: 10px;
+border-radius: 8px;
+border: 1px solid var(--color-border);
+background-color: var(--color-background);
+color: var(--color-text-primary);
+font-family: var(--font-family);
+}
+
+#home-delivery-fields {
+display: none;
+}
+#pickup-location-fields > div {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+.cart-total {
+text-align: right;
+margin-top: auto;
+font-size: 1.3em;
+font-weight: 700;
+color: var(--color-secondary);
+padding: 20px 25px 20px 25px;
+position: relative; z-index: 1;
+}
+
+.my-orders-list {
+list-style: none;
+padding: 0;
+margin: 0;
+max-height: 400px;
+overflow-y: auto;
+text-align: left;
+position: relative; z-index: 1;
+}
+
+.my-orders-item {
+background-color: rgba(0,0,0,0.2);
+padding: 15px;
+border-radius: var(--border-radius);
+margin-bottom: 10px;
+cursor: pointer;
+border: 1px solid var(--color-border);
+}
+.order-summary {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-weight: 600;
+}
+.order-details {
+display: none;
+margin-top: 15px;
+padding-top: 15px;
+border-top: 1px solid var(--color-border);
+text-align: left;
+font-size: 0.9em;
+color: var(--color-text-secondary);
+}
+.order-details strong { color: var(--color-text-primary); }
+
+.my-orders-item .status {
+font-size: 0.8em;
+padding: 5px 10px;
+border-radius: 50px;
+color: #111;
+font-weight: 500;
+}
+.my-orders-item .status.Entregado { background-color: #2e8b57; color: white; }
+.my-orders-item .status.Pendiente { background-color: #f1c40f; }
+.my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: #111; }
+.my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
+
+.footer-social {
+order: 4;
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 15px;
+margin-top: 25px;
+position: relative;
+bottom: auto;
+padding: 0;
+z-index: 10;
+}
+
+.social-btn {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 6px 12px;
+border-radius: 50px;
+color: white;
+text-decoration: none;
+font-size: 0.8em;
+font-weight: 500;
+box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+}
+
+.social-btn.facebook {
+background-color: #1877F2;
+}
+
+.social-btn.whatsapp {
+background-color: #25D366;
+}
+
+.social-btn svg {
+width: 18px;
+height: 18px;
+}
+.account-buttons .footer-social {
+margin-top: 10px;
+flex-direction: column;
+padding: 0;
+order: 0;
+position: relative;
+}
+.account-buttons .social-btn {
+width: 100%;
+justify-content: center;
+box-sizing: border-box;
+}
+</style>
 </head>
 <body>
 
-    <div class="container" id="main-container">
-        <button id="auth-button" class="auth-button">Iniciar Sesión</button>
-        <div class="header-icons">
-            <div class="cart-icon-wrapper">
-                <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎃</a>
-            </div>
-            </div>
+<div class="snow" id="snow-container"></div>
 
-        <main id="pantalla-principal" class="screen active">
-            <div class="title-container">
-                <h1>
-                    <span class="boo-text">¡Boo! 👻</span>
-                    <span class="welcome-text">Bienvenido a KalCTas</span>
-                </h1>
-                </div>
-            <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
-            <div class="button-container" id="main-buttons">
-                <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
-                    KalCTas 2/4
-                </button>
-                <button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
-                    KalCTas 3/4
-                </button>
-                <button class="btn btn-kalctas-largas" onclick="mostrarPantalla('pantalla-largas')">
-                    KalCTas Largas
-                </button>
-            </div>
-            <div class="footer-social">
-                <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-                    ¡Síguenos!
-                </a>
-                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
-                    ¡Contáctanos!
-                </a>
-            </div>
-        </main>
+<div class="container" id="main-container">
+<div class="lights">
+<div class="light red"></div>
+<div class="light yellow"></div>
+<div class="light green"></div>
+<div class="light blue"></div>
+<div class="light purple"></div>
+<div class="light red"></div>
+<div class="light yellow"></div>
+<div class="light green"></div>
+<div class="light blue"></div>
+<div class="light purple"></div>
+</div>
 
-        <section id="pantalla-2-4" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
-            <div class="model-grid" id="grid-2-4"></div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
-            </button>
-        </section>
+<button id="auth-button" class="auth-button">Iniciar Sesión</button>
+<div class="header-icons">
+<a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎁</a>
+</div>
 
-        <section id="pantalla-3-4" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
-            <div class="model-grid" id="grid-3-4"></div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
-            </button>
-        </section>
+<main id="pantalla-principal" class="screen active">
+<div class="title-container">
+<h1>
+<span class="jojo-text">¡Jo, Jo, Jo! 🎅🏼</span>
+<span class="welcome-text">Bienvenido a KalCTas</span>
+</h1>
+</div>
+<img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
+<div class="button-container" id="main-buttons">
+<button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
+<span>KalCTas 2/4</span>
+</button>
+<button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
+<span>KalCTas 3/4</span>
+</button>
+<button class="btn btn-kalctas-largas" onclick="mostrarPantalla('pantalla-largas')">
+<span>KalCTas Largas</span>
+</button>
+</div>
+<div class="footer-social">
+<a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+¡Síguenos!
+</a>
+<a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+¡Contáctanos!
+</a>
+</div>
+</main>
 
-        <section id="pantalla-largas" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
-            <div class="model-grid" id="grid-largas"></div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
-                Volver
-            </button>
-        </section>
-    </div>
+<section id="pantalla-2-4" class="screen">
+<a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+<div class="model-grid" id="grid-2-4"></div>
+<button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+<span>Volver</span>
+</button>
+</section>
 
-    <div id="account-panel" class="account-panel">
-        <span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
-        <h3>Mi Cuenta</h3>
-        <div class="account-info" id="account-info">
-        </div>
-        <div class="account-buttons">
-            <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
-            <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
-            <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
-            <div class="footer-social">
-                <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-                    ¡Síguenos!
-                </a>
-                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
-                    ¡Contáctanos!
-                </a>
-            </div>
-        </div>
-    </div>
+<section id="pantalla-3-4" class="screen">
+<a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+<div class="model-grid" id="grid-3-4"></div>
+<button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+<span>Volver</span>
+</button>
+</section>
 
-    <div id="cart-panel" class="cart-panel">
-        <span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
-        <h3>Tu Carrito</h3>
-        <ul class="cart-items" id="cart-list"></ul>
-        <div class="delivery-options">
-            <label for="delivery-method">Forma de entrega:</label>
-            <select id="delivery-method" onchange="renderizarCarrito()">
-                <option value="punto-medio">Punto medio ($0.00)</option>
-                <option value="domicilio">Entrega a domicilio ($60.00)</option>
-            </select>
-        </div>
-        <div class="cart-total" id="cart-total"></div>
-        <div class="cart-buttons">
-            <button class="btn btn-checkout" onclick="pagar()">Pagar</button>
-            <button class="btn btn-volver" onclick="cerrarPanelCarrito()">Cerrar</button>
-        </div>
-    </div>
-    
-    <div id="image-modal" class="image-modal" onclick="cerrarModal()">
-        <span class="close-modal">&times;</span>
-        <img class="modal-content-img" id="modal-image">
-    </div>
+<section id="pantalla-largas" class="screen">
+<a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+<div class="model-grid" id="grid-largas"></div>
+<button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+<span>Volver</span>
+</button>
+</section>
+</div>
 
-    <div id="edit-profile-modal" class="edit-profile-modal">
-        <div class="auth-modal-content">
-            <span class="close-modal" onclick="cerrarModalEditarDatos()">&times;</span>
-            <h3>Editar Mis Datos</h3>
-            <form id="edit-profile-form" class="auth-form">
-                <input type="text" id="edit-nombre" placeholder="Nombre" required>
-                <input type="text" id="edit-apellido" placeholder="Apellido" required>
-                <input type="tel" id="edit-telefono" placeholder="Teléfono de contacto (Opcional)">
-                <button type="submit" class="btn-auth">Guardar Cambios</button>
-                <p id="edit-message" class="auth-message"></p>
-            </form>
-        </div>
-    </div>
+<div id="account-panel" class="account-panel">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div>
+</div>
+<span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
+<h3>Mi Cuenta</h3>
+<div class="account-info" id="account-info">
+</div>
+<div class="account-buttons">
+<button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()"><span>Mis pedidos</span></button>
+<button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()"><span>Editar mis datos</span></button>
+<button class="btn btn-logout" onclick="cerrarSesion()"><span>Cerrar Sesión</span></button>
+<div class="footer-social">
+<a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+¡Síguenos!
+</a>
+<a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+¡Contáctanos!
+</a>
+</div>
+</div>
+</div>
 
-    <div id="auth-modal" class="auth-modal">
-        <div class="auth-modal-content">
-            <span class="close-modal" onclick="cerrarAuthModal()">&times;</span>
-            <div id="login-form-container">
-                <h3>Iniciar Sesión</h3>
-                <form id="login-form" class="auth-form">
-                    <input type="email" id="login-email" placeholder="Correo electrónico" required>
-                    <input type="password" id="login-password" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth">Entrar</button>
-                    <p id="login-message" class="auth-message"></p>
-                </form>
-                <p class="auth-toggle">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro()">Regístrate</a></p>
-            </div>
-            <div id="register-form-container" style="display:none;">
-                <h3>Crear Cuenta</h3>
-                <form id="register-form" class="auth-form">
-                    <input type="text" id="register-nombre" placeholder="Nombre" required>
-                    <input type="text" id="register-apellido" placeholder="Apellido" required>
-                    <input type="email" id="register-email" placeholder="Correo electrónico" required>
-                    <input type="password" id="register-password" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth">Registrarme</button>
-                    <p id="register-message" class="auth-message"></p>
-                </form>
-                <p class="auth-toggle">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia Sesión</a></p>
-            </div>
-        </div>
-    </div>
-    
-    <div id="alert-box" class="alert-box">
-        <div class="alert-content">
-            <p id="alert-text" class="alert-text"></p>
-            <button class="btn alert-button" onclick="closeAlert()">Aceptar</button>
-        </div>
-    </div>
+<div id="cart-panel" class="cart-panel">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div>
+</div>
+<span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
+<h3>Tu Carrito</h3>
+<ul class="cart-items" id="cart-list"></ul>
+<div class="delivery-options">
+<label for="delivery-method">Forma de entrega:</label>
+<select id="delivery-method" onchange="renderizarCarrito()">
+<option value="punto-medio">Punto medio ($0.00)</option>
+<option value="domicilio">Entrega a domicilio ($60.00)</option>
+</select>
+</div>
+<div class="cart-total" id="cart-total"></div>
+<div class="cart-buttons">
+<button class="btn btn-checkout" onclick="pagar()"><span>Pagar</span></button>
+<button class="btn btn-volver" onclick="cerrarPanelCarrito()"><span>Cerrar</span></button>
+</div>
+</div>
+<div id="image-modal" class="image-modal" onclick="cerrarModal()">
+<span class="close-modal">&times;</span>
+<img class="modal-content-img" id="modal-image">
+</div>
 
-    <div id="payment-options-modal" class="payment-options-modal">
-        <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarModalPago()">&times;</span>
-            <h3>Selecciona tu método de pago</h3>
-            <div class="button-container">
-                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta / Apple Pay</button>
-                <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')">Pagar por Transferencia</button>
-                <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')">Pagar en efectivo</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="card-payment-modal" class="auth-modal">
-        <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarModalPagoTarjeta()">&times;</span>
-            <h3>Pago con Tarjeta</h3>
-            
-            <div id="payment-request-button"></div>
-            
-            <div class="separator" id="separator-or"><span>O</span></div>
+<div id="edit-profile-modal" class="edit-profile-modal">
+<div class="auth-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+</div>
+<span class="close-modal" onclick="cerrarModalEditarDatos()">&times;</span>
+<h3>Editar Mis Datos</h3>
+<form id="edit-profile-form" class="auth-form">
+<input type="text" id="edit-nombre" placeholder="Nombre" required>
+<input type="text" id="edit-apellido" placeholder="Apellido" required>
+<input type="tel" id="edit-telefono" placeholder="Teléfono de contacto (Opcional)">
+<button type="submit" class="btn btn-auth"><span>Guardar Cambios</span></button>
+<p id="edit-message" class="auth-message"></p>
+</form>
+</div>
+</div>
 
-            <form id="payment-form" class="auth-form">
-                <div id="card-element"></div>
-                <button type="submit" id="submit-payment" class="btn btn-add">
-                    <span id="button-text">Pagar Ahora</span>
-                </button>
-                <div id="card-errors" role="alert"></div>
-              </form>
-        </div>
-    </div>
-    <div id="transfer-info-modal" class="transfer-info-modal">
-        <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
-            <h3>Detalles de la Transferencia</h3>
-            <div class="info-container">
-                <p id="transfer-total-amount" style="font-size: 1.3em; font-weight: bold; text-align: center; color: var(--color-primary); margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;"></p>
-                <p><strong>Cuenta CLABE:</strong> 012822015052928359</p>
-                <p><strong>Banco:</strong> BBVA</p>
-                <p><strong>Nombre:</strong> KalCTas</p>
-                <p><strong>Concepto:</strong> [Tu nombre de usuario]</p>
-                
-                <p style="margin-top: 15px; font-weight: bold; text-align: center;">Una vez transferido, envía tu comprobante:</p>
-                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp" style="width: 100%; justify-content: center; box-sizing: border-box; margin-top: 10px; font-size: 1em; text-transform: uppercase;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"></path></svg>
-                    <span>Envía tu comprobante</span>
-                </a>
-                </div>
-            <button class="btn btn-add" style="margin-top: 20px;" onclick="mostrarModalConfirmarEntrega('Transferencia')">Continuar</button>
-        </div>
-    </div>
-    
-    <div id="confirm-order-modal" class="confirm-order-modal">
-        <div class="payment-modal-content">
-            <span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
-            <h3 id="confirm-order-title"></h3>
-            <form id="delivery-form" class="auth-form">
-                <input type="hidden" id="payment-method-input">
-                
-                <input type="hidden" id="order-id-input"> 
-                <div id="home-delivery-fields">
-                    <label for="delivery-street">Calle y número:</label>
-                    <input type="text" id="delivery-street">
-                    
-                    <label for="delivery-neighborhood">Colonia:</label>
-                    <input type="text" id="delivery-neighborhood">
+<div id="auth-modal" class="auth-modal">
+<div class="auth-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+</div>
+<span class="close-modal" onclick="cerrarAuthModal()">&times;</span>
+<div id="login-form-container">
+<h3>Iniciar Sesión</h3>
+<form id="login-form" class="auth-form">
+<input type="email" id="login-email" placeholder="Correo electrónico" required>
+<input type="password" id="login-password" placeholder="Contraseña" required>
+<button type="submit" class="btn-auth"><span>Entrar</span></button>
+<p id="login-message" class="auth-message"></p>
+</form>
+<p class="auth-toggle">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro()">Regístrate</a></p>
+</div>
+<div id="register-form-container" style="display:none;">
+<h3>Crear Cuenta</h3>
+<form id="register-form" class="auth-form">
+<input type="text" id="register-nombre" placeholder="Nombre" required>
+<input type="text" id="register-apellido" placeholder="Apellido" required>
+<input type="email" id="register-email" placeholder="Correo electrónico" required>
+<input type="password" id="register-password" placeholder="Contraseña" required>
+<button type="submit" class="btn-auth"><span>Registrarme</span></button>
+<p id="register-message" class="auth-message"></p>
+</form>
+<p class="auth-toggle">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia Sesión</a></p>
+</div>
+</div>
+</div>
+<div id="alert-box" class="alert-box">
+<div class="alert-content">
+<p id="alert-text" class="alert-text"></p>
+<button class="btn alert-button" onclick="closeAlert()"><span>Aceptar</span></button>
+</div>
+</div>
 
-                    <label for="delivery-description">Descripción (opcional):</label>
-                    <textarea id="delivery-description" placeholder="Ej: Casa color azul, portón negro..."></textarea>
-                </div>
-                
-                <div id="pickup-location-fields">
-                    <div>
-                        <label for="delivery-date">Fecha de entrega:</label>
-                        <input type="date" id="delivery-date" required>
-                    </div>
-                    <div>
-                        <label for="delivery-location">Lugar de entrega:</label>
-                        <select id="delivery-location" onchange="toggleOtherLocation()">
-                            <option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
-                            <option value="La Portillo">La Portillo</option>
-                            <option value="Periférico">Periférico</option>
-                            <option value="Smart periférico">Smart periférico</option>
-                            <option value="Soriana Hidalgo">Soriana Hidalgo</option>
-                            <option value="HEB Morelos">HEB Morelos</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
-                    </div>
-                </div>
-                <label for="delivery-comments">Comentarios (opcional):</label>
-                <textarea id="delivery-comments" placeholder="Ej: Entregar en la entrada principal, tocar el claxon, etc."></textarea>
+<div id="payment-options-modal" class="payment-options-modal">
+<div class="payment-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+</div>
+<span class="close-modal" onclick="cerrarModalPago()">&times;</span>
+<h3>Selecciona tu método de pago</h3>
+<div class="button-container">
+<button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()"><span>Pago con Tarjeta / Apple Pay</span></button>
+<button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')"><span>Pagar por Transferencia</span></button>
+<button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')"><span>Pagar en efectivo</span></button>
+</div>
+</div>
+</div>
+<div id="card-payment-modal" class="auth-modal">
+<div class="payment-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+</div>
+<span class="close-modal" onclick="cerrarModalPagoTarjeta()">&times;</span>
+<h3>Pago con Tarjeta</h3>
+<div id="payment-request-button"></div>
+<div class="separator" id="separator-or"><span>O</span></div>
 
-                <button type="submit" class="btn btn-add">
-                    <span>Confirmar Pedido</span>
-                    <span>🛒</span>
-                </button>
-                </form>
-        </div>
-    </div>
+<form id="payment-form" class="auth-form">
+<div id="card-element"></div>
+<button type="submit" id="submit-payment" class="btn btn-add">
+<span id="button-text">Pagar Ahora</span>
+</button>
+<div id="card-errors" role="alert"></div>
+</form>
+</div>
+</div>
+<div id="transfer-info-modal" class="transfer-info-modal">
+<div class="payment-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+</div>
+<span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
+<h3>Detalles de la Transferencia</h3>
+<div class="info-container">
+<p id="transfer-total-amount" style="font-size: 1.5em; text-align: center; margin-bottom: 20px; color: var(--color-secondary);"></p>
+<p><strong>Cuenta CLABE:</strong> 012822015052928359</p>
+<p><strong>Banco:</strong> BBVA</p>
+<p><strong>Nombre:</strong> KalCTas</p>
+<p><strong>Concepto:</strong> [Tu nombre de usuario]</p>
+<p style="margin-top: 15px; font-weight: bold; text-align: center;">Una vez transferido, envía tu comprobante:</p>
+<a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp" style="width: 100%; justify-content: center; box-sizing: border-box; margin-top: 10px; font-size: 1em;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+Enviar Comprobante
+</a>
+</div>
+<button class="btn btn-add" onclick="mostrarModalConfirmarEntrega('Transferencia')"><span>Continuar</span></button>
+</div>
+</div>
+<div id="confirm-order-modal" class="confirm-order-modal">
+<div class="payment-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+</div>
+<span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
+<h3 id="confirm-order-title"></h3>
+<form id="delivery-form" class="auth-form">
+<input type="hidden" id="payment-method-input">
+<input type="hidden" id="order-id-input">
+<div id="home-delivery-fields">
+<label for="delivery-street">Calle y número:</label>
+<input type="text" id="delivery-street">
+<label for="delivery-neighborhood">Colonia:</label>
+<input type="text" id="delivery-neighborhood">
 
-    <div id="my-orders-modal" class="my-orders-modal">
-        <div class="my-orders-modal-content">
-            <span class="close-modal" onclick="cerrarModalMisPedidos()">&times;</span>
-            <h3>Mis Pedidos</h3>
-            <ul class="my-orders-list" id="my-orders-list"></ul>
-        </div>
-    </div>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
-          authDomain: "tienda-kalctas.firebaseapp.com",
-          projectId: "tienda-kalctas",
-          storageBucket: "tienda-kalctas.firebasestorage.app",
-          messagingSenderId: "374355691085",
-          appId: "1:374355691085:web:18abb15678c7a6870bbe04"
-        };
+<label for="delivery-description">Descripción (opcional):</label>
+<textarea id="delivery-description" placeholder="Ej: Casa color azul, portón negro..."></textarea>
+</div>
+<div id="pickup-location-fields">
+<div>
+<label for="delivery-date">Fecha de entrega:</label>
+<input type="date" id="delivery-date" required>
+</div>
+<div>
+<label for="delivery-location">Lugar de entrega:</label>
+<select id="delivery-location" onchange="toggleOtherLocation()">
+<option value="Mi tienda Jarachina">Mi tienda Jarachina</option>
+<option value="La Portillo">La Portillo</option>
+<option value="Periférico">Periférico</option>
+<option value="Smart periférico">Smart periférico</option>
+<option value="Soriana Hidalgo">Soriana Hidalgo</option>
+<option value="HEB Morelos">HEB Morelos</option>
+<option value="Otro">Otro</option>
+</select>
+</div>
+<div>
+<textarea id="other-location-note" placeholder="Escribe el lugar de entrega (punto medio)" style="display:none;"></textarea>
+</div>
+</div>
+<label for="delivery-comments">Comentarios (opcional):</label>
+<textarea id="delivery-comments" placeholder="Ej: Entregar en la entrada principal, tocar el claxon, etc."></textarea>
 
-        firebase.initializeApp(firebaseConfig);
+<button type="submit" class="btn btn-add">
+<span>Confirmar Pedido</span>
+<span>🎄</span>
+</button>
+</form>
+</div>
+</div>
 
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        let currentUser = null;
-        let unsubscribeMisPedidos = null; 
-        
-        // --- CONFIGURACIÓN DE STRIPE ---
-        const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
-        let elements;
-        let cardElement;
-        let currentClientSecret;
-        const cardPaymentModal = document.getElementById('card-payment-modal');
+<div id="my-orders-modal" class="my-orders-modal">
+<div class="my-orders-modal-content">
+<div class="lights">
+<div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div>
+</div>
+<span class="close-modal" onclick="cerrarModalMisPedidos()">&times;</span>
+<h3>Mis Pedidos</h3>
+<ul class="my-orders-list" id="my-orders-list"></ul>
+</div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyDuNHPsYnLD_qmbG2K9ieTIOCX6U4slD1E",
+authDomain: "tienda-kalctas.firebaseapp.com",
+projectId: "tienda-kalctas",
+storageBucket: "tienda-kalctas.firebasestorage.app",
+messagingSenderId: "374355691085",
+appId: "1:374355691085:web:18abb15678c7a6870bbe04"
+};
 
-        const alertBox = document.getElementById('alert-box');
-        const alertText = document.getElementById('alert-text');
-        
-        const pantallas = document.querySelectorAll('.screen');
-        const mainContainer = document.getElementById('main-container');
+firebase.initializeApp(firebaseConfig);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            mainContainer.classList.add('show');
-            window.scrollTo(0, 0); 
-            const activeScreen = document.querySelector('.screen.active');
-            if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
-                 generarGaleria(activeScreen.id);
-            }
-            
-            const themeToggleButton = document.getElementById('theme-toggle-button');
-            if (themeToggleButton) { 
-                const currentTheme = localStorage.getItem('theme');
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+let unsubscribeMisPedidos = null;
+const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
+let elements;
+let cardElement;
+let currentClientSecret;
+const cardPaymentModal = document.getElementById('card-payment-modal');
 
-                if (currentTheme === 'dark-mode') {
-                    document.body.classList.add('dark-mode');
-                    themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                }
+const alertBox = document.getElementById('alert-box');
+const alertText = document.getElementById('alert-text');
+const pantallas = document.querySelectorAll('.screen');
+const mainContainer = document.getElementById('main-container');
 
-                themeToggleButton.addEventListener('click', () => {
-                    document.body.classList.toggle('dark-mode');
-                    let theme = 'light-mode';
-                    if (document.body.classList.contains('dark-mode')) {
-                        theme = 'dark-mode';
-                        themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
-                    } else {
-                        themeToggleButton.textContent = 'Cambiar a Tema Oscuro 🌙';
-                    }
-                    localStorage.setItem('theme', theme);
-                });
-            }
-        });
+document.addEventListener('DOMContentLoaded', () => {
+mainContainer.classList.add('show');
+window.scrollTo(0, 0);
+const activeScreen = document.querySelector('.screen.active');
+if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
+generarGaleria(activeScreen.id);
+}
 
-        // ================================================================================= //
-        // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN
-        // ================================================================================= //
-        
-        function showMessage(text) {
-            alertText.textContent = text;
-            alertBox.style.display = 'flex';
-        }
+const snowContainer = document.getElementById('snow-container');
+const numberOfSnowflakes = 40;
+for (let i = 0; i < numberOfSnowflakes; i++) {
+const snowflake = document.createElement('div');
+snowflake.className = 'snowflake';
+snowflake.style.left = `${Math.random() * 100}vw`;
+snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+snowflake.style.animationDelay = `${Math.random() * 5}s`;
+snowflake.style.opacity = Math.random();
+snowflake.style.width = snowflake.style.height = `${Math.random() * 4 + 2}px`;
+snowContainer.appendChild(snowflake);
+}
+});
 
-        function closeAlert() {
-            alertBox.style.display = 'none';
-        }
-        
-        function mostrarPantalla(idDePantalla) {
-            pantallas.forEach(pantalla => {
-                pantalla.classList.remove('active');
-            });
+// ================================================================================= //
+// A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN (SIN CAMBIOS)
+// ================================================================================= //
+function showMessage(text) {
+alertText.textContent = text;
+alertBox.style.display = 'flex';
+}
 
-            const pantallaActiva = document.getElementById(idDePantalla);
-            if (pantallaActiva) {
-                pantallaActiva.classList.add('active');
-                if (idDePantalla.startsWith('pantalla-')) {
-                    generarGaleria(idDePantalla);
-                }
-            }
-        }
-        
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-            const authButton = document.getElementById('auth-button');
-            if (user) {
-                authButton.textContent = 'Mi Cuenta';
-                authButton.onclick = () => mostrarPanelMiCuenta();
-                cargarDatosUsuario();
-            } else {
-                authButton.textContent = 'Iniciar Sesión';
-                authButton.onclick = () => mostrarAuthModal();
-                if (unsubscribeMisPedidos) unsubscribeMisPedidos(); 
-            }
-            const activeScreen = document.querySelector('.screen.active');
-            if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
-                generarGaleria(activeScreen.id);
-            }
-        });
+function closeAlert() {
+alertBox.style.display = 'none';
+}
+function mostrarPantalla(idDePantalla) {
+const snowContainer = document.getElementById('snow-container');
+snowContainer.style.opacity = '0';
+setTimeout(() => {
+pantallas.forEach(pantalla => {
+pantalla.classList.remove('active');
+});
+const pantallaActiva = document.getElementById(idDePantalla);
+if (pantallaActiva) {
+pantallaActiva.classList.add('active');
+if (idDePantalla.startsWith('pantalla-')) {
+generarGaleria(idDePantalla);
+}
+}
+snowContainer.style.opacity = '1';
+}, 300);
+}
+auth.onAuthStateChanged(user => {
+currentUser = user;
+const authButton = document.getElementById('auth-button');
+if (user) {
+authButton.textContent = 'Mi Cuenta';
+authButton.onclick = () => mostrarPanelMiCuenta();
+cargarDatosUsuario();
+} else {
+authButton.textContent = 'Iniciar Sesión';
+authButton.onclick = () => mostrarAuthModal();
+if (unsubscribeMisPedidos) unsubscribeMisPedidos();
+}
+const activeScreen = document.querySelector('.screen.active');
+if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
+generarGaleria(activeScreen.id);
+}
+});
 
 
-        const authModal = document.getElementById('auth-modal');
-        const loginFormContainer = document.getElementById('login-form-container');
-        const registerFormContainer = document.getElementById('register-form-container');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const loginMessage = document.getElementById('login-message');
-        const registerMessage = document.getElementById('register-message');
+const authModal = document.getElementById('auth-modal');
+const loginFormContainer = document.getElementById('login-form-container');
+const registerFormContainer = document.getElementById('register-form-container');
+const loginForm = document.getElementById('login-form');
+const registerForm = document.getElementById('register-form');
+const loginMessage = document.getElementById('login-message');
+const registerMessage = document.getElementById('register-message');
 
-        function mostrarAuthModal() {
-            authModal.style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
+function mostrarAuthModal() {
+authModal.style.display = 'flex';
+window.scrollTo(0, 0);
+}
 
-        function cerrarAuthModal() {
-            authModal.style.display = 'none';
-        }
-        
-        function mostrarRegistro() {
-            loginFormContainer.style.display = 'none';
-            registerFormContainer.style.display = 'block';
-            loginMessage.textContent = '';
-        }
-        
-        function mostrarLogin() {
-            registerFormContainer.style.display = 'none';
-            loginFormContainer.style.display = 'block';
-            registerMessage.textContent = '';
-        }
+function cerrarAuthModal() {
+authModal.style.display = 'none';
+}
+function mostrarRegistro() {
+loginFormContainer.style.display = 'none';
+registerFormContainer.style.display = 'block';
+loginMessage.textContent = '';
+}
+function mostrarLogin() {
+registerFormContainer.style.display = 'none';
+loginFormContainer.style.display = 'block';
+registerMessage.textContent = '';
+}
 
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = registerForm['register-email'].value;
-            const password = registerForm['register-password'].value;
-            const nombre = registerForm['register-nombre'].value;
-            const apellido = registerForm['register-apellido'].value;
+registerForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+const email = registerForm['register-email'].value;
+const password = registerForm['register-password'].value;
+const nombre = registerForm['register-nombre'].value;
+const apellido = registerForm['register-apellido'].value;
 
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await db.collection('usuarios').doc(userCredential.user.uid).set({
-                    email: email,
-                    nombre: nombre,
-                    apellido: apellido,
-                    telefono: null,
-                    carrito: []
-                });
-                showMessage('¡Cuenta creada con éxito! Te recomendamos ir a "Mi Cuenta" para agregar tu número de teléfono, es importante para contactarte sobre tus entregas.');
-                cerrarAuthModal();
-            } catch (error) {
-                console.error('Error de registro:', error.message);
-                registerMessage.textContent = traducirErrorFirebase(error.code);
-            }
-        });
+try {
+const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+await db.collection('usuarios').doc(userCredential.user.uid).set({
+email: email,
+nombre: nombre,
+apellido: apellido,
+telefono: null,
+carrito: []
+});
+showMessage('¡Cuenta creada con éxito! Te recomendamos ir a "Mi Cuenta" para agregar tu número de teléfono, es importante para contactarte sobre tus entregas.');
+cerrarAuthModal();
+} catch (error) {
+console.error('Error de registro:', error.message);
+registerMessage.textContent = traducirErrorFirebase(error.code);
+}
+});
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = loginForm['login-email'].value;
-            const password = loginForm['login-password'].value;
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                showMessage('¡Sesión iniciada correctamente!');
-                cerrarAuthModal();
-                window.scrollTo(0, 0); 
-            } catch (error) {
-                console.error('Error de inicio de sesión:', error.message);
-                loginMessage.textContent = traducirErrorFirebase(error.code);
-            }
-        });
-        
-        function traducirErrorFirebase(codigo) {
-            switch (codigo) {
-                case 'auth/email-already-in-use': return 'El correo electrónico ya está registrado.';
-                case 'auth/invalid-email': return 'El correo electrónico no es válido.';
-                case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
-                case 'auth/user-not-found': return 'No se encontró un usuario con este correo.';
-                case 'auth/wrong-password': return 'La contraseña es incorrecta.';
-                default: return 'Ocurrió un error inesperado. Intenta de nuevo.';
-            }
-        }
+loginForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+const email = loginForm['login-email'].value;
+const password = loginForm['login-password'].value;
+try {
+await auth.signInWithEmailAndPassword(email, password);
+showMessage('¡Sesión iniciada correctamente!');
+cerrarAuthModal();
+window.scrollTo(0, 0);
+} catch (error) {
+console.error('Error de inicio de sesión:', error.message);
+loginMessage.textContent = traducirErrorFirebase(error.code);
+}
+});
+function traducirErrorFirebase(codigo) {
+switch (codigo) {
+case 'auth/email-already-in-use': return 'El correo electrónico ya está registrado.';
+case 'auth/invalid-email': return 'El correo electrónico no es válido.';
+case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
+case 'auth/user-not-found': return 'No se encontró un usuario con este correo.';
+case 'auth/wrong-password': return 'La contraseña es incorrecta.';
+default: return 'Ocurrió un error inesperado. Intenta de nuevo.';
+}
+}
 
-        const accountPanel = document.getElementById('account-panel');
-        const accountInfo = document.getElementById('account-info');
+const accountPanel = document.getElementById('account-panel');
+const accountInfo = document.getElementById('account-info');
 
-        function mostrarPanelMiCuenta() {
-            accountPanel.classList.add('show');
-        }
+function mostrarPanelMiCuenta() {
+accountPanel.classList.add('show');
+}
 
-        function cerrarPanelMiCuenta() {
-            accountPanel.classList.remove('show');
-        }
+function cerrarPanelMiCuenta() {
+accountPanel.classList.remove('show');
+}
 
-        async function cargarDatosUsuario() {
-            if (!currentUser) return;
-            try {
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
-                    accountInfo.innerHTML = `
-                        <p><strong>Nombre:</strong> ${userData.nombre} ${userData.apellido}</p>
-                        <p><strong>Correo:</strong> ${userData.email}</p>
-                        <p><strong>Teléfono:</strong> ${userData.telefono || 'No registrado'}</p>
-                    `;
-                }
-            } catch (error) {
-                console.error("Error al cargar datos del usuario:", error);
-                accountInfo.innerHTML = `<p>Error al cargar los datos.</p>`;
-            }
-        }
+async function cargarDatosUsuario() {
+if (!currentUser) return;
+try {
+const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+if (userDoc.exists) {
+const userData = userDoc.data();
+accountInfo.innerHTML = `
+<p><strong>Nombre:</strong> ${userData.nombre} ${userData.apellido}</p>
+<p><strong>Correo:</strong> ${userData.email}</p>
+<p><strong>Teléfono:</strong> ${userData.telefono || 'No registrado'}</p>
+`;
+}
+} catch (error) {
+console.error("Error al cargar datos del usuario:", error);
+accountInfo.innerHTML = `<p>Error al cargar los datos.</p>`;
+}
+}
 
-        const editProfileModal = document.getElementById('edit-profile-modal');
-        const editProfileForm = document.getElementById('edit-profile-form');
+const editProfileModal = document.getElementById('edit-profile-modal');
+const editProfileForm = document.getElementById('edit-profile-form');
 
-        async function mostrarModalEditarDatos() {
-            if (!currentUser) return;
-            cerrarPanelMiCuenta();
-            editProfileModal.style.display = 'flex';
-            try {
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
-                    document.getElementById('edit-nombre').value = userData.nombre || '';
-                    document.getElementById('edit-apellido').value = userData.apellido || '';
-                    document.getElementById('edit-telefono').value = userData.telefono || '';
-                }
-            } catch (error) {
-                console.error("Error al cargar datos para editar:", error);
-                showMessage("No se pudieron cargar los datos para editar.");
-            }
-        }
+async function mostrarModalEditarDatos() {
+if (!currentUser) return;
+cerrarPanelMiCuenta();
+editProfileModal.style.display = 'flex';
+try {
+const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+if (userDoc.exists) {
+const userData = userDoc.data();
+document.getElementById('edit-nombre').value = userData.nombre || '';
+document.getElementById('edit-apellido').value = userData.apellido || '';
+document.getElementById('edit-telefono').value = userData.telefono || '';
+}
+} catch (error) {
+console.error("Error al cargar datos para editar:", error);
+showMessage("No se pudieron cargar los datos para editar.");
+}
+}
 
-        function cerrarModalEditarDatos() {
-            editProfileModal.style.display = 'none';
-        }
+function cerrarModalEditarDatos() {
+editProfileModal.style.display = 'none';
+}
 
-        editProfileForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nombre = document.getElementById('edit-nombre').value;
-            const apellido = document.getElementById('edit-apellido').value;
-            const telefono = document.getElementById('edit-telefono').value;
+editProfileForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+const nombre = document.getElementById('edit-nombre').value;
+const apellido = document.getElementById('edit-apellido').value;
+const telefono = document.getElementById('edit-telefono').value;
 
-            try {
-                await db.collection('usuarios').doc(currentUser.uid).update({ nombre, apellido, telefono });
-                showMessage('Datos actualizados con éxito.');
-                cerrarModalEditarDatos();
-                cargarDatosUsuario();
-            } catch (error) {
-                console.error("Error al actualizar datos:", error);
-                document.getElementById('edit-message').textContent = "Hubo un error al guardar los cambios.";
-            }
-        });
+try {
+await db.collection('usuarios').doc(currentUser.uid).update({ nombre, apellido, telefono });
+showMessage('Datos actualizados con éxito.');
+cerrarModalEditarDatos();
+cargarDatosUsuario();
+} catch (error) {
+console.error("Error al actualizar datos:", error);
+document.getElementById('edit-message').textContent = "Hubo un error al guardar los cambios."
+}
+});
 
-        async function cerrarSesion() {
-            try {
-                await auth.signOut();
-                cerrarPanelMiCuenta();
-                showMessage("Has cerrado sesión.");
-            } catch (error) {
-                console.error("Error al cerrar sesión:", error);
-                showMessage("Hubo un error al intentar cerrar sesión.");
-            }
-        }
-        
-        const myOrdersModal = document.getElementById('my-orders-modal');
-        const myOrdersList = document.getElementById('my-orders-list');
+async function cerrarSesion() {
+try {
+await auth.signOut();
+cerrarPanelMiCuenta();
+showMessage("Has cerrado sesión.");
+} catch (error) {
+console.error("Error al cerrar sesión:", error);
+showMessage("Hubo un error al intentar cerrar sesión.");
+}
+}
+const myOrdersModal = document.getElementById('my-orders-modal');
+const myOrdersList = document.getElementById('my-orders-list');
 
-        function mostrarModalMisPedidos() {
-            if (!currentUser) {
-                showMessage('Debes iniciar sesión para ver tus pedidos.');
-                return;
-            }
-            cerrarPanelMiCuenta();
-            myOrdersModal.style.display = 'flex';
-            cargarMisPedidos();
-        }
+function mostrarModalMisPedidos() {
+if (!currentUser) {
+showMessage('Debes iniciar sesión para ver tus pedidos.');
+return;
+}
+cerrarPanelMiCuenta();
+myOrdersModal.style.display = 'flex';
+cargarMisPedidos();
+}
 
-        function cerrarModalMisPedidos() {
-            myOrdersModal.style.display = 'none';
-            if (unsubscribeMisPedidos) {
-                unsubscribeMisPedidos(); 
-                unsubscribeMisPedidos = null;
-            }
-        }
-        
-        function cargarMisPedidos() {
-            if (!currentUser) return;
-            if (unsubscribeMisPedidos) unsubscribeMisPedidos(); 
-            myOrdersList.innerHTML = '<p style="text-align:center;">Cargando pedidos...</p>';
-            
-            const pedidosRef = db.collection('pedidos').where('usuarioId', '==', currentUser.uid).orderBy('fechaCreacion', 'desc');
-            
-            unsubscribeMisPedidos = pedidosRef.onSnapshot(snapshot => {
-                myOrdersList.innerHTML = '';
-                if (snapshot.empty) {
-                    myOrdersList.innerHTML = '<p style="text-align:center;">No has realizado ningún pedido aún.</p>';
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const pedido = doc.data();
-                    const total = pedido.montoTotal ? pedido.montoTotal.toFixed(2) : '0.00';
-                    const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio.toFixed(2)})</li>`).join('');
+function cerrarModalMisPedidos() {
+myOrdersModal.style.display = 'none';
+if (unsubscribeMisPedidos) {
+unsubscribeMisPedidos();
+unsubscribeMisPedidos = null;
+}
+}
+function cargarMisPedidos() {
+if (!currentUser) return;
+if (unsubscribeMisPedidos) unsubscribeMisPedidos();
+myOrdersList.innerHTML = '<p style="text-align:center;">Cargando pedidos...</p>';
+const pedidosRef = db.collection('pedidos').where('usuarioId', '==', currentUser.uid).orderBy('fechaCreacion', 'desc');
+unsubscribeMisPedidos = pedidosRef.onSnapshot(snapshot => {
+myOrdersList.innerHTML = '';
+if (snapshot.empty) {
+myOrdersList.innerHTML = '<p style="text-align:center;">No has realizado ningún pedido aún.</p>';
+return;
+}
+snapshot.forEach(doc => {
+const pedido = doc.data();
+const total = pedido.montoTotal ? pedido.montoTotal.toFixed(2) : '0.00';
+const productosHtml = pedido.productos.map(p => `<li>${p.nombre} ($${p.precio.toFixed(2)})</li>`).join('');
 
-                    let deliveryDetailsHtml = '';
-                    if (pedido.datosEntrega) {
-                        if (pedido.datosEntrega.tipo === 'Envío a domicilio') {
-                            deliveryDetailsHtml = `
-                                <p><strong>Tipo de entrega:</strong> Envío a domicilio</p>
-                                <p><strong>Dirección:</strong> ${pedido.datosEntrega.calle}, ${pedido.datosEntrega.colonia}</p>
-                                ${pedido.datosEntrega.descripcion ? `<p><strong>Descripción:</strong> ${pedido.datosEntrega.descripcion}</p>` : ''}
-                            `;
-                        } else if (pedido.datosEntrega.tipo === 'Punto medio') {
-                            deliveryDetailsHtml = `
-                                <p><strong>Tipo de entrega:</strong> Punto medio</p>
-                                <p><strong>Lugar de encuentro:</strong> ${pedido.datosEntrega.lugar}</p>
-                                <p><strong>Fecha programada:</strong> ${pedido.datosEntrega.fecha}</p>
-                            `;
-                        }
-                    } else { 
-                        deliveryDetailsHtml = `
-                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'Pendiente de definir'}</p>
-                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'Pendiente de definir'}</p>
-                        `;
-                    }
+let deliveryDetailsHtml = '';
+if (pedido.datosEntrega) {
+if (pedido.datosEntrega.tipo === 'Envío a domicilio') {
+deliveryDetailsHtml = `
+<p><strong>Tipo de entrega:</strong> Envío a domicilio</p>
+<p><strong>Dirección:</strong> ${pedido.datosEntrega.calle}, ${pedido.datosEntrega.colonia}</p>
+${pedido.datosEntrega.descripcion ? `<p><strong>Descripción:</strong> ${pedido.datosEntrega.descripcion}</p>` : ''}
+`;
+} else if (pedido.datosEntrega.tipo === 'Punto medio') {
+deliveryDetailsHtml = `
+<p><strong>Tipo de entrega:</strong> Punto medio</p>
+<p><strong>Lugar de encuentro:</strong> ${pedido.datosEntrega.lugar}</p>
+<p><strong>Fecha programada:</strong> ${pedido.datosEntrega.fecha}</p>
+`;
+}
+} else {
+deliveryDetailsHtml = `
+<p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'Pendiente de definir'}</p>
+<p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'Pendiente de definir'}</p>
+`;
+}
 
-                    const item = document.createElement('li');
-                    item.className = 'my-orders-item';
-                    item.onclick = function() {
-                        const details = this.querySelector('.order-details');
-                        details.style.display = details.style.display === 'block' ? 'none' : 'block';
-                    };
-                    
-                    item.innerHTML = `
-                        <div class="order-summary">
-                            <span>${pedido.folio || 'Pedido'}</span>
-                            <span class="status ${pedido.estado}">${pedido.estado}</span>
-                        </div>
-                        <div class="order-details">
-                            <p><strong>Total:</strong> $${total}</p>
-                            <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
-                            ${deliveryDetailsHtml}
-                            ${pedido.comentarios ? `<p><strong>Comentarios:</strong> ${pedido.comentarios}</p>` : ''}
-                            <p><strong>Productos:</strong></p>
-                            <ul>
-                                ${productosHtml}
-                            </ul>
-                        </div>
-                    `;
-                    myOrdersList.appendChild(item);
-                });
+const item = document.createElement('li');
+item.className = 'my-orders-item';
+item.onclick = function() {
+const details = this.querySelector('.order-details');
+details.style.display = details.style.display === 'block' ? 'none' : 'block';
+};
+item.innerHTML = `
+<div class="order-summary">
+<span>${pedido.folio || 'Pedido'}</span>
+<span class="status ${pedido.estado}">${pedido.estado}</span>
+</div>
+<div class="order-details">
+<p><strong>Total:</strong> $${total}</p>
+<p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
+${deliveryDetailsHtml}
+${pedido.comentarios ? `<p><strong>Comentarios:</strong> ${pedido.comentarios}</p>` : ''}
+<p><strong>Productos:</strong></p>
+<ul>
+${productosHtml}
+</ul>
+</div>
+`;
+myOrdersList.appendChild(item);
+});
 
-            }, error => {
-                console.error("Error al cargar los pedidos del usuario:", error);
-                myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos.</p>';
-                if (unsubscribeMisPedidos) unsubscribeMisPedidos();
-            });
-        }
+}, error => {
+console.error("Error al cargar los pedidos del usuario:", error);
+myOrdersList.innerHTML = '<p style="text-align:center;">Hubo un error al cargar tus pedidos.</p>';
+if (unsubscribeMisPedidos) unsubscribeMisPedidos();
+});
+}
 
-        const cartPanel = document.getElementById('cart-panel');
-        const cartList = document.getElementById('cart-list');
-        const cartTotal = document.getElementById('cart-total');
+const cartPanel = document.getElementById('cart-panel');
+const cartList = document.getElementById('cart-list');
+const cartTotal = document.getElementById('cart-total');
 
-        function mostrarPanelCarrito() {
-            if (!currentUser) {
-                showMessage('Debes iniciar sesión para ver tu carrito.');
-                mostrarAuthModal();
-                return;
-            }
-            cartPanel.classList.add('show');
-            renderizarCarrito();
-        }
+function mostrarPanelCarrito() {
+if (!currentUser) {
+showMessage('Debes iniciar sesión para ver tu carrito.');
+mostrarAuthModal();
+return;
+}
+cartPanel.classList.add('show');
+renderizarCarrito();
+}
 
-        function cerrarPanelCarrito() {
-            cartPanel.classList.remove('show');
-        }
+function cerrarPanelCarrito() {
+cartPanel.classList.remove('show');
+}
 
-        async function renderizarCarrito() {
-            if (!currentUser) {
-                cartList.innerHTML = '<p>Debes iniciar sesión para ver tu carrito.</p>';
-                cartTotal.textContent = 'Total: $0.00';
-                return;
-            }
-            
-            cartList.innerHTML = '';
-            cartTotal.textContent = '';
-            
-            try {
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                if (!userDoc.exists) return;
+async function renderizarCarrito() {
+if (!currentUser) {
+cartList.innerHTML = '<p>Debes iniciar sesión para ver tu carrito.</p>';
+cartTotal.textContent = 'Total: $0.00';
+return;
+}
+cartList.innerHTML = '';
+cartTotal.textContent = '';
+try {
+const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+if (!userDoc.exists) return;
 
-                const carrito = userDoc.data().carrito || [];
-                
-                const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+const carrito = userDoc.data().carrito || [];
+const deliveryMethod = document.getElementById('delivery-method').value;
+const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
 
-                if (carrito.length === 0) {
-                    cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
-                    cartTotal.textContent = 'Total: $0.00';
-                    return;
-                }
+if (carrito.length === 0) {
+cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
+cartTotal.textContent = 'Total: $0.00';
+return;
+}
 
-                let subtotal = 0;
-                carrito.forEach((producto, index) => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'cart-item';
-                    listItem.innerHTML = `
-                        <img src="${producto.imagenUrl}" alt="${producto.nombre}" class="cart-item-img" onclick="verImagen('${producto.imagenUrl}')">
-                        <div class="cart-item-details">
-                            <span class="name">${producto.nombre}</span>
-                            <span class="price">$${producto.precio.toFixed(2)}</span>
-                        </div>
-                        <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
-                    `;
-                    cartList.appendChild(listItem);
-                    subtotal += producto.precio;
-                });
-                
-                const total = subtotal + shippingCost;
-                cartTotal.innerHTML = `
-                    ${shippingCost > 0 ? `Subtotal: $${subtotal.toFixed(2)}<br>Envío: $${shippingCost.toFixed(2)}<br>` : ''}
-                    <strong>Total: $${total.toFixed(2)}</strong>
-                `;
+let subtotal = 0;
+carrito.forEach((producto, index) => {
+const listItem = document.createElement('li');
+listItem.className = 'cart-item';
+listItem.innerHTML = `
+<img src="${producto.imagenUrl}" alt="${producto.nombre}" class="cart-item-img" onclick="verImagen('${producto.imagenUrl}')">
+<div class="cart-item-details">
+<span class="name">${producto.nombre}</span>
+<span class="price">$${producto.precio.toFixed(2)}</span>
+</div>
+<button onclick="eliminarDelCarrito(${index})">Eliminar</button>
+`;
+cartList.appendChild(listItem);
+subtotal += producto.precio;
+});
+const total = subtotal + shippingCost;
+cartTotal.innerHTML = `
+${shippingCost > 0 ? `Subtotal: $${subtotal.toFixed(2)}<br>Envío: $${shippingCost.toFixed(2)}<br>` : ''}
+<strong>Total: $${total.toFixed(2)}</strong>
+`;
 
-            } catch (error) {
-                console.error("Error al renderizar el carrito:", error);
-            }
-        }
-        
-        async function eliminarDelCarrito(index) {
-            if (!currentUser) return;
-            try {
-                const userRef = db.collection('usuarios').doc(currentUser.uid);
-                const userDoc = await userRef.get();
-                const carrito = userDoc.data().carrito || []; 
-                
-                if (index > -1 && index < carrito.length) {
-                    const productoEliminado = carrito.splice(index, 1)[0];
-                    const productoRef = db.collection('productos').doc(productoEliminado.id);
-                    await productoRef.update({ stock: firebase.firestore.FieldValue.increment(1) });
-                }
-                
-                await userRef.update({ carrito: carrito });
-                showMessage('Producto eliminado del carrito.');
-                renderizarCarrito();
-                generarGaleria(document.querySelector('.screen.active').id);
-            } catch (error) {
-                console.error("Error al eliminar del carrito:", error);
-                showMessage('Hubo un error al eliminar el producto.');
-            }
-        }
-        
-        const paymentOptionsModal = document.getElementById('payment-options-modal');
-        const confirmOrderModal = document.getElementById('confirm-order-modal');
-        const deliveryForm = document.getElementById('delivery-form');
-        const otherLocationNote = document.getElementById('other-location-note');
-        const transferInfoModal = document.getElementById('transfer-info-modal');
+} catch (error) {
+console.error("Error al renderizar el carrito:", error);
+}
+}
+async function eliminarDelCarrito(index) {
+if (!currentUser) return;
+try {
+const userRef = db.collection('usuarios').doc(currentUser.uid);
+const userDoc = await userRef.get();
+const carrito = userDoc.data().carrito || [];
+if (index > -1 && index < carrito.length) {
+const productoEliminado = carrito.splice(index, 1)[0];
+const productoRef = db.collection('productos').doc(productoEliminado.id);
+await productoRef.update({ stock: firebase.firestore.FieldValue.increment(1) });
+}
+await userRef.update({ carrito: carrito });
+showMessage('Producto eliminado del carrito.');
+renderizarCarrito();
+generarGaleria(document.querySelector('.screen.active').id);
+} catch (error) {
+console.error("Error al eliminar del carrito:", error);
+showMessage('Hubo un error al eliminar el producto.');
+}
+}
+const paymentOptionsModal = document.getElementById('payment-options-modal');
+const confirmOrderModal = document.getElementById('confirm-order-modal');
+const deliveryForm = document.getElementById('delivery-form');
+const otherLocationNote = document.getElementById('other-location-note');
+const transferInfoModal = document.getElementById('transfer-info-modal');
 
-        async function pagar() {
-            if (!currentUser) {
-                showMessage('Debes iniciar sesión para proceder al pago.');
-                mostrarAuthModal();
-                return;
-            }
+async function pagar() {
+if (!currentUser) {
+showMessage('Debes iniciar sesión para proceder al pago.');
+mostrarAuthModal();
+return;
+}
+const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+const carrito = userDoc.data().carrito || [];
+if (carrito.length === 0) {
+showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
+return;
+}
+cerrarPanelCarrito();
+paymentOptionsModal.style.display = 'flex';
+}
+function cerrarModalPago() {
+paymentOptionsModal.style.display = 'none';
+}
+
+async function iniciarPagoTarjeta() {
+cerrarModalPago();
+cardPaymentModal.style.display = 'flex';
+try {
+const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+const carrito = userDoc.data().carrito || [];
+
+const deliveryMethod = document.getElementById('delivery-method').value;
+const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
+const total = subtotal + shippingCost;
+
+if (total <= 0) {
+showMessage("No hay nada que pagar.");
+cerrarModalPagoTarjeta();
+return;
+}
+const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
+const response = await fetch(functionUrl, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ items: carrito, shippingCost: shippingCost }),
+});
+const data = await response.json();
+if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
+currentClientSecret = data.clientSecret;
+elements = stripe.elements({ clientSecret: currentClientSecret });
+
+const paymentRequest = stripe.paymentRequest({
+country: 'MX',
+currency: 'mxn',
+total: {
+label: 'Total KalCTas',
+amount: total * 100,
+},
+requestPayerName: true,
+requestPayerEmail: true,
+});
+
+const prButton = elements.create('paymentRequestButton', {
+paymentRequest: paymentRequest,
+});
+
+const result = await paymentRequest.canMakePayment();
+if (result) {
+prButton.mount('#payment-request-button');
+document.getElementById('separator-or').style.display = 'flex';
+} else {
+document.getElementById('payment-request-button').style.display = 'none';
+document.getElementById('separator-or').style.display = 'none';
+}
+
+paymentRequest.on('paymentmethod', async (ev) => {
+const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+currentClientSecret,
+{ payment_method: ev.paymentMethod.id },
+{ handleActions: false }
+);
+
+if (confirmError) {
+ev.complete('fail');
+showMessage(`Error en el pago: ${confirmError.message}`);
+return;
+}
+
+if (paymentIntent.status === "requires_action") {
+const { error: actionError } = await stripe.confirmCardPayment(currentClientSecret);
+if(actionError) {
+ev.complete('fail');
+showMessage(`Error en la autenticación: ${actionError.message}`);
+} else {
+const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
+ev.complete('success');
+showMessage('¡Pago completado con éxito!');
+cerrarModalPagoTarjeta();
+renderizarCarrito();
+mostrarModalConfirmarEntrega('Tarjeta', orderId);
+}
+} else {
+const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
+ev.complete('success');
+showMessage('¡Pago completado con éxito!');
+cerrarModalPagoTarjeta();
+renderizarCarrito();
+mostrarModalConfirmarEntrega('Tarjeta', orderId);
+}
+});
+
+if (!cardElement) {
+cardElement = elements.create('card', {
+style: {
+base: {
+color: '#fdfdfd',
+fontFamily: '"Poppins", sans-serif',
+fontSize: '16px',
+'::placeholder': {
+color: 'rgba(240, 196, 117, 0.7)' // Dorado pálido
+}
+}
+}
+});
+cardElement.mount('#card-element');
+cardElement.on('change', event => {
+document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+});
+} else {
+cardElement.update({ clientSecret: currentClientSecret });
+}
+
+} catch (error) {
+console.error("Error al iniciar el pago:", error);
+showMessage(error.message);
+cerrarModalPagoTarjeta();
+}
+}
+function cerrarModalPagoTarjeta() {
+document.getElementById('payment-request-button').innerHTML = '';
+document.getElementById('card-errors').textContent = '';
+if (cardElement) {
+cardElement.clear();
+}
+cardPaymentModal.style.display = 'none';
+}
+const paymentForm = document.getElementById('payment-form');
+paymentForm.addEventListener('submit', async (event) => {
+event.preventDefault();
+const paymentButton = document.getElementById('submit-payment');
+paymentButton.disabled = true;
+
+try {
+const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+const carrito = userDoc.data().carrito || [];
+
+const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
+payment_method: {
+card: cardElement,
+billing_details: {
+name: `${userDoc.data().nombre} ${userDoc.data().apellido}`,
+email: currentUser.email
+},
+}
+});
+if (error) {
+document.getElementById('card-errors').textContent = error.message;
+throw new Error(error.message);
+}
+
+if (paymentIntent.status === 'succeeded') {
+const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
+showMessage('¡Pago completado! Ahora completa los datos de entrega.');
+cerrarModalPagoTarjeta();
+renderizarCarrito();
+mostrarModalConfirmarEntrega('Tarjeta', orderId);
+}
+
+} catch (err) {
+console.error("Error en el pago con tarjeta:", err);
+} finally {
+paymentButton.disabled = false;
+}
+});
+async function registrarPedidoTarjeta(paymentIntent, carrito) {
+let orderId;
+await db.runTransaction(async (transaction) => {
+const userRef = db.collection('usuarios').doc(currentUser.uid);
+const userDoc = await transaction.get(userRef);
+if (!userDoc.exists) throw new Error("Usuario no encontrado.");
+const userData = userDoc.data();
+const counterRef = db.collection('contadores').doc('pedidos');
+const counterDoc = await transaction.get(counterRef);
+const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
+const folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
+transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
+
+const nuevoPedidoRef = db.collection('pedidos').doc();
+orderId = nuevoPedidoRef.id;
+transaction.set(nuevoPedidoRef, {
+folio: folioFormateado,
+usuarioId: currentUser.uid,
+datosCliente: {
+nombre: userData.nombre,
+apellido: userData.apellido,
+telefono: userData.telefono || 'N/A'
+},
+productos: carrito,
+montoTotal: paymentIntent.amount / 100,
+metodoPago: 'Tarjeta',
+estado: 'Confirmado',
+fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
+stripePaymentId: paymentIntent.id,
+datosEntrega: null
+});
+transaction.update(userRef, { carrito: [] });
+});
+return orderId;
+}
+
+// ========= INICIO DE LA FUNCIÓN MODIFICADA =========
+async function iniciarProcesoDeEntrega(metodoPago) {
+    cerrarModalPago();
+
+    if (metodoPago === 'Transferencia') {
+        try {
+            // Obtener el documento del usuario para acceder al carrito
             const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
+            if (!userDoc.exists) {
+                showMessage('Error: No se encontraron los datos del usuario.');
+                return;
+            }
             const carrito = userDoc.data().carrito || [];
             if (carrito.length === 0) {
-                showMessage('Tu carrito está vacío. Agrega productos para hacer un pedido.');
-                return;
-            }
-            cerrarPanelCarrito();
-            paymentOptionsModal.style.display = 'flex';
-        }
-        
-        function cerrarModalPago() {
-            paymentOptionsModal.style.display = 'none';
-        }
-
-        async function iniciarPagoTarjeta() {
-            cerrarModalPago();
-            cardPaymentModal.style.display = 'flex';
-            
-            try {
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                const carrito = userDoc.data().carrito || [];
-
-                const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
-                const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
-                const total = subtotal + shippingCost;
-
-                if (total <= 0) {
-                    showMessage("No hay nada que pagar.");
-                    cerrarModalPagoTarjeta();
-                    return;
-                }
-                
-                const functionUrl = 'https://us-central1-tienda-kalctas.cloudfunctions.net/createPaymentIntent';
-                const response = await fetch(functionUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: carrito, shippingCost: shippingCost }),
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
-                
-                currentClientSecret = data.clientSecret;
-                elements = stripe.elements({ clientSecret: currentClientSecret });
-
-                const paymentRequest = stripe.paymentRequest({
-                    country: 'MX',
-                    currency: 'mxn',
-                    total: {
-                        label: 'Total KalCTas',
-                        amount: total * 100, 
-                    },
-                    requestPayerName: true,
-                    requestPayerEmail: true,
-                });
-
-                const prButton = elements.create('paymentRequestButton', {
-                    paymentRequest: paymentRequest,
-                });
-
-                const result = await paymentRequest.canMakePayment();
-                if (result) {
-                    prButton.mount('#payment-request-button');
-                    document.getElementById('separator-or').style.display = 'flex';
-                } else {
-                    document.getElementById('payment-request-button').style.display = 'none';
-                    document.getElementById('separator-or').style.display = 'none';
-                }
-
-                paymentRequest.on('paymentmethod', async (ev) => {
-                    const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
-                        currentClientSecret,
-                        { payment_method: ev.paymentMethod.id },
-                        { handleActions: false }
-                    );
-
-                    if (confirmError) {
-                        ev.complete('fail');
-                        showMessage(`Error en el pago: ${confirmError.message}`);
-                        return;
-                    }
-
-                    if (paymentIntent.status === "requires_action") {
-                        const { error: actionError } = await stripe.confirmCardPayment(currentClientSecret);
-                        if(actionError) {
-                            ev.complete('fail');
-                            showMessage(`Error en la autenticación: ${actionError.message}`);
-                        } else {
-                             const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
-                             ev.complete('success');
-                             showMessage('¡Pago completado con éxito!');
-                             cerrarModalPagoTarjeta();
-                             renderizarCarrito();
-                             mostrarModalConfirmarEntrega('Tarjeta', orderId);
-                        }
-                    } else {
-                        const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
-                        ev.complete('success');
-                        showMessage('¡Pago completado con éxito!');
-                        cerrarModalPagoTarjeta();
-                        renderizarCarrito();
-                        mostrarModalConfirmarEntrega('Tarjeta', orderId);
-                    }
-                });
-
-                if (!cardElement) {
-                     // INICIO DE CAMBIOS SOLICITADOS
-                     cardElement = elements.create('card', {
-                        style: {
-                            base: {
-                                color: '#fdfdfd', // Color de texto blanco
-                                fontFamily: '"Poppins", sans-serif',
-                                fontSize: '16px',
-                                '::placeholder': {
-                                    color: 'rgba(249, 160, 63, 0.7)' // Naranja pálido para el placeholder
-                                }
-                            }
-                        }
-                     });
-                     // FIN DE CAMBIOS SOLICITADOS
-                     cardElement.mount('#card-element');
-                     cardElement.on('change', event => {
-                        document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
-                    });
-                } else {
-                    cardElement.update({ clientSecret: currentClientSecret });
-                }
-
-            } catch (error) {
-                console.error("Error al iniciar el pago:", error);
-                showMessage(error.message);
-                cerrarModalPagoTarjeta();
-            }
-        }
-        
-        function cerrarModalPagoTarjeta() {
-            document.getElementById('payment-request-button').innerHTML = '';
-            document.getElementById('card-errors').textContent = '';
-            if (cardElement) {
-                cardElement.clear();
-            }
-            cardPaymentModal.style.display = 'none';
-        }
-        
-        const paymentForm = document.getElementById('payment-form');
-        paymentForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const paymentButton = document.getElementById('submit-payment');
-            paymentButton.disabled = true;
-
-            try {
-                const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                const carrito = userDoc.data().carrito || [];
-
-                const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
-                    payment_method: {
-                        card: cardElement,
-                        billing_details: {
-                            name: `${userDoc.data().nombre} ${userDoc.data().apellido}`,
-                            email: currentUser.email
-                        },
-                    }
-                });
-                
-                if (error) {
-                    document.getElementById('card-errors').textContent = error.message;
-                    throw new Error(error.message);
-                }
-
-                if (paymentIntent.status === 'succeeded') {
-                    const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
-                    showMessage('¡Pago completado! Ahora completa los datos de entrega.');
-                    cerrarModalPagoTarjeta();
-                    renderizarCarrito();
-                    mostrarModalConfirmarEntrega('Tarjeta', orderId); 
-                }
-
-            } catch (err) {
-                console.error("Error en el pago con tarjeta:", err);
-            } finally {
-                paymentButton.disabled = false;
-            }
-        });
-        
-        async function registrarPedidoTarjeta(paymentIntent, carrito) {
-            let orderId;
-            await db.runTransaction(async (transaction) => {
-                const userRef = db.collection('usuarios').doc(currentUser.uid);
-                const userDoc = await transaction.get(userRef);
-                if (!userDoc.exists) throw new Error("Usuario no encontrado.");
-                
-                const userData = userDoc.data();
-                
-                const counterRef = db.collection('contadores').doc('pedidos');
-                const counterDoc = await transaction.get(counterRef);
-                const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
-                const folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
-                transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
-
-                const nuevoPedidoRef = db.collection('pedidos').doc();
-                orderId = nuevoPedidoRef.id;
-                
-                transaction.set(nuevoPedidoRef, {
-                    folio: folioFormateado,
-                    usuarioId: currentUser.uid,
-                    datosCliente: {
-                        nombre: userData.nombre,
-                        apellido: userData.apellido,
-                        telefono: userData.telefono || 'N/A'
-                    },
-                    productos: carrito,
-                    montoTotal: paymentIntent.amount / 100,
-                    metodoPago: 'Tarjeta',
-                    estado: 'Confirmado', 
-                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
-                    stripePaymentId: paymentIntent.id,
-                    datosEntrega: null 
-                });
-                transaction.update(userRef, { carrito: [] });
-            });
-            return orderId; 
-        }
-
-        async function iniciarProcesoDeEntrega(metodoPago) {
-            cerrarModalPago();
-            if (metodoPago === 'Transferencia') {
-                try {
-                    // Obtener el carrito y calcular el total
-                    const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
-                    if (userDoc.exists) {
-                        const carrito = userDoc.data().carrito || [];
-                        const deliveryMethod = document.getElementById('delivery-method').value;
-                        const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
-                        const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
-                        const total = subtotal + shippingCost;
-                        
-                        // Actualizar el elemento en el modal de transferencia
-                        const totalElement = document.getElementById('transfer-total-amount');
-                        if (totalElement) {
-                            totalElement.innerHTML = `Total a Pagar: $${total.toFixed(2)}`;
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error al obtener el total para la transferencia:", error);
-                    const totalElement = document.getElementById('transfer-total-amount');
-                    if (totalElement) {
-                        totalElement.textContent = 'No se pudo cargar el total.';
-                    }
-                }
-                transferInfoModal.style.display = 'flex';
-            } else if (metodoPago === 'Efectivo') {
-                mostrarModalConfirmarEntrega(metodoPago);
-            }
-        }
-        
-        function mostrarModalConfirmarEntrega(metodoPago, orderId = null) {
-            transferInfoModal.style.display = 'none';
-            document.getElementById('payment-method-input').value = metodoPago;
-            document.getElementById('order-id-input').value = orderId || '';
-            document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${metodoPago})`;
-            
-            const dateInput = document.getElementById('delivery-date');
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const yyyy = tomorrow.getFullYear();
-            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-            const dd = String(tomorrow.getDate()).padStart(2, '0');
-            dateInput.min = `${yyyy}-${mm}-${dd}`;
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
-
-            const deliveryMethod = document.getElementById('delivery-method').value;
-            const homeDeliveryFields = document.getElementById('home-delivery-fields');
-            const pickupLocationFields = document.getElementById('pickup-location-fields');
-
-            if (deliveryMethod === 'domicilio') {
-                homeDeliveryFields.style.display = 'block';
-                pickupLocationFields.style.display = 'none';
-                document.getElementById('delivery-street').required = true;
-                document.getElementById('delivery-neighborhood').required = true;
-                document.getElementById('delivery-date').required = false; 
-            } else {
-                homeDeliveryFields.style.display = 'none';
-                pickupLocationFields.style.display = 'block';
-                document.getElementById('delivery-street').required = false;
-                document.getElementById('delivery-neighborhood').required = false;
-                document.getElementById('delivery-date').required = true;
-            }
-
-            confirmOrderModal.style.display = 'flex';
-        }
-
-        function cerrarModalTransferencia() {
-            transferInfoModal.style.display = 'none';
-        }
-
-        function cerrarModalEntrega() {
-            confirmOrderModal.style.display = 'none';
-        }
-
-        function toggleOtherLocation() {
-            const locationSelect = document.getElementById('delivery-location');
-            otherLocationNote.style.display = locationSelect.value === 'Otro' ? 'block' : 'none';
-            otherLocationNote.required = locationSelect.value === 'Otro';
-        }
-        
-        deliveryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitButton = deliveryForm.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Procesando...';
-
-            const metodoPago = document.getElementById('payment-method-input').value;
-            const orderId = document.getElementById('order-id-input').value;
-            const comentarios = document.getElementById('delivery-comments').value;
-            const deliveryMethod = document.getElementById('delivery-method').value;
-
-            let datosEntrega = {};
-
-            if (deliveryMethod === 'domicilio') {
-                datosEntrega = {
-                    tipo: 'Envío a domicilio',
-                    calle: document.getElementById('delivery-street').value,
-                    colonia: document.getElementById('delivery-neighborhood').value,
-                    descripcion: document.getElementById('delivery-description').value || null
-                };
-            } else {
-                const lugarEntregaSelect = document.getElementById('delivery-location').value;
-                const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
-                datosEntrega = {
-                    tipo: 'Punto medio',
-                    lugar: lugarEntrega,
-                    fecha: document.getElementById('delivery-date').value
-                };
-            }
-
-            try {
-                if (orderId) { 
-                    const pedidoRef = db.collection('pedidos').doc(orderId);
-                    await pedidoRef.update({
-                        datosEntrega: datosEntrega,
-                        comentarios: comentarios || null,
-                    });
-                    showMessage(`¡Pedido ${metodoPago === 'Tarjeta' ? 'confirmado' : 'registrado'} con éxito! Nos comunicaremos contigo.`);
-                } else { 
-                    let folioFormateado;
-                    await db.runTransaction(async (transaction) => {
-                        const userRef = db.collection('usuarios').doc(currentUser.uid);
-                        const userDoc = await transaction.get(userRef);
-                        
-                        if (!userDoc.exists) throw new Error("Usuario no encontrado.");
-                        
-                        const userData = userDoc.data();
-                        const carrito = userData.carrito || [];
-
-                        if (carrito.length === 0) throw new Error('El carrito está vacío.');
-                        
-                        const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
-                        const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
-                        const montoTotal = subtotal + shippingCost;
-
-                        const counterRef = db.collection('contadores').doc('pedidos');
-                        const counterDoc = await transaction.get(counterRef);
-                        
-                        const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
-                        folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
-                        
-                        transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
-
-                        const nuevoPedidoRef = db.collection('pedidos').doc();
-                        
-                        transaction.set(nuevoPedidoRef, {
-                            folio: folioFormateado,
-                            usuarioId: currentUser.uid,
-                            datosCliente: {
-                                nombre: userData.nombre,
-                                apellido: userData.apellido,
-                                telefono: userData.telefono || 'N/A'
-                            },
-                            productos: carrito,
-                            montoTotal: montoTotal,
-                            metodoPago,
-                            datosEntrega, 
-                            comentarios: comentarios || null, 
-                            estado: 'Pendiente',
-                            fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-
-                        transaction.update(userRef, { carrito: [] });
-                    });
-                     showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
-                }
-
-                cerrarModalEntrega();
-                renderizarCarrito();
-
-            } catch (error) {
-                console.error("Error al procesar el pedido:", error);
-                showMessage(`Hubo un error: ${error.message}. Intenta de nuevo.`);
-            } finally {
-                submitButton.disabled = false;
-                submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
-            }
-        });
-
-
-        async function generarGaleria(idDePantalla) {
-            let categoria;
-            let gridId;
-
-            switch(idDePantalla) {
-                case 'pantalla-2-4': categoria = 'KalCTas2-4'; gridId = 'grid-2-4'; break;
-                case 'pantalla-3-4': categoria = 'KalCTas3-4'; gridId = 'grid-3-4'; break;
-                case 'pantalla-largas': categoria = 'KalCTasLargas'; gridId = 'grid-largas'; break;
-                default: return;
-            }
-
-            const contenedor = document.getElementById(gridId);
-            if (!contenedor) return;
-
-            contenedor.innerHTML = '<p>Cargando modelos...</p>';
-
-            try {
-                const snapshot = await db.collection('productos').where('categoria', '==', categoria).get();
-                contenedor.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    contenedor.innerHTML = '<p>No hay modelos disponibles.</p>';
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const producto = doc.data();
-                    const card = document.createElement('div');
-                    card.className = 'model-card';
-                    card.innerHTML = `
-                        <img src="${producto.imagenUrl}" alt="${producto.nombre}">
-                        <p class="product-price">$${producto.precio.toFixed(2)}</p>
-                        <p>${producto.nombre}</p>
-                        <div class="model-buttons">
-                            <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
-                            <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
-                                ${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎃'}
-                                </button>
-                        </div>
-                    `;
-                    contenedor.appendChild(card);
-                });
-                
-                contenedor.querySelectorAll('.btn-add').forEach(btn => {
-                    btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
-                });
-
-            } catch (error) {
-                console.error("Error al obtener los productos:", error);
-                contenedor.innerHTML = '<p>Hubo un error al cargar el catálogo.</p>';
-            }
-        }
-
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-image');
-
-        function verImagen(imagenSrc) {
-            modal.style.display = 'flex';
-            modalImg.src = imagenSrc;
-        }
-        
-        function cerrarModal() {
-            modal.style.display = 'none';
-        }
-        
-        async function agregarAlCarrito(productoId) {
-            if (!currentUser) {
-                showMessage('Debes iniciar sesión para agregar productos al carrito.');
-                mostrarAuthModal();
+                showMessage('Tu carrito está vacío.');
                 return;
             }
 
-            try {
-                await db.runTransaction(async (transaction) => {
-                    const productoRef = db.collection('productos').doc(productoId);
-                    const userRef = db.collection('usuarios').doc(currentUser.uid);
+            // Calcular el total (misma lógica que en renderizarCarrito)
+            const deliveryMethod = document.getElementById('delivery-method').value;
+            const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+            const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
+            const total = subtotal + shippingCost;
 
-                    const productoDoc = await transaction.get(productoRef);
-                    const userDoc = await transaction.get(userRef);
-                    
-                    if (!productoDoc.exists) throw new Error("El producto no existe.");
-                    if (!userDoc.exists) throw new Error("El usuario no existe.");
+            // Actualizar el modal con el monto total
+            const totalAmountElement = document.getElementById('transfer-total-amount');
+            totalAmountElement.innerHTML = `<strong>Total a Pagar:</strong> $${total.toFixed(2)}`;
 
-                    const productoData = productoDoc.data();
-                    if (productoData.stock <= 0) throw new Error("Este producto está agotado.");
-                    
-                    const carrito = userDoc.data().carrito || [];
-                    carrito.push({
-                        id: productoDoc.id,
-                        nombre: productoData.nombre,
-                        precio: productoData.precio,
-                        imagenUrl: productoData.imagenUrl
-                    });
+            // Mostrar el modal de transferencia
+            transferInfoModal.style.display = 'flex';
 
-                    transaction.update(productoRef, { stock: productoData.stock - 1 });
-                    transaction.update(userRef, { carrito: carrito });
-                });
-                
-                showMessage('¡Modelo agregado al carrito!');
-                generarGaleria(document.querySelector('.screen.active').id);
-            } catch (error) {
-                console.error("Error al agregar al carrito:", error);
-                showMessage(error.message || 'Hubo un error al agregar el producto.');
-            }
+        } catch (error) {
+            console.error("Error al preparar modal de transferencia:", error);
+            showMessage("Hubo un error al obtener el total del carrito. Por favor, intenta de nuevo.");
         }
+    } else if (metodoPago === 'Efectivo') {
+        mostrarModalConfirmarEntrega(metodoPago);
+    }
+}
+// ========= FIN DE LA FUNCIÓN MODIFICADA =========
 
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-              .then(registration => {
-                console.log('Service Worker registrado con éxito:', registration);
-              })
-              .catch(error => {
-                console.log('Error al registrar el Service Worker:', error);
-              });
-          });
-        }
-    </script>
+function mostrarModalConfirmarEntrega(metodoPago, orderId = null) {
+transferInfoModal.style.display = 'none';
+document.getElementById('payment-method-input').value = metodoPago;
+document.getElementById('order-id-input').value = orderId || '';
+document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${metodoPago})`;
+const dateInput = document.getElementById('delivery-date');
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+const yyyy = tomorrow.getFullYear();
+const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+const dd = String(tomorrow.getDate()).padStart(2, '0');
+dateInput.min = `${yyyy}-${mm}-${dd}`;
+dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+const deliveryMethod = document.getElementById('delivery-method').value;
+const homeDeliveryFields = document.getElementById('home-delivery-fields');
+const pickupLocationFields = document.getElementById('pickup-location-fields');
+
+if (deliveryMethod === 'domicilio') {
+homeDeliveryFields.style.display = 'block';
+pickupLocationFields.style.display = 'none';
+document.getElementById('delivery-street').required = true;
+document.getElementById('delivery-neighborhood').required = true;
+document.getElementById('delivery-date').required = false;
+} else {
+homeDeliveryFields.style.display = 'none';
+pickupLocationFields.style.display = 'block';
+document.getElementById('delivery-street').required = false;
+document.getElementById('delivery-neighborhood').required = false;
+document.getElementById('delivery-date').required = true;
+}
+
+confirmOrderModal.style.display = 'flex';
+}
+
+function cerrarModalTransferencia() {
+transferInfoModal.style.display = 'none';
+}
+
+function cerrarModalEntrega() {
+confirmOrderModal.style.display = 'none';
+}
+
+function toggleOtherLocation() {
+const locationSelect = document.getElementById('delivery-location');
+otherLocationNote.style.display = locationSelect.value === 'Otro' ? 'block' : 'none';
+otherLocationNote.required = locationSelect.value === 'Otro';
+}
+deliveryForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+const submitButton = deliveryForm.querySelector('button[type="submit"]');
+submitButton.disabled = true;
+submitButton.textContent = 'Procesando...';
+
+const metodoPago = document.getElementById('payment-method-input').value;
+const orderId = document.getElementById('order-id-input').value;
+const comentarios = document.getElementById('delivery-comments').value;
+const deliveryMethod = document.getElementById('delivery-method').value;
+
+let datosEntrega = {};
+
+if (deliveryMethod === 'domicilio') {
+datosEntrega = {
+tipo: 'Envío a domicilio',
+calle: document.getElementById('delivery-street').value,
+colonia: document.getElementById('delivery-neighborhood').value,
+descripcion: document.getElementById('delivery-description').value || null
+};
+} else {
+const lugarEntregaSelect = document.getElementById('delivery-location').value;
+const lugarEntrega = (lugarEntregaSelect === 'Otro') ? otherLocationNote.value : lugarEntregaSelect;
+datosEntrega = {
+tipo: 'Punto medio',
+lugar: lugarEntrega,
+fecha: document.getElementById('delivery-date').value
+};
+}
+
+try {
+if (orderId) {
+const pedidoRef = db.collection('pedidos').doc(orderId);
+await pedidoRef.update({
+datosEntrega: datosEntrega,
+comentarios: comentarios || null,
+});
+showMessage(`¡Pedido ${metodoPago === 'Tarjeta' ? 'confirmado' : 'registrado'} con éxito! Nos comunicaremos contigo.`);
+} else {
+let folioFormateado;
+await db.runTransaction(async (transaction) => {
+const userRef = db.collection('usuarios').doc(currentUser.uid);
+const userDoc = await transaction.get(userRef);
+if (!userDoc.exists) throw new Error("Usuario no encontrado.");
+const userData = userDoc.data();
+const carrito = userData.carrito || [];
+
+if (carrito.length === 0) throw new Error('El carrito está vacío.');
+const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
+const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+const montoTotal = subtotal + shippingCost;
+
+const counterRef = db.collection('contadores').doc('pedidos');
+const counterDoc = await transaction.get(counterRef);
+const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
+folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
+transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
+
+const nuevoPedidoRef = db.collection('pedidos').doc();
+transaction.set(nuevoPedidoRef, {
+folio: folioFormateado,
+usuarioId: currentUser.uid,
+datosCliente: {
+nombre: userData.nombre,
+apellido: userData.apellido,
+telefono: userData.telefono || 'N/A'
+},
+productos: carrito,
+montoTotal: montoTotal,
+metodoPago,
+datosEntrega,
+comentarios: comentarios || null,
+estado: 'Pendiente',
+fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+transaction.update(userRef, { carrito: [] });
+});
+showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
+}
+
+cerrarModalEntrega();
+renderizarCarrito();
+
+} catch (error) {
+console.error("Error al procesar el pedido:", error);
+showMessage(`Hubo un error: ${error.message}. Intenta de nuevo.`);
+} finally {
+submitButton.disabled = false;
+submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
+}
+});
+
+
+async function generarGaleria(idDePantalla) {
+let categoria;
+let gridId;
+
+switch(idDePantalla) {
+case 'pantalla-2-4': categoria = 'KalCTas2-4'; gridId = 'grid-2-4'; break;
+case 'pantalla-3-4': categoria = 'KalCTas3-4'; gridId = 'grid-3-4'; break;
+case 'pantalla-largas': categoria = 'KalCTasLargas'; gridId = 'grid-largas'; break;
+default: return;
+}
+
+const contenedor = document.getElementById(gridId);
+if (!contenedor) return;
+
+contenedor.innerHTML = '<p>Cargando modelos...</p>';
+
+try {
+const snapshot = await db.collection('productos').where('categoria', '==', categoria).get();
+contenedor.innerHTML = '';
+if (snapshot.empty) {
+contenedor.innerHTML = '<p>No hay modelos disponibles.</p>';
+return;
+}
+snapshot.forEach(doc => {
+const producto = doc.data();
+const card = document.createElement('div');
+card.className = 'model-card';
+card.innerHTML = `
+<img src="${producto.imagenUrl}" alt="${producto.nombre}">
+<p class="product-price">$${producto.precio.toFixed(2)}</p>
+<p>${producto.nombre}</p>
+<div class="model-buttons">
+<button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')"><span>Ver</span></button>
+<button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
+<span>${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎁'}</span>
+</button>
+</div>
+`;
+contenedor.appendChild(card);
+});
+contenedor.querySelectorAll('.btn-add').forEach(btn => {
+btn.addEventListener('click', () => agregarAlCarrito(btn.dataset.id));
+});
+
+} catch (error) {
+console.error("Error al obtener los productos:", error);
+contenedor.innerHTML = '<p>Hubo un error al cargar el catálogo.</p>';
+}
+}
+
+const modal = document.getElementById('image-modal');
+const modalImg = document.getElementById('modal-image');
+
+function verImagen(imagenSrc) {
+modal.style.display = 'flex';
+modalImg.src = imagenSrc;
+}
+function cerrarModal() {
+modal.style.display = 'none';
+}
+async function agregarAlCarrito(productoId) {
+if (!currentUser) {
+showMessage('Debes iniciar sesión para agregar productos al carrito.');
+mostrarAuthModal();
+return;
+}
+
+try {
+await db.runTransaction(async (transaction) => {
+const productoRef = db.collection('productos').doc(productoId);
+const userRef = db.collection('usuarios').doc(currentUser.uid);
+
+const productoDoc = await transaction.get(productoRef);
+const userDoc = await transaction.get(userRef);
+if (!productoDoc.exists) throw new Error("El producto no existe.");
+if (!userDoc.exists) throw new Error("El usuario no existe.");
+
+const productoData = productoDoc.data();
+if (productoData.stock <= 0) throw new Error("Este producto está agotado.");
+const carrito = userDoc.data().carrito || [];
+carrito.push({
+id: productoDoc.id,
+nombre: productoData.nombre,
+precio: productoData.precio,
+imagenUrl: productoData.imagenUrl
+});
+
+transaction.update(productoRef, { stock: productoData.stock - 1 });
+transaction.update(userRef, { carrito: carrito });
+});
+showMessage('¡Modelo agregado al carrito!');
+generarGaleria(document.querySelector('.screen.active').id);
+} catch (error) {
+console.error("Error al agregar al carrito:", error);
+showMessage(error.message || 'Hubo un error al agregar el producto.');
+}
+}
+
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', () => {
+navigator.serviceWorker.register('sw.js')
+.then(registration => {
+console.log('Service Worker registrado con éxito:', registration);
+})
+.catch(error => {
+console.log('Error al registrar el Service Worker:', error);
+});
+});
+}
+</script>
 </body>
 </html>
