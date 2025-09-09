@@ -862,7 +862,6 @@
         .my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
 
         /* --- INICIO DE CAMBIOS SOLICITADOS --- */
-        /* --- Footer Social --- */
         .footer-social {
             order: 4; /* Para que aparezca después de los botones de categoría */
             width: 100%;
@@ -871,6 +870,10 @@
             align-items: center;
             gap: 15px;
             margin-top: 25px; /* Espacio superior */
+            position: relative; /* Cambiado de fixed a relative */
+            bottom: auto; /* Reiniciar bottom */
+            padding: 0; /* Reiniciar padding */
+            z-index: 10;
         }
 
         .social-btn {
@@ -905,17 +908,17 @@
             height: 18px; /* Ícono reducido */
         }
         
-        /* Estilos para los botones sociales en el panel de cuenta */
         .account-buttons .footer-social {
             margin-top: 10px;
-            flex-direction: column; /* Para que se apilen verticalmente */
+            flex-direction: column; 
             padding: 0;
-            order: 0; /* Reiniciar el orden para el panel */
+            order: 0;
+            position: relative; /* Asegurar que no sea fixed aquí */
         }
         .account-buttons .social-btn {
             width: 100%;
             justify-content: center;
-            box-sizing: border-box; /* Asegura que el padding se incluya en el width */
+            box-sizing: border-box; 
         }
         /* --- FIN DE CAMBIOS SOLICITADOS --- */
     </style>
@@ -959,7 +962,7 @@
                     ¡Contáctanos!
                 </a>
             </div>
-            </main>
+        </main>
 
         <section id="pantalla-2-4" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
@@ -990,7 +993,7 @@
         <span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
         <h3>Mi Cuenta</h3>
         <div class="account-info" id="account-info">
-            </div>
+        </div>
         <div class="account-buttons">
             <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
             <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
@@ -1005,7 +1008,7 @@
                     ¡Contáctanos!
                 </a>
             </div>
-            </div>
+        </div>
     </div>
 
     <div id="cart-panel" class="cart-panel">
@@ -1133,6 +1136,7 @@
             <form id="delivery-form" class="auth-form">
                 <input type="hidden" id="payment-method-input">
                 
+                <input type="hidden" id="order-id-input"> 
                 <div id="home-delivery-fields">
                     <label for="delivery-street">Calle y número:</label>
                     <input type="text" id="delivery-street">
@@ -1183,7 +1187,7 @@
             <ul class="my-orders-list" id="my-orders-list"></ul>
         </div>
     </div>
-
+    
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1227,7 +1231,7 @@
             }
             
             const themeToggleButton = document.getElementById('theme-toggle-button');
-            if (themeToggleButton) { // Check if button exists before adding listener
+            if (themeToggleButton) { 
                 const currentTheme = localStorage.getItem('theme');
 
                 if (currentTheme === 'dark-mode') {
@@ -1251,7 +1255,6 @@
 
         // ================================================================================= //
         // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN
-        // ... Todo tu código Javascript original se mantiene aquí ...
         // ================================================================================= //
         
         function showMessage(text) {
@@ -1512,10 +1515,10 @@
                                 <p><strong>Fecha programada:</strong> ${pedido.datosEntrega.fecha}</p>
                             `;
                         }
-                    } else { // Fallback para pedidos antiguos
+                    } else { 
                         deliveryDetailsHtml = `
-                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'N/A'}</p>
-                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'N/A'}</p>
+                            <p><strong>Lugar de entrega:</strong> ${pedido.lugarEntrega || 'Pendiente de definir'}</p>
+                            <p><strong>Fecha de entrega programada:</strong> ${pedido.fechaEntrega || 'Pendiente de definir'}</p>
                         `;
                     }
 
@@ -1694,7 +1697,7 @@
                 const response = await fetch(functionUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: carrito, shippingCost: shippingCost }), // Envía el costo de envío
+                    body: JSON.stringify({ items: carrito, shippingCost: shippingCost }),
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Error al crear la intención de pago.');
@@ -1707,7 +1710,7 @@
                     currency: 'mxn',
                     total: {
                         label: 'Total KalCTas',
-                        amount: total * 100, // Usa el total que incluye el envío
+                        amount: total * 100, 
                     },
                     requestPayerName: true,
                     requestPayerEmail: true,
@@ -1745,18 +1748,20 @@
                             ev.complete('fail');
                             showMessage(`Error en la autenticación: ${actionError.message}`);
                         } else {
-                             await registrarPedidoTarjeta(paymentIntent, carrito);
+                             const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
                              ev.complete('success');
                              showMessage('¡Pago completado con éxito!');
                              cerrarModalPagoTarjeta();
                              renderizarCarrito();
+                             mostrarModalConfirmarEntrega('Tarjeta', orderId);
                         }
                     } else {
-                        await registrarPedidoTarjeta(paymentIntent, carrito);
+                        const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
                         ev.complete('success');
                         showMessage('¡Pago completado con éxito!');
                         cerrarModalPagoTarjeta();
                         renderizarCarrito();
+                        mostrarModalConfirmarEntrega('Tarjeta', orderId);
                     }
                 });
 
@@ -1812,10 +1817,11 @@
                 }
 
                 if (paymentIntent.status === 'succeeded') {
-                    await registrarPedidoTarjeta(paymentIntent, carrito);
-                    showMessage('¡Pago completado con éxito! Tu pedido ha sido registrado.');
+                    const orderId = await registrarPedidoTarjeta(paymentIntent, carrito);
+                    showMessage('¡Pago completado! Ahora completa los datos de entrega.');
                     cerrarModalPagoTarjeta();
                     renderizarCarrito();
+                    mostrarModalConfirmarEntrega('Tarjeta', orderId); 
                 }
 
             } catch (err) {
@@ -1824,9 +1830,10 @@
                 paymentButton.disabled = false;
             }
         });
-
+        
         async function registrarPedidoTarjeta(paymentIntent, carrito) {
-             await db.runTransaction(async (transaction) => {
+            let orderId;
+            await db.runTransaction(async (transaction) => {
                 const userRef = db.collection('usuarios').doc(currentUser.uid);
                 const userDoc = await transaction.get(userRef);
                 if (!userDoc.exists) throw new Error("Usuario no encontrado.");
@@ -1840,6 +1847,7 @@
                 transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
 
                 const nuevoPedidoRef = db.collection('pedidos').doc();
+                orderId = nuevoPedidoRef.id;
                 
                 transaction.set(nuevoPedidoRef, {
                     folio: folioFormateado,
@@ -1854,27 +1862,28 @@
                     metodoPago: 'Tarjeta',
                     estado: 'Confirmado', 
                     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
-                    stripePaymentId: paymentIntent.id
+                    stripePaymentId: paymentIntent.id,
+                    datosEntrega: null 
                 });
                 transaction.update(userRef, { carrito: [] });
             });
+            return orderId; 
         }
-
 
         function iniciarProcesoDeEntrega(metodoPago) {
             cerrarModalPago();
-            document.getElementById('payment-method-input').value = metodoPago;
-            
             if (metodoPago === 'Transferencia') {
                 transferInfoModal.style.display = 'flex';
             } else if (metodoPago === 'Efectivo') {
-                mostrarModalConfirmarEntrega();
+                mostrarModalConfirmarEntrega(metodoPago);
             }
         }
         
-        function mostrarModalConfirmarEntrega() {
+        function mostrarModalConfirmarEntrega(metodoPago, orderId = null) {
             transferInfoModal.style.display = 'none';
-            document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${document.getElementById('payment-method-input').value})`;
+            document.getElementById('payment-method-input').value = metodoPago;
+            document.getElementById('order-id-input').value = orderId || '';
+            document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${metodoPago})`;
             
             const dateInput = document.getElementById('delivery-date');
             const tomorrow = new Date();
@@ -1927,10 +1936,10 @@
             submitButton.textContent = 'Procesando...';
 
             const metodoPago = document.getElementById('payment-method-input').value;
+            const orderId = document.getElementById('order-id-input').value;
             const comentarios = document.getElementById('delivery-comments').value;
-
             const deliveryMethod = document.getElementById('delivery-method').value;
-            let montoTotal;
+
             let datosEntrega = {};
 
             if (deliveryMethod === 'domicilio') {
@@ -1950,61 +1959,69 @@
                 };
             }
 
-            let folioFormateado;
-
             try {
-                await db.runTransaction(async (transaction) => {
-                    const userRef = db.collection('usuarios').doc(currentUser.uid);
-                    const userDoc = await transaction.get(userRef);
-                    
-                    if (!userDoc.exists) throw new Error("Usuario no encontrado.");
-                    
-                    const userData = userDoc.data();
-                    const carrito = userData.carrito || [];
-
-                    if (carrito.length === 0) throw new Error('El carrito está vacío.');
-                    
-                    const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
-                    const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
-                    montoTotal = subtotal + shippingCost;
-
-                    const counterRef = db.collection('contadores').doc('pedidos');
-                    const counterDoc = await transaction.get(counterRef);
-                    
-                    const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
-                    folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
-                    
-                    transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
-
-                    const nuevoPedidoRef = db.collection('pedidos').doc();
-                    
-                    transaction.set(nuevoPedidoRef, {
-                        folio: folioFormateado,
-                        usuarioId: currentUser.uid,
-                        datosCliente: {
-                            nombre: userData.nombre,
-                            apellido: userData.apellido,
-                            telefono: userData.telefono || 'N/A'
-                        },
-                        productos: carrito,
-                        montoTotal: montoTotal,
-                        metodoPago,
-                        datosEntrega, 
-                        comentarios: comentarios || null, 
-                        estado: 'Pendiente',
-                        fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+                if (orderId) { 
+                    const pedidoRef = db.collection('pedidos').doc(orderId);
+                    await pedidoRef.update({
+                        datosEntrega: datosEntrega,
+                        comentarios: comentarios || null,
                     });
+                    showMessage(`¡Pedido ${metodoPago === 'Tarjeta' ? 'confirmado' : 'registrado'} con éxito! Nos comunicaremos contigo.`);
+                } else { 
+                    let folioFormateado;
+                    await db.runTransaction(async (transaction) => {
+                        const userRef = db.collection('usuarios').doc(currentUser.uid);
+                        const userDoc = await transaction.get(userRef);
+                        
+                        if (!userDoc.exists) throw new Error("Usuario no encontrado.");
+                        
+                        const userData = userDoc.data();
+                        const carrito = userData.carrito || [];
 
-                    transaction.update(userRef, { carrito: [] });
-                });
+                        if (carrito.length === 0) throw new Error('El carrito está vacío.');
+                        
+                        const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
+                        const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
+                        const montoTotal = subtotal + shippingCost;
 
-                showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
+                        const counterRef = db.collection('contadores').doc('pedidos');
+                        const counterDoc = await transaction.get(counterRef);
+                        
+                        const nuevoFolioNum = (counterDoc.exists ? counterDoc.data().ultimoFolio : 0) + 1;
+                        folioFormateado = `PEDIDO-${String(nuevoFolioNum).padStart(3, '0')}`;
+                        
+                        transaction.set(counterRef, { ultimoFolio: nuevoFolioNum }, { merge: true });
+
+                        const nuevoPedidoRef = db.collection('pedidos').doc();
+                        
+                        transaction.set(nuevoPedidoRef, {
+                            folio: folioFormateado,
+                            usuarioId: currentUser.uid,
+                            datosCliente: {
+                                nombre: userData.nombre,
+                                apellido: userData.apellido,
+                                telefono: userData.telefono || 'N/A'
+                            },
+                            productos: carrito,
+                            montoTotal: montoTotal,
+                            metodoPago,
+                            datosEntrega, 
+                            comentarios: comentarios || null, 
+                            estado: 'Pendiente',
+                            fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        transaction.update(userRef, { carrito: [] });
+                    });
+                     showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
+                }
+
                 cerrarModalEntrega();
                 renderizarCarrito();
 
             } catch (error) {
-                console.error("Error al registrar el pedido:", error);
-                showMessage(`Hubo un error al procesar tu pedido: ${error.message}. Intenta de nuevo.`);
+                console.error("Error al procesar el pedido:", error);
+                showMessage(`Hubo un error: ${error.message}. Intenta de nuevo.`);
             } finally {
                 submitButton.disabled = false;
                 submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
