@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KalCTas Tienda - Edición Navideña</title>
+    <title>KalCTas Tienda</title>
 
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#1a1a2e"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#FFFFFF"/> <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="KalCTas">
     <link rel="apple-touch-icon" href="icon-192x192.png">
@@ -18,32 +17,38 @@
     <script src="https://js.stripe.com/v3/"></script>
     
     <style>
-        /* --- Paleta de Colores y Variables de Diseño NAVIDEÑA --- */
+        /* --- Paleta de Colores y Variables de Diseño - TEMA MODERNO --- */
         :root {
-            --color-background: #0a2f35; /* Verde pino oscuro */
-            --color-surface: #1d576b;    /* Azul verdoso oscuro */
-            --color-primary: #d94545;    /* Rojo navideño */
-            --color-secondary: #f0c475;   /* Dorado / Amarillo cálido */
-            --color-accent: #ffffff;      /* Blanco nieve */
-            --color-danger: #e74c3c;
-            --color-text-primary: #fdfdfd; /* Blanco para texto principal */
-            --color-text-secondary: #f0c475; /* Dorado para texto secundario */
-            --color-border: #f0c475;     /* Borde dorado */
+            /* Tema Claro (Default) */
+            --color-background: #f8f9fa;      /* Blanco Hueso */
+            --color-surface: #ffffff;         /* Blanco Puro */
+            --color-primary: #8E44AD;         /* Morado Elegante */
+            --color-primary-hover: #7D3C98;
+            --color-secondary: #3498DB;       /* Azul Moderno */
+            --color-secondary-hover: #2E86C1;
+            --color-danger: #E74C3C;
+            --color-text-primary: #212529;    /* Negro Carbón */
+            --color-text-secondary: #6c757d;   /* Gris Medio */
+            --color-border: #dee2e6;          /* Gris Claro */
             
             --font-family: 'Poppins', sans-serif;
-            --font-christmas: 'Mountains of Christmas', cursive; /* Fuente temática */
-            --border-radius: 12px;
-            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
-            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.4);
+            --border-radius: 8px;
+            --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        body, body.dark-mode {
-            --color-background: #0a2f35;
-            --color-surface: #1d576b;
-            --color-primary: #d94545;
-            --color-text-primary: #fdfdfd;
-            --color-text-secondary: #f0c475;
-            --color-border: #f0c475;
+        body.dark-mode {
+            /* Tema Oscuro */
+            --color-background: #121212;
+            --color-surface: #1e1e1e;
+            --color-primary: #9B59B6;
+            --color-primary-hover: #8E44AD;
+            --color-secondary: #5DADE2;
+            --color-secondary-hover: #3498DB;
+            --color-danger: #EC7063;
+            --color-text-primary: #e9ecef;
+            --color-text-secondary: #adb5bd;
+            --color-border: #343a40;
         }
 
         /* Transición suave para el cambio de tema */
@@ -55,48 +60,21 @@
         body {
             margin: 0;
             font-family: var(--font-family);
-            background: linear-gradient(180deg, #0a2f35 0%, #1d576b 100%);
+            background-color: var(--color-background);
             color: var(--color-text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            overflow: hidden; 
         }
-
-        .snow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1001;
-        }
-
-        .snowflake {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) translateX(0); }
-            100% { transform: translateY(110vh) translateX(15px); }
-        }
-
 
         /* --- Contenedor Principal --- */
         .container {
             background-color: var(--color-surface);
             padding: 40px;
             border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
+            border: 1px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             max-width: 450px;
             width: 90%;
@@ -109,59 +87,9 @@
             transform: translateY(20px);
             transition: opacity 0.8s ease, transform 0.8s ease;
             min-height: 85vh; 
-            overflow: hidden; 
-        }
-        
-        .auth-modal-content, .payment-modal-content, .my-orders-modal-content,
-        .account-panel, .cart-panel, .container {
-            position: relative;
             overflow: hidden;
         }
         
-        .lights {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            text-align: center;
-            white-space: nowrap;
-            z-index: 20;
-        }
-
-        .lights .light {
-            position: relative;
-            display: inline-block;
-            width: 10px;
-            height: 20px;
-            background: #fff;
-            margin: 0 10px;
-            border-radius: 50%;
-            animation: flash 1.2s infinite;
-        }
-        
-        .lights .light::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: 2px;
-            width: 6px;
-            height: 8px;
-            background: #444;
-            border-radius: 3px;
-        }
-
-        @keyframes flash {
-            0%, 100% { background: rgba(255,255,255,0.4); box-shadow: none; }
-            50% { background: var(--light-color); box-shadow: 0 0 10px var(--light-color), 0 0 20px var(--light-color); }
-        }
-
-        .light.red { --light-color: #ff5e5e; animation-delay: 0.2s; }
-        .light.yellow { --light-color: #ffff8a; animation-delay: 0.4s; }
-        .light.green { --light-color: #8aff8a; animation-delay: 0.6s; }
-        .light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
-        .light.purple { --light-color: #d48aff; animation-delay: 1s; }
-
         .container.show {
             opacity: 1;
             transform: translateY(0);
@@ -178,8 +106,6 @@
             overflow-y: auto;
             -ms-overflow-style: none;
             scrollbar-width: none;
-            position: relative;
-            z-index: 10;
         }
 
         .screen::-webkit-scrollbar {
@@ -192,69 +118,32 @@
             transform: scale(1);
         }
         
-        h2, h3 { 
+        h1, h2, h3 { 
             color: var(--color-text-primary);
             font-weight: 600;
         }
         
         h1 {
-            font-family: var(--font-christmas);
-            letter-spacing: 2px;
-            color: var(--color-primary);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
-
-        .jojo-text {
-            font-size: 1.6em; 
-            display: block;
-            white-space: nowrap; 
-        }
-
-        .welcome-text {
-            font-size: 0.7em; 
-            font-family: var(--font-christmas);
-            display: block;
-            margin-top: 5px; 
-            white-space: nowrap; 
-        }
-
-        .title-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            order: 1;
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
-        }
-
-        .title-container h1 {
-            margin: 0;
-            position: relative;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
         
-        .title-container hr {
-            display: none;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .welcome-text {
+            font-size: 1em;
+            color: var(--color-text-secondary);
+            margin-bottom: 30px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .logo {
-            max-width: 280px;
-            margin-bottom: 30px;
-            order: 2;
-            transition: all 1s ease-in;
-            margin-top: 120px;
-            animation: pulse 2.5s infinite ease-in-out; 
-            filter: drop-shadow(0 0 10px var(--color-secondary));
+            max-width: 180px; /* Tamaño más sutil */
+            margin-bottom: 20px;
+            transition: transform 0.5s ease;
+        }
+        .logo:hover {
+            transform: rotate(-5deg);
         }
 
         .logo-small {
@@ -267,92 +156,69 @@
         /* --- Estilo de Botones --- */
         .btn {
             padding: 15px 20px;
-            border: 2px solid var(--color-border);
+            border: none; /* Diseño sin bordes */
             border-radius: var(--border-radius);
             font-size: 1em;
             font-weight: 600; 
             font-family: var(--font-family);
-            color: #ffffff;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             width: 100%;
             letter-spacing: 0.5px; 
             text-transform: uppercase;
-            position: relative;
-            overflow: visible;
-        }
-        
-        /* --- INICIO NUEVA MEJORA CSS: EFECTO NIEVE 3D EN BOTONES --- */
-        .btn span {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Se eliminó la capa ::after para un enfoque más limpio y realista */
-        .btn::before {
-            content: '';
-            position: absolute;
-            left: -2px; /* Ligeramente más ancho que el botón */
-            top: -12px;
-            width: calc(100% + 4px);
-            height: 20px;
-            background: linear-gradient(to top, rgba(255,255,255,0.8) 0%, white 40%);
-            z-index: 1;
-            
-            /* La magia del efecto 3D con clip-path */
-            clip-path: polygon(
-                0% 100%, 100% 100%, 100% 25%, 
-                90% 15%, 80% 20%, 70% 10%, 60% 22%, 
-                50% 8%, 40% 18%, 30% 5%, 20% 15%, 
-                10% 10%, 0% 20%
-            );
-            
-            /* Sombra para dar volumen */
-            filter: drop-shadow(0 -3px 2px rgba(0,0,0,0.15));
-            
-            transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--shadow-soft);
         }
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 15px var(--color-secondary);
+            box-shadow: var(--shadow-medium);
         }
-
-        .btn:hover::before {
-            top: -14px; /* La nieve se "levanta" un poco */
-        }
-        /* --- FIN NUEVA MEJORA CSS --- */
 
         .btn:disabled {
-            background-color: #575757; 
+            background-color: var(--color-border); 
+            color: var(--color-text-secondary);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
-            border-color: #333;
         }
         
-        .btn:disabled::before {
-            display: none;
+        /* Botones primarios */
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: #ffffff;
         }
-        
-        /* Asignación de nueva paleta a los botones existentes */
-        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #fff; }
-        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); color: #111; }
-        .btn-kalctas-largas, .btn-checkout { background-color: #2e8b57; border-color: #2e8b57; color: #fff; }
-        .btn-volver { background-color: #4a4a6a; border-color: #4a4a6a; } 
-        .btn-view { background-color: #34495e; border-color: #34495e; } 
+        .btn-primary:hover { background-color: var(--color-primary-hover); }
+
+        /* Botones secundarios */
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: #ffffff;
+        }
+        .btn-secondary:hover { background-color: var(--color-secondary-hover); }
+
+        /* Botones de acción (agregar, pagar, etc.) */
         .btn-add {
             background-color: var(--color-primary);
-            border-color: var(--color-primary);
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
+            gap: 10px; /* Espacio entre texto e icono */
         }
-        .btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
+        .btn-add:hover { background-color: var(--color-primary-hover); }
+
+        /* Botones neutrales o de "volver" */
+        .btn-neutral {
+            background-color: var(--color-surface);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+        .btn-neutral:hover { background-color: var(--color-background); }
         
-        #delivery-form .btn-add {
-            gap: 10px;
+        /* Botones de peligro (logout) */
+        .btn-danger {
+            background-color: var(--color-danger);
+            color: #ffffff;
         }
 
         .button-container {
@@ -360,8 +226,6 @@
             flex-direction: column;
             gap: 20px;
             width: 100%;
-            order: 3;
-            transition: all 1s ease-in;
             margin-top: 15px;
         }
         
@@ -371,30 +235,28 @@
             right: 25px;
             display: flex;
             gap: 15px;
-            transition: all 1s ease-in;
             z-index: 100;
         }
         
         .header-icon {
-            font-size: 2em;
+            font-size: 1.8em;
             color: var(--color-text-primary);
             cursor: pointer;
             transition: transform 0.2s ease;
-            filter: drop-shadow(0 0 5px var(--color-secondary));
             text-decoration: none;
         }
 
         .header-icon:hover {
-            transform: scale(1.1) rotate(10deg);
+            transform: scale(1.1);
         }
         
         .auth-button {
             position: fixed;
             top: 20px;
             left: 25px;
-            background-color: transparent;
-            border: 2px solid var(--color-secondary);
-            color: var(--color-secondary);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
             padding: 8px 16px; 
             border-radius: 50px; 
             cursor: pointer;
@@ -402,11 +264,12 @@
             font-weight: 600;
             transition: all 0.2s ease;
             z-index: 100;
+            box-shadow: var(--shadow-soft);
         }
 
         .auth-button:hover {
-            background-color: var(--color-secondary);
-            color: var(--color-surface);
+            background-color: var(--color-background);
+            border-color: var(--color-text-secondary);
         }
 
         .model-grid {
@@ -418,7 +281,7 @@
         }
 
         .model-card {
-            background-color: rgba(0,0,0,0.2);
+            background-color: var(--color-surface);
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius);
             padding: 15px;
@@ -429,13 +292,13 @@
 
         .model-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--color-secondary);
+            box-shadow: var(--shadow-medium);
         }
 
         .model-card img {
             width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: calc(var(--border-radius) - 4px);
             margin-bottom: 15px;
         }
         
@@ -443,19 +306,18 @@
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .model-buttons .btn {
             width: calc(50% - 5px);
             padding: 10px;
-            font-size: 0.75em; 
-            font-weight: 500;
+            font-size: 0.75em;
         }
 
         .product-price {
             font-weight: 700;
-            color: var(--color-secondary);
+            color: var(--color-primary);
             font-size: 1.2em;
             margin-bottom: 5px;
         }
@@ -474,7 +336,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(10, 47, 53, 0.8);
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
@@ -496,7 +358,6 @@
             font-size: 35px;
             font-weight: bold;
             transition: 0.3s;
-            z-index: 25; 
         }
 
         .close-modal:hover,
@@ -511,7 +372,7 @@
             color: var(--color-text-primary);
             padding: 40px 30px 30px 30px;
             border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
+            border: 1px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             width: 90%;
             max-width: 400px;
@@ -521,13 +382,11 @@
         .my-orders-modal-content { max-width: 550px; }
 
         .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
-            font-family: var(--font-christmas);
-            letter-spacing: 1px;
-            font-size: 2.2em;
+            font-weight: 700;
+            font-size: 1.8em;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 0;
             margin-bottom: 25px;
-            position: relative; z-index: 1;
         }
         
         .payment-modal-content { text-align: center; }
@@ -539,21 +398,19 @@
             border-radius: var(--border-radius);
             margin-top: 20px;
             border: 1px solid var(--color-border);
-            position: relative; z-index: 1;
         }
         .payment-modal-content .info-container p { margin: 8px 0; }
-        .payment-modal-content .info-container strong { color: var(--color-secondary); }
+        .payment-modal-content .info-container strong { color: var(--color-primary); }
 
         .auth-form {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            position: relative; z-index: 1;
         }
 
         .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
             padding: 14px;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             border: 1px solid var(--color-border);
             font-size: 1em;
             font-family: var(--font-family);
@@ -570,7 +427,7 @@
         .auth-form input:focus {
             outline: none;
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(217, 69, 69, 0.4);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
         }
         
         .auth-form label {
@@ -585,21 +442,20 @@
             color: #fff;
             font-weight: 600;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
             margin-top: 10px;
         }
 
-        .auth-form .btn-auth:hover { background-color: #b83232; }
+        .auth-form .btn-auth:hover { background-color: var(--color-primary-hover); }
         
         .auth-toggle {
             text-align: center;
             margin-top: 15px;
             font-size: 0.9em;
             color: var(--color-text-secondary);
-            position: relative; z-index: 1;
         }
 
         .auth-toggle a {
@@ -615,15 +471,12 @@
             font-weight: 500;
         }
         
-        #payment-request-button { margin-bottom: 20px; position: relative; z-index: 1; }
-        
         .separator {
             display: flex;
             align-items: center;
             text-align: center;
             color: var(--color-text-secondary);
             margin: 20px 0;
-            position: relative; z-index: 1;
         }
         .separator::before, .separator::after {
             content: '';
@@ -637,7 +490,7 @@
             background-color: var(--color-background);
             padding: 12px;
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             margin-bottom: 20px;
         }
         #card-errors {
@@ -653,6 +506,7 @@
             box-shadow: var(--shadow-medium);
             text-align: center;
             max-width: 320px;
+            border: 1px solid var(--color-border);
         }
         .alert-text { color: var(--color-text-primary); font-size: 1.1em;}
         .alert-button {
@@ -674,38 +528,26 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box; 
+            border-left: 1px solid var(--color-border);
+            border-right: 1px solid var(--color-border);
         }
         
-        .account-panel { 
-            left: 0; 
-            transform: translateX(-100%); 
-        }
-
-        .cart-panel { 
-            right: 0; 
-            transform: translateX(100%); 
-        }
-
-        .account-panel.show, .cart-panel.show { 
-            transform: translateX(0); 
-        }
+        .account-panel { left: 0; transform: translateX(-100%); }
+        .cart-panel { right: 0; transform: translateX(100%); }
+        .account-panel.show, .cart-panel.show { transform: translateX(0); }
         
         .account-panel h3, .cart-panel h3 {
             text-align: center;
             margin: 0; 
             padding: 45px 25px 20px 25px;
             flex-shrink: 0;
-            font-family: var(--font-christmas);
-            font-size: 2.5em;
-            letter-spacing: 1px;
-            position: relative; z-index: 1;
+            font-size: 2em;
         }
         
         .account-info { 
             flex-grow: 1; 
             overflow-y: auto; 
             padding: 0 25px;
-            position: relative; z-index: 1;
         }
         
         .account-info p {
@@ -731,12 +573,6 @@
             padding: 20px 25px 25px 25px; 
             border-top: 1px solid var(--color-border);
             flex-shrink: 0;
-            position: relative; z-index: 1;
-        }
-        
-        .btn-theme {
-            background-color: var(--color-border);
-            color: var(--color-text-primary);
         }
         
         .cart-items {
@@ -745,8 +581,7 @@
             margin: 0;
             overflow-y: auto;
             flex-grow: 1; 
-            padding: 0 25px; 
-            position: relative; z-index: 1;
+            padding: 0 25px;
         }
         
         .cart-item {
@@ -760,33 +595,14 @@
         .cart-item-img {
             width: 50px;
             height: 50px;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.2s ease;
+            border: 1px solid var(--color-border);
         }
 
-        .cart-item-img:hover {
-            transform: scale(1.08);
-        }
-
-        .cart-item-details {
-            flex-grow: 1;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .cart-item-details .name {
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-        
-        .cart-item-details .price {
-            font-size: 0.9em;
-            font-weight: 600;
-            color: var(--color-text-secondary);
-        }
+        .cart-item-details { flex-grow: 1; text-align: left; }
+        .cart-item-details .name { font-size: 0.9em; font-weight: 500; }
+        .cart-item-details .price { font-size: 0.9em; font-weight: 600; color: var(--color-primary); }
         
         .cart-item button { 
             background: none; 
@@ -797,201 +613,84 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            margin-left: auto;
         }
         .cart-item button:hover { background: var(--color-danger); color: white; }
         
-        .delivery-options {
-            padding: 15px 25px;
-            border-top: 1px solid var(--color-border);
-            border-bottom: 1px solid var(--color-border);
-            position: relative; z-index: 1;
-        }
-        
-        .delivery-options label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            text-align: left;
-        }
-        
+        .delivery-options { padding: 15px 25px; border-top: 1px solid var(--color-border); }
+        .delivery-options label { display: block; margin-bottom: 10px; font-weight: 600; text-align: left; }
         .delivery-options select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
-            background-color: var(--color-background);
-            color: var(--color-text-primary);
-            font-family: var(--font-family);
+            width: 100%; padding: 10px; border-radius: var(--border-radius); border: 1px solid var(--color-border);
+            background-color: var(--color-background); color: var(--color-text-primary); font-family: var(--font-family);
         }
 
-        #home-delivery-fields {
-            display: none;
-        }
+        #home-delivery-fields, #pickup-location-fields > div { display: flex; flex-direction: column; gap: 15px; }
+        #home-delivery-fields { display: none; }
         
-        #pickup-location-fields > div {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
         .cart-total {
-            text-align: right;
-            margin-top: auto;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: var(--color-secondary);
-            padding: 20px 25px 20px 25px;
-            position: relative; z-index: 1;
+            text-align: right; margin-top: auto; font-size: 1.3em; font-weight: 700; color: var(--color-primary);
+            padding: 20px 25px; border-top: 1px solid var(--color-border);
         }
 
-        .my-orders-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 400px;
-            overflow-y: auto;
-            text-align: left;
-            position: relative; z-index: 1;
-        }
-
+        .my-orders-list { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; text-align: left; }
         .my-orders-item {
-            background-color: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
-            cursor: pointer;
-            border: 1px solid var(--color-border);
+            background-color: var(--color-background); padding: 15px; border-radius: var(--border-radius);
+            margin-bottom: 10px; cursor: pointer; border: 1px solid var(--color-border);
         }
-        .order-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-        
+        .order-summary { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
         .order-details {
-            display: none;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--color-border);
-            text-align: left;
-            font-size: 0.9em;
-            color: var(--color-text-secondary);
+            display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--color-border);
+            text-align: left; font-size: 0.9em; color: var(--color-text-secondary);
         }
         .order-details strong { color: var(--color-text-primary); }
 
-        .my-orders-item .status {
-            font-size: 0.8em;
-            padding: 5px 10px;
-            border-radius: 50px;
-            color: #111;
-            font-weight: 500;
-        }
-        .my-orders-item .status.Entregado { background-color: #2e8b57; color: white; }
-        .my-orders-item .status.Pendiente { background-color: #f1c40f; }
-        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: #111; }
-        .my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
+        .my-orders-item .status { font-size: 0.8em; padding: 5px 10px; border-radius: 50px; color: #fff; font-weight: 500; }
+        .my-orders-item .status.Entregado { background-color: #2ECC71; }
+        .my-orders-item .status.Pendiente { background-color: #F1C40F; color: #111; }
+        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); }
+        .my-orders-item .status.Cancelado { background-color: var(--color-danger); }
 
         .footer-social {
-            order: 4;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 25px;
-            position: relative;
-            bottom: auto;
-            padding: 0;
-            z-index: 10;
+            width: 100%; display: flex; justify-content: center; align-items: center;
+            gap: 15px; margin-top: auto; padding-top: 25px;
         }
 
         .social-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-size: 0.8em;
-            font-weight: 500;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px;
+            color: white; text-decoration: none; font-size: 0.9em; font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .social-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-        }
-
-        .social-btn.facebook {
-            background-color: #1877F2;
-        }
-
-        .social-btn.whatsapp {
-            background-color: #25D366;
-        }
-
-        .social-btn svg {
-            width: 18px;
-            height: 18px;
-        }
+        .social-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        .social-btn.facebook { background-color: #1877F2; }
+        .social-btn.whatsapp { background-color: #25D366; }
+        .social-btn svg { width: 18px; height: 18px; }
         
-        .account-buttons .footer-social {
-            margin-top: 10px;
-            flex-direction: column; 
-            padding: 0;
-            order: 0;
-            position: relative;
-        }
-        .account-buttons .social-btn {
-            width: 100%;
-            justify-content: center;
-            box-sizing: border-box; 
-        }
+        .account-buttons .footer-social { margin-top: 10px; flex-direction: column; padding: 0; }
+        .account-buttons .social-btn { width: 100%; justify-content: center; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <div class="snow" id="snow-container"></div>
-
     <div class="container" id="main-container">
-        <div class="lights">
-            <div class="light red"></div>
-            <div class="light yellow"></div>
-            <div class="light green"></div>
-            <div class="light blue"></div>
-            <div class="light purple"></div>
-            <div class="light red"></div>
-            <div class="light yellow"></div>
-            <div class="light green"></div>
-            <div class="light blue"></div>
-            <div class="light purple"></div>
-        </div>
 
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-             <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎁</a>
+             <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
         </div>
 
         <main id="pantalla-principal" class="screen active">
-            <div class="title-container">
-                <h1>
-                    <span class="jojo-text">¡Jo, Jo, Jo! 🎅🏼</span>
-                    <span class="welcome-text">Bienvenido a KalCTas</span>
-                </h1>
-            </div>
             <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
+            <h1>KalCTas</h1>
+            <p class="welcome-text">Calcetas con estilo para cada paso que das.</p>
+
             <div class="button-container" id="main-buttons">
-                <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
+                <button class="btn btn-primary" onclick="mostrarPantalla('pantalla-2-4')">
                     <span>KalCTas 2/4</span>
                 </button>
-                <button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
+                <button class="btn btn-secondary" onclick="mostrarPantalla('pantalla-3-4')">
                     <span>KalCTas 3/4</span>
                 </button>
-                <button class="btn btn-kalctas-largas" onclick="mostrarPantalla('pantalla-largas')">
+                <button class="btn btn-neutral" onclick="mostrarPantalla('pantalla-largas')">
                     <span>KalCTas Largas</span>
                 </button>
             </div>
@@ -1009,41 +708,42 @@
 
         <section id="pantalla-2-4" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+            <h2>KalCTas 2/4</h2>
             <div class="model-grid" id="grid-2-4"></div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+            <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
                 <span>Volver</span>
             </button>
         </section>
 
         <section id="pantalla-3-4" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+            <h2>KalCTas 3/4</h2>
             <div class="model-grid" id="grid-3-4"></div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+            <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
                 <span>Volver</span>
             </button>
         </section>
 
         <section id="pantalla-largas" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+            <h2>KalCTas Largas</h2>
             <div class="model-grid" id="grid-largas"></div>
-            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+            <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
                 <span>Volver</span>
             </button>
         </section>
     </div>
 
     <div id="account-panel" class="account-panel">
-        <div class="lights">
-            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div>
-        </div>
         <span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
         <h3>Mi Cuenta</h3>
         <div class="account-info" id="account-info">
         </div>
         <div class="account-buttons">
-            <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()"><span>Mis pedidos</span></button>
-            <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()"><span>Editar mis datos</span></button>
-            <button class="btn btn-logout" onclick="cerrarSesion()"><span>Cerrar Sesión</span></button>
+            <button class="btn btn-primary" onclick="mostrarModalMisPedidos()"><span>Mis pedidos</span></button>
+            <button class="btn btn-secondary" onclick="mostrarModalEditarDatos()"><span>Editar mis datos</span></button>
+            <button class="btn btn-neutral" onclick="toggleTheme()"><span>Alternar Tema 🌗</span></button>
+            <button class="btn btn-danger" onclick="cerrarSesion()"><span>Cerrar Sesión</span></button>
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
@@ -1058,9 +758,6 @@
     </div>
 
     <div id="cart-panel" class="cart-panel">
-        <div class="lights">
-            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div>
-        </div>
         <span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
         <h3>Tu Carrito</h3>
         <ul class="cart-items" id="cart-list"></ul>
@@ -1073,8 +770,8 @@
         </div>
         <div class="cart-total" id="cart-total"></div>
         <div class="cart-buttons">
-            <button class="btn btn-checkout" onclick="pagar()"><span>Pagar</span></button>
-            <button class="btn btn-volver" onclick="cerrarPanelCarrito()"><span>Cerrar</span></button>
+            <button class="btn btn-add" onclick="pagar()"><span>Pagar</span></button>
+            <button class="btn btn-neutral" onclick="cerrarPanelCarrito()"><span>Cerrar</span></button>
         </div>
     </div>
     
@@ -1085,9 +782,6 @@
 
     <div id="edit-profile-modal" class="edit-profile-modal">
         <div class="auth-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
-            </div>
             <span class="close-modal" onclick="cerrarModalEditarDatos()">&times;</span>
             <h3>Editar Mis Datos</h3>
             <form id="edit-profile-form" class="auth-form">
@@ -1102,9 +796,6 @@
 
     <div id="auth-modal" class="auth-modal">
         <div class="auth-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
-            </div>
             <span class="close-modal" onclick="cerrarAuthModal()">&times;</span>
             <div id="login-form-container">
                 <h3>Iniciar Sesión</h3>
@@ -1140,24 +831,18 @@
 
     <div id="payment-options-modal" class="payment-options-modal">
         <div class="payment-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
-            </div>
             <span class="close-modal" onclick="cerrarModalPago()">&times;</span>
             <h3>Selecciona tu método de pago</h3>
-            <div class="button-container">
-                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()"><span>Pago con Tarjeta / Apple Pay</span></button>
-                <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')"><span>Pagar por Transferencia</span></button>
-                <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')"><span>Pagar en efectivo</span></button>
+            <div class="button-container" style="gap: 15px;">
+                <button class="btn btn-primary" onclick="iniciarPagoTarjeta()"><span>Pago con Tarjeta / Apple Pay</span></button>
+                <button class="btn btn-secondary" onclick="iniciarProcesoDeEntrega('Transferencia')"><span>Pagar por Transferencia</span></button>
+                <button class="btn btn-neutral" onclick="iniciarProcesoDeEntrega('Efectivo')"><span>Pagar en efectivo</span></button>
             </div>
         </div>
     </div>
     
     <div id="card-payment-modal" class="auth-modal">
         <div class="payment-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
-            </div>
             <span class="close-modal" onclick="cerrarModalPagoTarjeta()">&times;</span>
             <h3>Pago con Tarjeta</h3>
             
@@ -1176,9 +861,6 @@
     </div>
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
-            </div>
             <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
             <h3>Detalles de la Transferencia</h3>
             <div class="info-container">
@@ -1192,15 +874,12 @@
                     Enviar Comprobante
                 </a>
             </div>
-            <button class="btn btn-add" onclick="mostrarModalConfirmarEntrega('Transferencia')"><span>Continuar</span></button>
+            <button class="btn btn-add" style="margin-top: 20px;" onclick="mostrarModalConfirmarEntrega('Transferencia')"><span>Continuar</span></button>
         </div>
     </div>
     
     <div id="confirm-order-modal" class="confirm-order-modal">
         <div class="payment-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
-            </div>
             <span class="close-modal" onclick="cerrarModalEntrega()">&times;</span>
             <h3 id="confirm-order-title"></h3>
             <form id="delivery-form" class="auth-form">
@@ -1244,7 +923,7 @@
 
                 <button type="submit" class="btn btn-add">
                     <span>Confirmar Pedido</span>
-                    <span>🎄</span>
+                    <span>🛍️</span>
                 </button>
                 </form>
         </div>
@@ -1252,9 +931,6 @@
 
     <div id="my-orders-modal" class="my-orders-modal">
         <div class="my-orders-modal-content">
-            <div class="lights">
-                <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div>
-            </div>
             <span class="close-modal" onclick="cerrarModalMisPedidos()">&times;</span>
             <h3>Mis Pedidos</h3>
             <ul class="my-orders-list" id="my-orders-list"></ul>
@@ -1276,6 +952,33 @@
         };
 
         firebase.initializeApp(firebaseConfig);
+        
+        // ================================================================================= //
+        // LÓGICA PARA EL CAMBIO DE TEMA CLARO/OSCURO
+        // ================================================================================= //
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+
+            // Actualizar el theme-color para la barra de estado del navegador
+            const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+            if (themeColorMeta) {
+                themeColorMeta.setAttribute('content', isDarkMode ? '#121212' : '#FFFFFF');
+            }
+        }
+
+        function applyInitialTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                // Asegurar que el theme-color inicial sea correcto
+                const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+                 if (themeColorMeta) {
+                    themeColorMeta.setAttribute('content', '#121212');
+                }
+            }
+        }
 
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -1295,24 +998,12 @@
         const mainContainer = document.getElementById('main-container');
 
         document.addEventListener('DOMContentLoaded', () => {
+            applyInitialTheme(); // Aplicar tema guardado al cargar
             mainContainer.classList.add('show');
             window.scrollTo(0, 0); 
             const activeScreen = document.querySelector('.screen.active');
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                  generarGaleria(activeScreen.id);
-            }
-
-            const snowContainer = document.getElementById('snow-container');
-            const numberOfSnowflakes = 40;
-            for (let i = 0; i < numberOfSnowflakes; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
-                snowflake.style.opacity = Math.random();
-                snowflake.style.width = snowflake.style.height = `${Math.random() * 4 + 2}px`;
-                snowContainer.appendChild(snowflake);
             }
         });
 
@@ -1330,21 +1021,18 @@
         }
         
         function mostrarPantalla(idDePantalla) {
-            const snowContainer = document.getElementById('snow-container');
-            snowContainer.style.opacity = '0';
-            setTimeout(() => {
-                pantallas.forEach(pantalla => {
-                    pantalla.classList.remove('active');
-                });
-                const pantallaActiva = document.getElementById(idDePantalla);
-                if (pantallaActiva) {
-                    pantallaActiva.classList.add('active');
-                    if (idDePantalla.startsWith('pantalla-')) {
+            pantallas.forEach(pantalla => {
+                pantalla.classList.remove('active');
+            });
+            const pantallaActiva = document.getElementById(idDePantalla);
+            if (pantallaActiva) {
+                setTimeout(() => {
+                     pantallaActiva.classList.add('active');
+                     if (idDePantalla.startsWith('pantalla-')) {
                         generarGaleria(idDePantalla);
                     }
-                }
-                snowContainer.style.opacity = '1';
-            }, 300);
+                }, 50); // Pequeño delay para que la transición se vea
+            }
         }
         
         auth.onAuthStateChanged(user => {
@@ -1836,11 +1524,11 @@
                      cardElement = elements.create('card', {
                         style: {
                             base: {
-                                color: '#fdfdfd',
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-primary').trim(),
                                 fontFamily: '"Poppins", sans-serif',
                                 fontSize: '16px',
                                 '::placeholder': {
-                                    color: 'rgba(240, 196, 117, 0.7)' // Dorado pálido
+                                    color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
                                 }
                             }
                         }
@@ -2102,7 +1790,7 @@
                 showMessage(`Hubo un error: ${error.message}. Intenta de nuevo.`);
             } finally {
                 submitButton.disabled = false;
-                submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
+                submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛍️</span>`;
             }
         });
 
@@ -2141,9 +1829,9 @@
                         <p class="product-price">$${producto.precio.toFixed(2)}</p>
                         <p>${producto.nombre}</p>
                         <div class="model-buttons">
-                            <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')"><span>Ver</span></button>
+                            <button class="btn btn-neutral" onclick="verImagen('${producto.imagenUrl}')"><span>Ver</span></button>
                             <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
-                                <span>${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎁'}</span>
+                                <span>${producto.stock <= 0 ? 'Agotado' : 'Agregar 🛍️'}</span>
                                 </button>
                         </div>
                     `;
