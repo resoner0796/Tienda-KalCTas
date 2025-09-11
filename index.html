@@ -7,7 +7,7 @@
 
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#FFFFFF"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1059,10 +1059,6 @@
                  generarGaleria(activeScreen.id);
             }
         });
-
-        // ================================================================================= //
-        // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN (SIN CAMBIOS)
-        // ================================================================================= //
         
         function showMessage(text) {
             alertText.textContent = text;
@@ -1689,12 +1685,10 @@
             return orderId; 
         }
 
-        // --- INICIO DE LA FUNCIÓN MODIFICADA ---
         async function iniciarProcesoDeEntrega(metodoPago) {
             cerrarModalPago();
             if (metodoPago === 'Transferencia') {
                 try {
-                    // Obtener el carrito y calcular el total
                     const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                     if (userDoc.exists) {
                         const carrito = userDoc.data().carrito || [];
@@ -1703,7 +1697,6 @@
                         const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                         const total = subtotal + shippingCost;
                         
-                        // Actualizar el elemento en el modal de transferencia
                         const totalElement = document.getElementById('transfer-total-amount');
                         totalElement.innerHTML = `<strong>Total a Pagar:</strong> $${total.toFixed(2)}`;
                     }
@@ -1716,7 +1709,6 @@
                 mostrarModalConfirmarEntrega(metodoPago);
             }
         }
-        // --- FIN DE LA FUNCIÓN MODIFICADA ---
         
         function mostrarModalConfirmarEntrega(metodoPago, orderId = null) {
             transferInfoModal.style.display = 'none';
@@ -1867,7 +1859,9 @@
             }
         });
 
-
+        // ================================================================================= //
+        // FUNCIÓN MODIFICADA PARA FILTRAR PRODUCTOS
+        // ================================================================================= //
         async function generarGaleria(idDePantalla) {
             let categoria;
             let gridId;
@@ -1885,11 +1879,16 @@
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
             try {
-                const snapshot = await db.collection('productos').where('categoria', '==', categoria).get();
+                // --- CAMBIO AÑADIDO: Se agrega .where('visible', '==', true) para filtrar ---
+                const snapshot = await db.collection('productos')
+                    .where('categoria', '==', categoria)
+                    .where('visible', '==', true) 
+                    .get();
+                
                 contenedor.innerHTML = '';
                 
                 if (snapshot.empty) {
-                    contenedor.innerHTML = '<p>No hay modelos disponibles.</p>';
+                    contenedor.innerHTML = '<p>No hay modelos disponibles por el momento.</p>';
                     return;
                 }
                 
