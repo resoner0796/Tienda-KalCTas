@@ -1,15 +1,17 @@
+Index Tienda KalCTas Halloween
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KalCTas Tienda</title>
+    <title>KalCTas Tienda - Edición Halloween</title>
 
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#FFFFFF"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#1a1a2e"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="KalCTas">
@@ -18,42 +20,32 @@
     <script src="https://js.stripe.com/v3/"></script>
     
     <style>
-        /* --- Paleta de Colores y Variables de Diseño - TEMA AJUSTADO --- */
+        /* --- Paleta de Colores y Variables de Diseño HALLOWEEN --- */
         :root {
-            /* Tema Claro (Default) */
-            --color-background: #f8f9fa;
-            --color-surface: #ffffff;
-            --color-primary: #4A55A2;         /* Azul/Índigo (de la imagen) */
-            --color-primary-hover: #3A448A;
-            --color-secondary: #F7941D;       /* Naranja (de la imagen) */
-            --color-secondary-hover: #E68A1A;
-            --color-green: #4CAF50;           /* Verde (de la imagen) */
-            --color-green-hover: #45A049;
-            --color-danger: #E74C3C;
-            --color-text-primary: #212529;
-            --color-text-secondary: #6c757d;
-            --color-border: #dee2e6;
+            --color-background: #0d0221; /* Morado muy oscuro casi negro */
+            --color-surface: #261c3e;    /* Morado oscuro para contenedores */
+            --color-primary: #f9a03f;    /* Naranja Halloween */
+            --color-secondary: #a75db4;   /* Morado medio */
+            --color-accent: #92e6a7;      /* Verde lima "tóxico" */
+            --color-danger: #e74c3c;
+            --color-text-primary: #fdfdfd; /* Blanco para texto principal */
+            --color-text-secondary: #f9a03f; /* Naranja para texto secundario */
+            --color-border: #4d426d;     /* Borde morado oscuro */
             
             --font-family: 'Poppins', sans-serif;
-            --border-radius: 8px;
-            --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.05);
-            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --font-halloween: 'Creepster', cursive; /* Fuente temática */
+            --border-radius: 12px;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
         
-        body.dark-mode {
-            /* Tema Oscuro */
-            --color-background: #121212;
-            --color-surface: #1e1e1e;
-            --color-primary: #7882C2;
-            --color-primary-hover: #5F6AAD;
-            --color-secondary: #F9A84D;
-            --color-secondary-hover: #F7941D;
-            --color-green: #6BCF70;
-            --color-green-hover: #4CAF50;
-            --color-danger: #EC7063;
-            --color-text-primary: #e9ecef;
-            --color-text-secondary: #adb5bd;
-            --color-border: #343a40;
+        body, body.dark-mode {
+            --color-background: #0d0221;
+            --color-surface: #261c3e;
+            --color-primary: #f9a03f;
+            --color-text-primary: #fdfdfd;
+            --color-text-secondary: #f9a03f;
+            --color-border: #4d426d;
         }
 
         /* Transición suave para el cambio de tema */
@@ -65,13 +57,14 @@
         body {
             margin: 0;
             font-family: var(--font-family);
-            background-color: var(--color-background);
+            background: linear-gradient(180deg, #0d0221 0%, #261c3e 100%);
             color: var(--color-text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
+            overflow: hidden; 
         }
 
         /* --- Contenedor Principal --- */
@@ -79,7 +72,7 @@
             background-color: var(--color-surface);
             padding: 40px;
             border-radius: var(--border-radius);
-            border: 1px solid var(--color-border);
+            border: 2px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             max-width: 450px;
             width: 90%;
@@ -92,14 +85,55 @@
             transform: translateY(20px);
             transition: opacity 0.8s ease, transform 0.8s ease;
             min-height: 85vh; 
+            overflow: hidden; 
+        }
+        
+        /* --- INICIO DE MODIFICACIÓN CSS: TELARAÑAS --- */
+        /* Aplicar posición relativa y overflow para que las telarañas se contengan */
+        .auth-modal-content, .payment-modal-content, .my-orders-modal-content,
+        .account-panel, .cart-panel {
+            position: relative;
             overflow: hidden;
         }
         
+        /* Selector combinado para aplicar telarañas a todos los contenedores */
+        .container::before, .container::after,
+        .auth-modal-content::before, .auth-modal-content::after,
+        .payment-modal-content::before, .payment-modal-content::after,
+        .my-orders-modal-content::before, .my-orders-modal-content::after,
+        .account-panel::before, .account-panel::after,
+        .cart-panel::before, .cart-panel::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 A100,100 0 0,0 0,100 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L80,0 A80,80 0 0,0 0,80 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L60,0 A60,60 0 0,0 0,60 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L40,0 A40,40 0 0,0 0,40 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L20,0 A20,20 0 0,0 0,20 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='0' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='50' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 0;
+            opacity: 0.5;
+        }
+        
+        .container::before, .auth-modal-content::before, .payment-modal-content::before, 
+        .my-orders-modal-content::before, .account-panel::before, .cart-panel::before {
+            top: -10px;
+            left: -10px;
+        }
+
+        .container::after, .auth-modal-content::after, .payment-modal-content::after,
+        .my-orders-modal-content::after, .account-panel::after, .cart-panel::after {
+            bottom: -10px;
+            right: -10px;
+            transform: rotate(180deg);
+        }
+        /* --- FIN DE MODIFICACIÓN CSS --- */
+
         .container.show {
             opacity: 1;
             transform: translateY(0);
         }
 
+        /* --- Transiciones de pantalla --- */
         .screen {
             display: none;
             width: 100%;
@@ -111,11 +145,8 @@
             overflow-y: auto;
             -ms-overflow-style: none;
             scrollbar-width: none;
-        }
-        #pantalla-principal.screen.active {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            position: relative;
+            z-index: 10;
         }
 
         .screen::-webkit-scrollbar {
@@ -128,154 +159,201 @@
             transform: scale(1);
         }
         
-        h1, h2, h3 { 
+        /* --- Títulos --- */
+        h2, h3 { /* h1 se estiliza por separado ahora */
             color: var(--color-text-primary);
             font-weight: 600;
         }
         
-        /* --- INICIO DE CAMBIOS --- */
-        /* Contenedor para el logo y el título principal */
-        #pantalla-principal > div:first-of-type {
-            position: relative; /* Base para el posicionamiento absoluto del título */
-            margin-bottom: 40px; /* Mantiene el espacio debajo del logo */
+        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
+        @keyframes blink {
+            50% { opacity: 0.2; }
         }
 
-        h1.main-title {
-            font-size: 1.1em;
-            color: var(--color-text-primary);
-            position: absolute;   /* Posicionamiento absoluto sobre el logo */
-            top: 60px;            /* Ajusta esta distancia para bajar el texto */
-            left: 0;              /* Centrado horizontal */
-            right: 0;             /* Centrado horizontal */
-            z-index: 1;           /* Asegura que esté por encima del logo */
-            margin: 0;            /* Resetea márgenes */
+        h1 {
+            font-family: var(--font-halloween);
+            letter-spacing: 2px;
+            color: var(--color-primary);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            line-height: 1.2;
         }
 
-        /* --- Nueva Animación para el Logo --- */
+        .boo-text {
+            font-size: 1.6em; /* Tercera reducción de tamaño */
+            animation: blink 1.5s infinite;
+            display: block;
+            white-space: nowrap; 
+        }
+
+        .welcome-text {
+            font-size: 0.7em; /* Tercera reducción de tamaño */
+            font-family: var(--font-halloween);
+            display: block;
+            margin-top: 5px; 
+            white-space: nowrap; 
+        }
+        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
+
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            order: 1;
+            position: absolute;
+            top: 20%; /* Movido un poco más arriba */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+        }
+
+        .title-container h1 {
+            margin: 0;
+            position: relative;
+        }
+        
+        .title-container hr {
+            display: none;
+        }
+
+        /* Animaciones */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
-        .logo {
-            max-width: 300px;
-            animation: pulse 2.5s infinite ease-in-out;
-            margin-bottom: 0; /* El margen ahora está en el contenedor padre */
+        
+        @keyframes swing {
+            0% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+            100% { transform: rotate(10deg); }
         }
-        /* --- FIN DE CAMBIOS --- */
+
+        /* --- Logo --- */
+        .logo {
+            max-width: 280px;
+            margin-bottom: 30px;
+            order: 2;
+            transition: all 1s ease-in;
+            margin-top: 120px;
+            animation: pulse 2.5s infinite ease-in-out; 
+            filter: drop-shadow(0 0 10px var(--color-primary));
+        }
 
         .logo-small {
             display: block;
-            width: 115px;
-            margin: 0 auto 20px auto; /* Centrado correcto */
+            width: 80px;
+            margin: 0 auto 20px auto;
             cursor: pointer;
         }
 
         /* --- Estilo de Botones --- */
         .btn {
             padding: 15px 20px;
-            border: none;
+            border: 2px solid var(--color-border);
             border-radius: var(--border-radius);
             font-size: 1em;
             font-weight: 600; 
             font-family: var(--font-family);
+            color: #ffffff;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             width: 100%;
             letter-spacing: 0.5px; 
             text-transform: uppercase;
-            box-shadow: var(--shadow-soft);
         }
-        
+
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px var(--color-accent);
         }
 
         .btn:disabled {
-            background-color: var(--color-border); 
-            color: var(--color-text-secondary);
+            background-color: #575757; 
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+            border-color: #333;
         }
         
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: #ffffff;
-        }
-        .btn-primary:hover { background-color: var(--color-primary-hover); }
-
-        .btn-secondary {
-            background-color: var(--color-secondary);
-            color: #ffffff;
-        }
-        .btn-secondary:hover { background-color: var(--color-secondary-hover); }
-        
-        .btn-green {
-            background-color: var(--color-green);
-            color: #ffffff;
-        }
-        .btn-green:hover { background-color: var(--color-green-hover); }
-
+        /* Asignación de nueva paleta a los botones existentes */
+        .btn-kalctas-2-4, .btn-pedidos { background-color: var(--color-primary); border-color: var(--color-primary); color: #111; }
+        .btn-kalctas-3-4, .btn-edit-profile { background-color: var(--color-secondary); border-color: var(--color-secondary); }
+        .btn-kalctas-largas, .btn-checkout { background-color: var(--color-accent); border-color: var(--color-accent); color: #111; }
+        .btn-volver { background-color: #4a4a6a; border-color: #4a4a6a; } 
+        .btn-view { background-color: #34495e; border-color: #34495e; } 
         .btn-add {
-            background-color: var(--color-primary);
-            color: #ffffff;
+            background-color: var(--color-secondary);
+            border-color: var(--color-secondary);
             display: flex;
             justify-content: center;
             align-items: center;
+            text-align: center;
+        }
+        .btn-logout { background-color: var(--color-danger); border-color: var(--color-danger); }
+
+        #delivery-form .btn-add {
             gap: 10px;
         }
-        .btn-add:hover { background-color: var(--color-primary-hover); }
 
-        .btn-neutral {
-            background-color: var(--color-surface);
-            color: var(--color-text-primary);
-            border: 1px solid var(--color-border);
-        }
-        .btn-neutral:hover { background-color: var(--color-background); }
-        
-        .btn-danger {
-            background-color: var(--color-danger);
-            color: #ffffff;
-        }
-
+        /* Contenedor de Botones (Menú principal) */
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             width: 100%;
+            order: 3;
+            transition: all 1s ease-in;
         }
         
+        /* --- Iconos y Botón de Sesión --- */
         .header-icons {
             position: fixed;
             top: 20px;
             right: 25px;
             display: flex;
             gap: 15px;
+            transition: all 1s ease-in;
             z-index: 100;
         }
+
+        .cart-icon-wrapper {
+            position: relative;
+        }
         
+        /* --- INICIO DE CORRECCIONES SOLICITADAS --- */
+        .cart-icon-wrapper::after {
+            content: '🕷️';
+            position: absolute;
+            font-size: 35px; /* Tamaño ya está bien */
+            top: 35px;
+            left: 15%; /* Movida un poco más a la izquierda */
+            transform: translateX(-50%);
+            transform-origin: top center;
+            animation: swing 4s infinite ease-in-out;
+        }
+        /* --- FIN DE CORRECCIONES SOLICITADAS --- */
+
         .header-icon {
-            font-size: 1.8em;
+            font-size: 2em;
             color: var(--color-text-primary);
             cursor: pointer;
             transition: transform 0.2s ease;
+            filter: drop-shadow(0 0 5px var(--color-primary));
             text-decoration: none;
         }
 
         .header-icon:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(10deg);
         }
         
         .auth-button {
             position: fixed;
             top: 20px;
             left: 25px;
-            background-color: var(--color-surface);
-            border: 1px solid var(--color-border);
-            color: var(--color-text-primary);
+            background-color: transparent;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
             padding: 8px 16px; 
             border-radius: 50px; 
             cursor: pointer;
@@ -283,14 +361,14 @@
             font-weight: 600;
             transition: all 0.2s ease;
             z-index: 100;
-            box-shadow: var(--shadow-soft);
         }
 
         .auth-button:hover {
-            background-color: var(--color-background);
-            border-color: var(--color-text-secondary);
+            background-color: var(--color-primary);
+            color: var(--color-surface);
         }
 
+        /* --- Diseño de la galería de modelos --- */
         .model-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -300,7 +378,7 @@
         }
 
         .model-card {
-            background-color: var(--color-surface);
+            background-color: rgba(0,0,0,0.2);
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius);
             padding: 15px;
@@ -311,13 +389,13 @@
 
         .model-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 0 20px var(--color-accent);
         }
 
         .model-card img {
             width: 100%;
             height: auto;
-            border-radius: calc(var(--border-radius) - 4px);
+            border-radius: 8px;
             margin-bottom: 15px;
         }
         
@@ -331,7 +409,8 @@
         .model-buttons .btn {
             width: calc(50% - 5px);
             padding: 10px;
-            font-size: 0.75em;
+            font-size: 0.75em; 
+            font-weight: 500;
         }
 
         .product-price {
@@ -346,6 +425,7 @@
             color: var(--color-text-secondary);
         }
 
+        /* --- Modales y Alertas --- */
         .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal {
             display: none;
             position: fixed;
@@ -355,7 +435,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(13, 2, 33, 0.8);
             backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
@@ -377,6 +457,7 @@
             font-size: 35px;
             font-weight: bold;
             transition: 0.3s;
+            z-index: 2; /* Para que esté por encima de la telaraña */
         }
 
         .close-modal:hover,
@@ -386,28 +467,33 @@
             cursor: pointer;
         }
 
+        /* Estilos base para contenido de modales */
         .auth-modal-content, .payment-modal-content, .my-orders-modal-content {
             background-color: var(--color-surface);
             color: var(--color-text-primary);
-            padding: 40px 30px 30px 30px;
+            padding: 30px;
             border-radius: var(--border-radius);
-            border: 1px solid var(--color-border);
+            border: 2px solid var(--color-border);
             box-shadow: var(--shadow-medium);
             width: 90%;
             max-width: 400px;
             text-align: left;
+            /* position: relative; ya se añadió arriba */
         }
         
         .my-orders-modal-content { max-width: 550px; }
 
         .auth-modal-content h3, .payment-modal-content h3, .my-orders-modal-content h3 {
-            font-weight: 700;
-            font-size: 1.8em;
+            font-family: var(--font-halloween);
+            letter-spacing: 1px;
+            font-size: 2.2em;
             text-align: center;
             margin-top: 0;
             margin-bottom: 25px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
+        /* Contenido de modales específicos */
         .payment-modal-content { text-align: center; }
         
         .payment-modal-content .info-container {
@@ -417,19 +503,22 @@
             border-radius: var(--border-radius);
             margin-top: 20px;
             border: 1px solid var(--color-border);
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         .payment-modal-content .info-container p { margin: 8px 0; }
         .payment-modal-content .info-container strong { color: var(--color-primary); }
 
+        /* --- Formularios --- */
         .auth-form {
             display: flex;
             flex-direction: column;
             gap: 15px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
 
         .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea {
             padding: 14px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             border: 1px solid var(--color-border);
             font-size: 1em;
             font-family: var(--font-family);
@@ -446,7 +535,7 @@
         .auth-form input:focus {
             outline: none;
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+            box-shadow: 0 0 0 3px rgba(249, 160, 63, 0.4);
         }
         
         .auth-form label {
@@ -458,23 +547,23 @@
 
         .auth-form .btn-auth {
             background-color: var(--color-primary);
-            color: #fff;
+            color: #111;
             font-weight: 600;
             padding: 15px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            margin-top: 10px;
         }
 
-        .auth-form .btn-auth:hover { background-color: var(--color-primary-hover); }
+        .auth-form .btn-auth:hover { background-color: #d18228; }
         
         .auth-toggle {
             text-align: center;
             margin-top: 15px;
             font-size: 0.9em;
             color: var(--color-text-secondary);
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
 
         .auth-toggle a {
@@ -490,12 +579,16 @@
             font-weight: 500;
         }
         
+        /* --- ESTILOS PARA STRIPE --- */
+        #payment-request-button { margin-bottom: 20px; position: relative; z-index: 1; }
+        
         .separator {
             display: flex;
             align-items: center;
             text-align: center;
             color: var(--color-text-secondary);
             margin: 20px 0;
+            position: relative; z-index: 1;
         }
         .separator::before, .separator::after {
             content: '';
@@ -509,7 +602,7 @@
             background-color: var(--color-background);
             padding: 12px;
             border: 1px solid var(--color-border);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             margin-bottom: 20px;
         }
         #card-errors {
@@ -518,6 +611,7 @@
             font-weight: 500;
         }
 
+        /* Alertas personalizadas */
         .alert-content {
             background-color: var(--color-surface);
             padding: 30px;
@@ -525,15 +619,15 @@
             box-shadow: var(--shadow-medium);
             text-align: center;
             max-width: 320px;
-            border: 1px solid var(--color-border);
         }
         .alert-text { color: var(--color-text-primary); font-size: 1.1em;}
         .alert-button {
             margin-top: 20px;
             background-color: var(--color-primary);
-            color: #fff;
+            color: #111;
         }
 
+        /* --- Paneles laterales (Mi Cuenta y Carrito) --- */
         .account-panel, .cart-panel {
             position: fixed;
             top: 0;
@@ -547,26 +641,39 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box; 
-            border-left: 1px solid var(--color-border);
-            border-right: 1px solid var(--color-border);
+            /* position: relative y overflow ya se añadió arriba */
         }
         
-        .account-panel { left: 0; transform: translateX(-100%); }
-        .cart-panel { right: 0; transform: translateX(100%); }
-        .account-panel.show, .cart-panel.show { transform: translateX(0); }
+        .account-panel { 
+            left: 0; 
+            transform: translateX(-100%); 
+        }
+
+        .cart-panel { 
+            right: 0; 
+            transform: translateX(100%); 
+        }
+
+        .account-panel.show, .cart-panel.show { 
+            transform: translateX(0); 
+        }
         
         .account-panel h3, .cart-panel h3 {
             text-align: center;
             margin: 0; 
-            padding: 45px 25px 20px 25px;
+            padding: 25px 25px 20px 25px;
             flex-shrink: 0;
-            font-size: 2em;
+            font-family: var(--font-halloween);
+            font-size: 2.5em;
+            letter-spacing: 1px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .account-info { 
             flex-grow: 1; 
             overflow-y: auto; 
             padding: 0 25px;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .account-info p {
@@ -584,39 +691,31 @@
             margin-bottom: 5px;
         }
 
-        .account-buttons {
+        .account-buttons, .cart-buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             margin-top: auto; 
             padding: 20px 25px 25px 25px; 
             border-top: 1px solid var(--color-border);
             flex-shrink: 0;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
-        /* Reducción de tamaño para botones en Mi Cuenta */
-        .account-buttons .btn {
-            padding: 12px 15px;
-            font-size: 0.9em;
-        }
-
-        .cart-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: auto; 
-            padding: 20px 25px 25px 25px; 
-            border-top: 1px solid var(--color-border);
-            flex-shrink: 0;
+        .btn-theme {
+            background-color: var(--color-border);
+            color: var(--color-text-primary);
         }
         
+        /* Carrito */
         .cart-items {
             list-style: none;
             padding: 0;
             margin: 0;
             overflow-y: auto;
             flex-grow: 1; 
-            padding: 0 25px;
+            padding: 0 25px; 
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
         
         .cart-item {
@@ -630,14 +729,33 @@
         .cart-item-img {
             width: 50px;
             height: 50px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             object-fit: cover;
-            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
 
-        .cart-item-details { flex-grow: 1; text-align: left; }
-        .cart-item-details .name { font-size: 0.9em; font-weight: 500; }
-        .cart-item-details .price { font-size: 0.9em; font-weight: 600; color: var(--color-primary); }
+        .cart-item-img:hover {
+            transform: scale(1.08);
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-item-details .name {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .cart-item-details .price {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
         
         .cart-item button { 
             background: none; 
@@ -648,141 +766,227 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
+            margin-left: auto;
         }
         .cart-item button:hover { background: var(--color-danger); color: white; }
         
-        .delivery-options { padding: 15px 25px; border-top: 1px solid var(--color-border); }
-        .delivery-options label { display: block; margin-bottom: 10px; font-weight: 600; text-align: left; }
-        .delivery-options select {
-            width: 100%; padding: 10px; border-radius: var(--border-radius); border: 1px solid var(--color-border);
-            background-color: var(--color-background); color: var(--color-text-primary); font-family: var(--font-family);
+        .delivery-options {
+            padding: 15px 25px;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
         }
-
-        #home-delivery-fields, #pickup-location-fields > div { display: flex; flex-direction: column; gap: 15px; }
-        #home-delivery-fields { display: none; }
         
-        .cart-total {
-            text-align: right; margin-top: auto; font-size: 1.3em; font-weight: 700; color: var(--color-primary);
-            padding: 20px 25px; border-top: 1px solid var(--color-border);
+        .delivery-options label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .delivery-options select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            font-family: var(--font-family);
         }
 
-        .my-orders-list { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; text-align: left; }
-        .my-orders-item {
-            background-color: var(--color-background); padding: 15px; border-radius: var(--border-radius);
-            margin-bottom: 10px; cursor: pointer; border: 1px solid var(--color-border);
+        #home-delivery-fields {
+            display: none; /* Oculto por defecto */
         }
-        .order-summary { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        
+        #pickup-location-fields > div {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Espacio entre los grupos de label/input */
+        }
+
+        .cart-total {
+            text-align: right;
+            margin-top: auto;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--color-primary);
+            padding: 20px 25px 20px 25px; /* Padding ajustado */
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+        }
+
+        /* Pedidos */
+        .my-orders-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+            position: relative; z-index: 1; /* Para que esté por encima de la telaraña */
+        }
+
+        .my-orders-item {
+            background-color: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid var(--color-border);
+        }
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
         .order-details {
-            display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--color-border);
-            text-align: left; font-size: 0.9em; color: var(--color-text-secondary);
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--color-border);
+            text-align: left;
+            font-size: 0.9em;
+            color: var(--color-text-secondary);
         }
         .order-details strong { color: var(--color-text-primary); }
 
-        .my-orders-item .status { font-size: 0.8em; padding: 5px 10px; border-radius: 50px; color: #fff; font-weight: 500; }
-        .my-orders-item .status.Entregado { background-color: #2ECC71; }
-        .my-orders-item .status.Pendiente { background-color: #F1C40F; color: #111; }
-        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); }
-        .my-orders-item .status.Cancelado { background-color: var(--color-danger); }
+        .my-orders-item .status {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 50px;
+            color: #111;
+            font-weight: 500;
+        }
+        .my-orders-item .status.Entregado { background-color: var(--color-accent); }
+        .my-orders-item .status.Pendiente { background-color: #f1c40f; }
+        .my-orders-item .status.Confirmado { background-color: var(--color-secondary); color: white; }
+        .my-orders-item .status.Cancelado { background-color: var(--color-danger); color: white; }
 
+        /* --- INICIO DE CAMBIOS SOLICITADOS --- */
         .footer-social {
-            width: 100%; display: flex; justify-content: center; align-items: center;
-            gap: 15px; margin-top: auto; padding-top: 25px;
+            order: 4; /* Para que aparezca después de los botones de categoría */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px; /* Espacio superior */
+            position: relative; /* Cambiado de fixed a relative */
+            bottom: auto; /* Reiniciar bottom */
+            padding: 0; /* Reiniciar padding */
+            z-index: 10;
         }
 
         .social-btn {
-            display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px;
-            color: white; text-decoration: none; font-size: 0.9em; font-weight: 500;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px; /* Tamaño reducido */
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.8em; /* Tamaño de fuente reducido */
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .social-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-        .social-btn.facebook { background-color: #1877F2; }
-        .social-btn.whatsapp { background-color: #25D366; }
-        .social-btn svg { width: 18px; height: 18px; }
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        .social-btn.facebook {
+            background-color: #1877F2;
+        }
+
+        .social-btn.whatsapp {
+            background-color: #25D366;
+        }
+
+        .social-btn svg {
+            width: 18px; /* Ícono reducido */
+            height: 18px; /* Ícono reducido */
+        }
         
-        .account-buttons .footer-social { 
-            margin-top: 10px; 
+        .account-buttons .footer-social {
+            margin-top: 10px;
+            flex-direction: column; 
             padding: 0;
-            flex-direction: row;
+            order: 0;
+            position: relative; /* Asegurar que no sea fixed aquí */
+        }
+        .account-buttons .social-btn {
+            width: 100%;
             justify-content: center;
+            box-sizing: border-box; 
         }
-        .account-buttons .social-btn { 
-            width: auto;
-            padding: 10px;
-            border-radius: 50%;
-        }
-        .account-buttons .social-btn span {
-            display: none;
-        }
-        .account-buttons .social-btn svg {
-            margin: 0;
-        }
+        /* --- FIN DE CAMBIOS SOLICITADOS --- */
     </style>
 </head>
 <body>
 
     <div class="container" id="main-container">
-
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-             <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
-        </div>
+            <div class="cart-icon-wrapper">
+                <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🎃</a>
+            </div>
+            </div>
 
         <main id="pantalla-principal" class="screen active">
-            
-            <div>
-                <h1 class="main-title">¡Bienvenido a KalCTas!</h1>
-                <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
-            </div>
-
+            <div class="title-container">
+                <h1>
+                    <span class="boo-text">¡Boo! 👻</span>
+                    <span class="welcome-text">Bienvenido a KalCTas</span>
+                </h1>
+                </div>
+            <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
             <div class="button-container" id="main-buttons">
-                <button class="btn btn-primary" onclick="mostrarPantalla('pantalla-2-4')">
-                    <span>KalCTas 2/4</span>
+                <button class="btn btn-kalctas-2-4" onclick="mostrarPantalla('pantalla-2-4')">
+                    KalCTas 2/4
                 </button>
-                <button class="btn btn-green" onclick="mostrarPantalla('pantalla-3-4')">
-                    <span>KalCTas 3/4</span>
+                <button class="btn btn-kalctas-3-4" onclick="mostrarPantalla('pantalla-3-4')">
+                    KalCTas 3/4
                 </button>
-                <button class="btn btn-secondary" onclick="mostrarPantalla('pantalla-largas')">
-                    <span>KalCTas Largas</span>
+                <button class="btn btn-kalctas-largas" onclick="mostrarPantalla('pantalla-largas')">
+                    KalCTas Largas
                 </button>
             </div>
-            
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-                    <span>¡Síguenos!</span>
+                    ¡Síguenos!
                 </a>
                 <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
-                    <span>¡Contáctanos!</span>
+                    ¡Contáctanos!
                 </a>
             </div>
         </main>
 
         <section id="pantalla-2-4" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
-            
             <div class="model-grid" id="grid-2-4"></div>
-            <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
-                <span>Volver</span>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
             </button>
         </section>
 
         <section id="pantalla-3-4" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
-            
             <div class="model-grid" id="grid-3-4"></div>
-            <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
-                <span>Volver</span>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
             </button>
         </section>
 
         <section id="pantalla-largas" class="screen">
             <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
-            
             <div class="model-grid" id="grid-largas"></div>
-            <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
-                <span>Volver</span>
+            <button class="btn btn-volver" onclick="mostrarPantalla('pantalla-principal')">
+                Volver
             </button>
         </section>
     </div>
@@ -793,16 +997,17 @@
         <div class="account-info" id="account-info">
         </div>
         <div class="account-buttons">
-            <button class="btn btn-primary" onclick="mostrarModalMisPedidos()"><span>Mis pedidos</span></button>
-            <button class="btn btn-neutral" onclick="mostrarModalEditarDatos()"><span>Editar mis datos</span></button>
-            <button class="btn btn-neutral" onclick="toggleTheme()"><span>Alternar Tema 🌗</span></button>
-            <button class="btn btn-danger" onclick="cerrarSesion()"><span>Cerrar Sesión</span></button>
+            <button class="btn btn-pedidos" onclick="mostrarModalMisPedidos()">Mis pedidos</button>
+            <button class="btn btn-edit-profile" onclick="mostrarModalEditarDatos()">Editar mis datos</button>
+            <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+                    ¡Síguenos!
                 </a>
                 <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
+                    ¡Contáctanos!
                 </a>
             </div>
         </div>
@@ -816,13 +1021,13 @@
             <label for="delivery-method">Forma de entrega:</label>
             <select id="delivery-method" onchange="renderizarCarrito()">
                 <option value="punto-medio">Punto medio ($0.00)</option>
-                <option value="domicilio">Entrega a domicilio ($70.00)</option>
+                <option value="domicilio">Entrega a domicilio ($60.00)</option>
             </select>
         </div>
         <div class="cart-total" id="cart-total"></div>
         <div class="cart-buttons">
-            <button class="btn btn-add" onclick="pagar()"><span>Pagar</span></button>
-            <button class="btn btn-neutral" onclick="cerrarPanelCarrito()"><span>Cerrar</span></button>
+            <button class="btn btn-checkout" onclick="pagar()">Pagar</button>
+            <button class="btn btn-volver" onclick="cerrarPanelCarrito()">Cerrar</button>
         </div>
     </div>
     
@@ -839,7 +1044,7 @@
                 <input type="text" id="edit-nombre" placeholder="Nombre" required>
                 <input type="text" id="edit-apellido" placeholder="Apellido" required>
                 <input type="tel" id="edit-telefono" placeholder="Teléfono de contacto (Opcional)">
-                <button type="submit" class="btn btn-auth"><span>Guardar Cambios</span></button>
+                <button type="submit" class="btn-auth">Guardar Cambios</button>
                 <p id="edit-message" class="auth-message"></p>
             </form>
         </div>
@@ -853,7 +1058,7 @@
                 <form id="login-form" class="auth-form">
                     <input type="email" id="login-email" placeholder="Correo electrónico" required>
                     <input type="password" id="login-password" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth"><span>Entrar</span></button>
+                    <button type="submit" class="btn-auth">Entrar</button>
                     <p id="login-message" class="auth-message"></p>
                 </form>
                 <p class="auth-toggle">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro()">Regístrate</a></p>
@@ -865,7 +1070,7 @@
                     <input type="text" id="register-apellido" placeholder="Apellido" required>
                     <input type="email" id="register-email" placeholder="Correo electrónico" required>
                     <input type="password" id="register-password" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth"><span>Registrarme</span></button>
+                    <button type="submit" class="btn-auth">Registrarme</button>
                     <p id="register-message" class="auth-message"></p>
                 </form>
                 <p class="auth-toggle">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia Sesión</a></p>
@@ -876,7 +1081,7 @@
     <div id="alert-box" class="alert-box">
         <div class="alert-content">
             <p id="alert-text" class="alert-text"></p>
-            <button class="btn alert-button" onclick="closeAlert()"><span>Aceptar</span></button>
+            <button class="btn alert-button" onclick="closeAlert()">Aceptar</button>
         </div>
     </div>
 
@@ -884,10 +1089,10 @@
         <div class="payment-modal-content">
             <span class="close-modal" onclick="cerrarModalPago()">&times;</span>
             <h3>Selecciona tu método de pago</h3>
-            <div class="button-container" style="gap: 15px;">
-                <button class="btn btn-primary" onclick="iniciarPagoTarjeta()"><span>Pago con Tarjeta / Apple Pay</span></button>
-                <button class="btn btn-green" onclick="iniciarProcesoDeEntrega('Transferencia')"><span>Pagar por Transferencia</span></button>
-                <button class="btn btn-secondary" onclick="iniciarProcesoDeEntrega('Efectivo')"><span>Pagar en efectivo</span></button>
+            <div class="button-container">
+                <button class="btn btn-kalctas-2-4" onclick="iniciarPagoTarjeta()">Pago con Tarjeta / Apple Pay</button>
+                <button class="btn btn-kalctas-3-4" onclick="iniciarProcesoDeEntrega('Transferencia')">Pagar por Transferencia</button>
+                <button class="btn btn-kalctas-largas" onclick="iniciarProcesoDeEntrega('Efectivo')">Pagar en efectivo</button>
             </div>
         </div>
     </div>
@@ -910,24 +1115,24 @@
               </form>
         </div>
     </div>
-
     <div id="transfer-info-modal" class="transfer-info-modal">
         <div class="payment-modal-content">
             <span class="close-modal" onclick="cerrarModalTransferencia()">&times;</span>
             <h3>Detalles de la Transferencia</h3>
             <div class="info-container">
-                <p id="transfer-total-amount" style="font-size: 1.2em; font-weight: bold; text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;"></p>
+                <p id="transfer-total-amount" style="font-size: 1.3em; font-weight: bold; text-align: center; color: var(--color-primary); margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;"></p>
                 <p><strong>Cuenta CLABE:</strong> 012822015052928359</p>
                 <p><strong>Banco:</strong> BBVA</p>
                 <p><strong>Nombre:</strong> KalCTas</p>
                 <p><strong>Concepto:</strong> [Tu nombre de usuario]</p>
+                
                 <p style="margin-top: 15px; font-weight: bold; text-align: center;">Una vez transferido, envía tu comprobante:</p>
-                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp" style="width: 100%; justify-content: center; box-sizing: border-box; margin-top: 10px; font-size: 1em;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"/></svg>
-                    Enviar Comprobante
+                <a href="https://wa.me/message/VY6GBISU227ZP1" target="_blank" class="social-btn whatsapp" style="width: 100%; justify-content: center; box-sizing: border-box; margin-top: 10px; font-size: 1em; text-transform: uppercase;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.38 1.25 4.82l-1.34 4.88 5-1.32c1.4.74 2.97 1.18 4.59 1.18h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.23 14.25c-.2-.11-.73-.36-.84-.4s-.19-.11-.28.11c-.08.22-.32.4-.39.48-.07.08-.14.1-.25.03-.53-.29-1.23-.76-1.73-1.28-.43-.45-.72-.84-.81-1.07s-.09-.28 0-.39c.08-.1.19-.25.28-.36.09-.11.12-.19.19-.31s.03-.22 0-.31c-.03-.08-.28-.67-.38-.92s-.2-.21-.28-.21h-.25c-.08 0-.22.03-.34.14s-.45.43-.58 1.05c-.13.62.08 1.23.25 1.7.17.48.81 1.49 1.95 2.18 1.2.73 2.02 1.01 2.86 1.01.62 0 1.25-.19 1.75-.48.58-.33.91-.77 1.05-1.34.14-.57.14-1.05.1-1.15s-.08-.15-.17-.25z"></path></svg>
+                    <span>Envía tu comprobante</span>
                 </a>
-            </div>
-            <button class="btn btn-add" style="margin-top: 20px;" onclick="mostrarModalConfirmarEntrega('Transferencia')"><span>Continuar</span></button>
+                </div>
+            <button class="btn btn-add" style="margin-top: 20px;" onclick="mostrarModalConfirmarEntrega('Transferencia')">Continuar</button>
         </div>
     </div>
     
@@ -976,7 +1181,7 @@
 
                 <button type="submit" class="btn btn-add">
                     <span>Confirmar Pedido</span>
-                    <span>🛍️</span>
+                    <span>🛒</span>
                 </button>
                 </form>
         </div>
@@ -1005,39 +1210,13 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        
-        // ================================================================================= //
-        // LÓGICA PARA EL CAMBIO DE TEMA CLARO/OSCURO
-        // ================================================================================= //
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-
-            // Actualizar el theme-color para la barra de estado del navegador
-            const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-            if (themeColorMeta) {
-                themeColorMeta.setAttribute('content', isDarkMode ? '#121212' : '#FFFFFF');
-            }
-        }
-
-        function applyInitialTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                // Asegurar que el theme-color inicial sea correcto
-                const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-                 if (themeColorMeta) {
-                    themeColorMeta.setAttribute('content', '#121212');
-                }
-            }
-        }
 
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
+        // --- CONFIGURACIÓN DE STRIPE ---
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
         let elements;
         let cardElement;
@@ -1051,14 +1230,39 @@
         const mainContainer = document.getElementById('main-container');
 
         document.addEventListener('DOMContentLoaded', () => {
-            applyInitialTheme(); // Aplicar tema guardado al cargar
             mainContainer.classList.add('show');
             window.scrollTo(0, 0); 
             const activeScreen = document.querySelector('.screen.active');
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                  generarGaleria(activeScreen.id);
             }
+            
+            const themeToggleButton = document.getElementById('theme-toggle-button');
+            if (themeToggleButton) { 
+                const currentTheme = localStorage.getItem('theme');
+
+                if (currentTheme === 'dark-mode') {
+                    document.body.classList.add('dark-mode');
+                    themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
+                }
+
+                themeToggleButton.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    let theme = 'light-mode';
+                    if (document.body.classList.contains('dark-mode')) {
+                        theme = 'dark-mode';
+                        themeToggleButton.textContent = 'Cambiar a Tema Claro ☀️';
+                    } else {
+                        themeToggleButton.textContent = 'Cambiar a Tema Oscuro 🌙';
+                    }
+                    localStorage.setItem('theme', theme);
+                });
+            }
         });
+
+        // ================================================================================= //
+        // A PARTIR DE AQUÍ COMIENZA LA LÓGICA DE LA APLICACIÓN
+        // ================================================================================= //
         
         function showMessage(text) {
             alertText.textContent = text;
@@ -1073,14 +1277,13 @@
             pantallas.forEach(pantalla => {
                 pantalla.classList.remove('active');
             });
+
             const pantallaActiva = document.getElementById(idDePantalla);
             if (pantallaActiva) {
-                setTimeout(() => {
-                     pantallaActiva.classList.add('active');
-                     if (idDePantalla.startsWith('pantalla-')) {
-                        generarGaleria(idDePantalla);
-                    }
-                }, 50); // Pequeño delay para que la transición se vea
+                pantallaActiva.classList.add('active');
+                if (idDePantalla.startsWith('pantalla-')) {
+                    generarGaleria(idDePantalla);
+                }
             }
         }
         
@@ -1394,7 +1597,7 @@
                 const carrito = userDoc.data().carrito || [];
                 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
 
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
@@ -1487,7 +1690,7 @@
                 const carrito = userDoc.data().carrito || [];
 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
                 const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                 const total = subtotal + shippingCost;
 
@@ -1570,18 +1773,20 @@
                 });
 
                 if (!cardElement) {
+                     // INICIO DE CAMBIOS SOLICITADOS
                      cardElement = elements.create('card', {
                         style: {
                             base: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-primary').trim(),
+                                color: '#fdfdfd', // Color de texto blanco
                                 fontFamily: '"Poppins", sans-serif',
                                 fontSize: '16px',
                                 '::placeholder': {
-                                    color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
+                                    color: 'rgba(249, 160, 63, 0.7)' // Naranja pálido para el placeholder
                                 }
                             }
                         }
                      });
+                     // FIN DE CAMBIOS SOLICITADOS
                      cardElement.mount('#card-element');
                      cardElement.on('change', event => {
                         document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
@@ -1689,20 +1894,27 @@
             cerrarModalPago();
             if (metodoPago === 'Transferencia') {
                 try {
+                    // Obtener el carrito y calcular el total
                     const userDoc = await db.collection('usuarios').doc(currentUser.uid).get();
                     if (userDoc.exists) {
                         const carrito = userDoc.data().carrito || [];
                         const deliveryMethod = document.getElementById('delivery-method').value;
-                        const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                        const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
                         const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                         const total = subtotal + shippingCost;
                         
+                        // Actualizar el elemento en el modal de transferencia
                         const totalElement = document.getElementById('transfer-total-amount');
-                        totalElement.innerHTML = `<strong>Total a Pagar:</strong> $${total.toFixed(2)}`;
+                        if (totalElement) {
+                            totalElement.innerHTML = `Total a Pagar: $${total.toFixed(2)}`;
+                        }
                     }
                 } catch (error) {
                     console.error("Error al obtener el total para la transferencia:", error);
-                    document.getElementById('transfer-total-amount').textContent = 'No se pudo cargar el total.';
+                    const totalElement = document.getElementById('transfer-total-amount');
+                    if (totalElement) {
+                        totalElement.textContent = 'No se pudo cargar el total.';
+                    }
                 }
                 transferInfoModal.style.display = 'flex';
             } else if (metodoPago === 'Efectivo') {
@@ -1812,7 +2024,7 @@
                         if (carrito.length === 0) throw new Error('El carrito está vacío.');
                         
                         const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
-                        const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                        const shippingCost = deliveryMethod === 'domicilio' ? 60 : 0;
                         const montoTotal = subtotal + shippingCost;
 
                         const counterRef = db.collection('contadores').doc('pedidos');
@@ -1855,13 +2067,11 @@
                 showMessage(`Hubo un error: ${error.message}. Intenta de nuevo.`);
             } finally {
                 submitButton.disabled = false;
-                submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛍️</span>`;
+                submitButton.innerHTML = `<span>Confirmar Pedido</span><span>🛒</span>`;
             }
         });
 
-        // ================================================================================= //
-        // FUNCIÓN MODIFICADA PARA FILTRAR PRODUCTOS
-        // ================================================================================= //
+
         async function generarGaleria(idDePantalla) {
             let categoria;
             let gridId;
@@ -1879,16 +2089,14 @@
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
             try {
-                // --- CAMBIO AÑADIDO: Se agrega .where('visible', '==', true) para filtrar ---
                 const snapshot = await db.collection('productos')
-                    .where('categoria', '==', categoria)
-                    .where('visible', '==', true) 
-                    .get();
-                
+    .where('categoria', '==', categoria)
+    .where('visible', '==', true) // <--- AÑADIR ESTA LÍNEA
+    .get();
                 contenedor.innerHTML = '';
                 
                 if (snapshot.empty) {
-                    contenedor.innerHTML = '<p>No hay modelos disponibles por el momento.</p>';
+                    contenedor.innerHTML = '<p>No hay modelos disponibles.</p>';
                     return;
                 }
                 
@@ -1901,9 +2109,9 @@
                         <p class="product-price">$${producto.precio.toFixed(2)}</p>
                         <p>${producto.nombre}</p>
                         <div class="model-buttons">
-                            <button class="btn btn-neutral" onclick="verImagen('${producto.imagenUrl}')"><span>Ver</span></button>
+                            <button class="btn btn-view" onclick="verImagen('${producto.imagenUrl}')">Ver</button>
                             <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
-                                <span>${producto.stock <= 0 ? 'Agotado' : 'Agregar 🛍️'}</span>
+                                ${producto.stock <= 0 ? 'Agotado' : 'Agregar 🎃'}
                                 </button>
                         </div>
                     `;
