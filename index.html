@@ -740,6 +740,14 @@
             font-size: 2.2em; /* Tamaño ajustado para Halloween */
             top: 40px;
         }
+        body.theme-halloween .main-title .subtitle {
+            font-size: 0.6em;
+            letter-spacing: 1px;
+            font-weight: normal;
+            color: var(--color-text-secondary);
+            display: block;
+            margin-top: 5px;
+        }
         body.theme-halloween .auth-modal-content h3, 
         body.theme-halloween .payment-modal-content h3, 
         body.theme-halloween .my-orders-modal-content h3,
@@ -817,6 +825,14 @@
             line-height: 1.2;
             font-size: 2.2em; /* Tamaño ajustado para Navidad */
             top: 40px;
+        }
+        body.theme-christmas .main-title .subtitle {
+            font-size: 0.6em;
+            letter-spacing: 1px;
+            font-weight: normal;
+            color: var(--color-text-secondary);
+            display: block;
+            margin-top: 5px;
         }
         body.theme-christmas .auth-modal-content h3, 
         body.theme-christmas .payment-modal-content h3, 
@@ -1244,13 +1260,13 @@
             if (themeName === 'halloween') {
                 body.classList.add('theme-halloween');
                 logoSrc = 'LOGOHALLOWEEN.png';
-                titleText = '¡Boo! 👻';
+                titleText = '¡Boo! 👻<br><span class="subtitle">¡Bienvenido a KalCTas!</span>';
                 cartIconText = '🎃';
                 themeColor = '#0d0221';
             } else if (themeName === 'christmas') {
                 body.classList.add('theme-christmas');
                 logoSrc = 'LOGONAVIDAD.png';
-                titleText = '¡Jo, Jo, Jo! 🎅🏼';
+                titleText = '¡Jo Jo Jo! 🎅🏻<br><span class="subtitle">¡Bienvenido a KalCTas!</span>';
                 cartIconText = '🎁';
                 themeColor = '#0a2f35';
             }
