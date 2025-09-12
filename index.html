@@ -759,10 +759,10 @@
             letter-spacing: 1px;
         }
         body.theme-halloween .logo {
-             filter: drop-shadow(0 0 10px var(--color-primary));
+            filter: drop-shadow(0 0 10px var(--color-primary));
         }
         body.theme-halloween .header-icon {
-             filter: drop-shadow(0 0 5px var(--color-primary));
+            filter: drop-shadow(0 0 5px var(--color-primary));
         }
         body.theme-halloween .auth-button {
             border-color: var(--color-primary);
@@ -845,10 +845,10 @@
             letter-spacing: 1px;
         }
         body.theme-christmas .logo {
-             filter: drop-shadow(0 0 10px var(--color-secondary));
+            filter: drop-shadow(0 0 10px var(--color-secondary));
         }
         body.theme-christmas .header-icon {
-             filter: drop-shadow(0 0 5px var(--color-secondary));
+            filter: drop-shadow(0 0 5px var(--color-secondary));
         }
         body.theme-christmas .auth-button {
             border-color: var(--color-secondary);
@@ -868,11 +868,9 @@
         body.theme-christmas .cart-panel {
             border-width: 2px;
         }
-
-        /* MODIFICACIÓN AÑADIDA: Corrección para el botón deshabilitado en tema Navidad */
         body.theme-christmas .btn:disabled {
-            color: var(--color-background); /* Texto oscuro para contraste sobre fondo claro */
-            opacity: 0.8; /* Se ve más 'deshabilitado' */
+            color: var(--color-background);
+            opacity: 0.8;
         }
         
         .snow {
@@ -948,16 +946,7 @@
             </div>
 
             <div class="button-container" id="main-buttons">
-                <button class="btn btn-primary" onclick="mostrarPantalla('pantalla-2-4')">
-                    <span>KalCTas 2/4</span>
-                </button>
-                <button class="btn btn-green" onclick="mostrarPantalla('pantalla-3-4')">
-                    <span>KalCTas 3/4</span>
-                </button>
-                <button class="btn btn-secondary" onclick="mostrarPantalla('pantalla-largas')">
-                    <span>KalCTas Largas</span>
-                </button>
-            </div>
+                </div>
             
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
@@ -1242,7 +1231,7 @@
         const mainContainer = document.getElementById('main-container');
 
         // ================================================================================= //
-        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE (CON CROSSFADE Y LOOP CORREGIDOS) ---
+        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE ---
         // ================================================================================= //
         
         let audio1, audio2;
@@ -1255,7 +1244,6 @@
         const FADE_DURATION = 3; // Duración del fundido en segundos
         const MAX_VOLUME = 0.3; // Volumen máximo al 30%
 
-        // Función de utilidad para crear un fundido de volumen
         function fade(player, options) {
             let startVolume = options.from;
             let endVolume = options.to;
@@ -1263,7 +1251,7 @@
             let onComplete = options.onComplete;
 
             player.volume = startVolume;
-            const steps = 50; // Número de pasos para suavizar la transición
+            const steps = 50;
             const stepDuration = duration / steps;
             const stepSize = (endVolume - startVolume) / steps;
             
@@ -1272,7 +1260,7 @@
                 currentStep++;
                 if (currentStep >= steps) {
                     clearInterval(fadeInterval);
-                    player.volume = endVolume; // Asegura el valor final exacto
+                    player.volume = endVolume;
                     if (onComplete) onComplete();
                     return;
                 }
@@ -1280,7 +1268,6 @@
             }, stepDuration);
         }
 
-        // Función principal para la transición entre canciones
         function transitionToNextTrack() {
             if (isTransitioning || !isMusicPlaying) return;
             isTransitioning = true;
@@ -1292,12 +1279,11 @@
             playerToFadeIn.src = currentPlaylist[currentTrackIndex];
             
             playerToFadeIn.play().then(() => {
-                // Inicia ambos fundidos al mismo tiempo
                 if(playerToFadeOut) {
                     fade(playerToFadeOut, { from: playerToFadeOut.volume, to: 0, duration: FADE_DURATION * 1000, onComplete: () => playerToFadeOut.pause() });
                 }
                 fade(playerToFadeIn, { from: 0, to: MAX_VOLUME, duration: FADE_DURATION * 1000, onComplete: () => {
-                    activePlayer = playerToFadeIn; // El nuevo reproductor se vuelve el activo
+                    activePlayer = playerToFadeIn;
                     isTransitioning = false;
                 }});
             }).catch(e => {
@@ -1306,7 +1292,6 @@
             });
         }
         
-        // Se activa constantemente para verificar si debemos empezar la transición
         function handleTimeUpdate() {
             if (!isMusicPlaying || isTransitioning || !activePlayer || !activePlayer.duration) return;
             if ((activePlayer.duration - activePlayer.currentTime) <= FADE_DURATION) {
@@ -1314,7 +1299,6 @@
             }
         }
         
-        // Fallback por si 'timeupdate' no se dispara (ej. tab en segundo plano)
         function handleTrackEnd() {
             if (!isTransitioning) {
                  transitionToNextTrack();
@@ -1332,14 +1316,13 @@
             }
             if (currentPlaylist.length === 0) return;
 
-            // Crea los reproductores de audio si no existen
             if (!audio1) {
                 audio1 = new Audio();
                 audio2 = new Audio();
                 audio1.addEventListener('timeupdate', handleTimeUpdate);
                 audio2.addEventListener('timeupdate', handleTimeUpdate);
-                audio1.addEventListener('ended', handleTrackEnd); // Fallback para loop
-                audio2.addEventListener('ended', handleTrackEnd); // Fallback para loop
+                audio1.addEventListener('ended', handleTrackEnd);
+                audio2.addEventListener('ended', handleTrackEnd);
             }
 
             isMusicPlaying = true;
@@ -1350,7 +1333,7 @@
             activePlayer.src = currentPlaylist[currentTrackIndex];
             
             activePlayer.play().then(() => {
-                fade(activePlayer, { from: 0, to: MAX_VOLUME, duration: 1500 }); // Fade-in inicial más rápido
+                fade(activePlayer, { from: 0, to: MAX_VOLUME, duration: 1500 });
             }).catch(e => console.error("La reproducción inicial falló:", e));
         }
 
@@ -1374,8 +1357,43 @@
         }
 
         // ================================================================================= //
-        // LÓGICA PARA EL CAMBIO DE TEMA GLOBAL
+        // LÓGICA PARA EL CAMBIO DE TEMA Y VISIBILIDAD DE CATEGORÍAS
         // ================================================================================= //
+        
+        // Objeto global para almacenar la visibilidad de las categorías
+        let categoryVisibility = {};
+
+        async function fetchCategoryVisibility() {
+            const snapshot = await db.collection('categorias').get();
+            snapshot.forEach(doc => {
+                categoryVisibility[doc.id] = doc.data().visible;
+            });
+            renderCategoryButtons();
+        }
+        
+        function renderCategoryButtons() {
+            const buttonContainer = document.getElementById('main-buttons');
+            buttonContainer.innerHTML = ''; // Limpiar botones existentes
+
+            const categories = [
+                { id: 'KalCTas2-4', text: 'KalCTas 2/4', class: 'btn-primary' },
+                { id: 'KalCTas3-4', text: 'KalCTas 3/4', class: 'btn-green' },
+                { id: 'KalCTasLargas', text: 'KalCTas Largas', class: 'btn-secondary' }
+            ];
+
+            categories.forEach(cat => {
+                // Si la categoría no está definida en la DB, se asume visible (true).
+                // Si está definida como false, no se muestra.
+                if (categoryVisibility[cat.id] !== false) {
+                    const button = document.createElement('button');
+                    button.className = `btn ${cat.class}`;
+                    button.onclick = () => mostrarPantalla(`pantalla-${cat.id.split('KalCTas')[1].toLowerCase()}`);
+                    button.innerHTML = `<span>${cat.text}</span>`;
+                    buttonContainer.appendChild(button);
+                }
+            });
+        }
+
         function applyTheme(themeName) {
             stopMusic();
             
@@ -1388,10 +1406,10 @@
 
             if (themeName === 'halloween' || themeName === 'christmas') {
                 musicButton.style.display = 'block';
-                toggleThemeButton.style.display = 'none'; // Ocultar botón de alternar tema
+                toggleThemeButton.style.display = 'none';
             } else {
                 musicButton.style.display = 'none';
-                toggleThemeButton.style.display = 'block'; // Mostrar botón de alternar tema
+                toggleThemeButton.style.display = 'block';
             }
 
             const mainTitle = document.querySelector('.main-title');
@@ -1405,7 +1423,7 @@
             let cartIconText = '🛍️';
             let themeColor = '#FFFFFF';
             if (body.classList.contains('dark-mode')) {
-                 themeColor = '#121212';
+                themeColor = '#121212';
             }
 
             if (themeName === 'halloween') {
@@ -1426,13 +1444,12 @@
             mainLogo.src = logoSrc;
             smallLogos.forEach(logo => logo.src = logoSrc);
             cartIcon.textContent = cartIconText;
-            // El icono del botón de confirmar pedido se actualiza al abrir el modal correspondiente
             themeColorMeta.setAttribute('content', themeColor);
             
             const snowContainer = document.getElementById('snow-container');
             if (themeName === 'christmas' && snowContainer.children.length === 0) {
-                 const numberOfSnowflakes = 40;
-                 for (let i = 0; i < numberOfSnowflakes; i++) {
+                const numberOfSnowflakes = 40;
+                for (let i = 0; i < numberOfSnowflakes; i++) {
                     const snowflake = document.createElement('div');
                     snowflake.className = 'snowflake';
                     snowflake.style.left = `${Math.random() * 100}vw`;
@@ -1441,7 +1458,7 @@
                     snowflake.style.opacity = Math.random();
                     snowflake.style.width = snowflake.style.height = `${Math.random() * 4 + 2}px`;
                     snowContainer.appendChild(snowflake);
-                 }
+                }
             } else if (themeName !== 'christmas') {
                 snowContainer.innerHTML = '';
             }
@@ -1477,6 +1494,7 @@
             applyInitialTheme();
             window.scrollTo(0, 0); 
 
+            // Escuchar cambios de tema y visibilidad de categorías
             const configRef = db.collection('configuracion').doc('tienda');
             configRef.onSnapshot(doc => {
                 if (doc.exists) {
@@ -1491,10 +1509,17 @@
                 applyTheme('default');
                 mainContainer.classList.add('show');
             });
+
+            db.collection('categorias').onSnapshot(snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    categoryVisibility[change.doc.id] = change.doc.data().visible;
+                });
+                renderCategoryButtons();
+            });
         });
         
         // ================================================================================= //
-        // LÓGICA ORIGINAL DE LA APP (CON AJUSTE EN ICONO DE CONFIRMAR PEDIDO)
+        // LÓGICA ORIGINAL DE LA APP
         // ================================================================================= //
         
         function showMessage(text) {
@@ -1831,7 +1856,7 @@
                 const carrito = userDoc.data().carrito || [];
                 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0; // Costo unificado a $70
+                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
 
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
@@ -2008,16 +2033,16 @@
 
                 if (!cardElement) {
                      cardElement = elements.create('card', {
-                        style: {
-                            base: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-primary').trim(),
-                                fontFamily: '"Poppins", sans-serif',
-                                fontSize: '16px',
-                                '::placeholder': {
-                                    color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
-                                }
-                            }
-                        }
+                         style: {
+                             base: {
+                                 color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-primary').trim(),
+                                 fontFamily: '"Poppins", sans-serif',
+                                 fontSize: '16px',
+                                 '::placeholder': {
+                                     color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
+                                 }
+                             }
+                         }
                      });
                      cardElement.mount('#card-element');
                      cardElement.on('change', event => {
@@ -2153,7 +2178,6 @@
             document.getElementById('order-id-input').value = orderId || '';
             document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${metodoPago})`;
 
-            // AJUSTE PARA ICONO DE CONFIRMAR PEDIDO
             const confirmIcon = document.getElementById('confirm-order-icon');
             const bodyClasses = document.body.classList;
             if (bodyClasses.contains('theme-christmas')) {
@@ -2292,7 +2316,7 @@
 
                         transaction.update(userRef, { carrito: [] });
                     });
-                     showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
+                      showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
                 }
 
                 cerrarModalEntrega();
@@ -2323,6 +2347,12 @@
             if (!contenedor) return;
 
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
+
+            // Comprobar si la categoría está visible
+            if (categoryVisibility[categoria] === false) {
+                contenedor.innerHTML = '<p>Esta categoría no está disponible por el momento.</p>';
+                return;
+            }
 
             try {
                 const snapshot = await db.collection('productos')
