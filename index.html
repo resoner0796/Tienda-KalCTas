@@ -1010,7 +1010,7 @@
         <div class="account-buttons">
             <button class="btn btn-primary" onclick="mostrarModalMisPedidos()"><span>Mis pedidos</span></button>
             <button class="btn btn-neutral" onclick="mostrarModalEditarDatos()"><span>Editar mis datos</span></button>
-            <button class="btn btn-neutral" onclick="toggleTheme()"><span>Alternar Tema 🌗</span></button>
+            <button id="toggle-theme-btn" class="btn btn-neutral" onclick="toggleTheme()"><span>Alternar Tema 🌗</span></button>
             <button class="btn btn-danger" onclick="cerrarSesion()"><span>Cerrar Sesión</span></button>
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
@@ -1242,93 +1242,72 @@
         const mainContainer = document.getElementById('main-container');
 
         // ================================================================================= //
-        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE (CON CROSSFADE) ---
+        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE (CON CROSSFADE CORREGIDO) ---
         // ================================================================================= //
         
-        let themeAudioPlayer = null;
+        let audio1, audio2;
+        let activePlayer = null;
         let isMusicPlaying = false;
-        let isFading = false;
+        let isTransitioning = false;
         let currentPlaylist = [];
         let currentTrackIndex = 0;
-        let fadeInterval = null;
         
         const FADE_DURATION = 3; // Duración del fundido en segundos
-        const MAX_VOLUME = 0.5; // Volumen máximo al 50%
+        const MAX_VOLUME = 0.3; // Volumen máximo al 30%
 
-        // Función genérica para hacer el fundido de volumen
-        function fadeVolume(player, targetVolume, duration, callback) {
-            clearInterval(fadeInterval);
-            const startVolume = player.volume;
-            const volumeChange = targetVolume - startVolume;
-            if (volumeChange === 0) {
-                if (callback) callback();
-                return;
-            }
-            const stepTime = 50; // ms por cada paso de volumen
-            const numSteps = duration / stepTime;
-            const stepSize = volumeChange / numSteps;
+        function fade(player, options) {
+            let startVolume = options.from;
+            let endVolume = options.to;
+            let duration = options.duration;
+            let onComplete = options.onComplete;
+
+            player.volume = startVolume;
+            let steps = 40;
+            let stepDuration = duration / steps;
+            let stepSize = (endVolume - startVolume) / steps;
+            
             let currentStep = 0;
-
-            fadeInterval = setInterval(() => {
-                currentStep++;
-                let newVolume = startVolume + (stepSize * currentStep);
-                
-                if ((stepSize > 0 && newVolume > targetVolume) || (stepSize < 0 && newVolume < targetVolume)) {
-                    newVolume = targetVolume;
-                }
-                
-                player.volume = newVolume;
-
-                if (currentStep >= numSteps) {
+            const fadeInterval = setInterval(() => {
+                if (currentStep >= steps) {
                     clearInterval(fadeInterval);
-                    player.volume = targetVolume;
-                    if (callback) callback();
+                    player.volume = endVolume;
+                    if (onComplete) onComplete();
+                    return;
                 }
-            }, stepTime);
+                player.volume += stepSize;
+                currentStep++;
+            }, stepDuration);
         }
 
-        function handleTrackTransition() {
-            if (!isMusicPlaying || isFading || !themeAudioPlayer.duration) return;
-            // Si faltan `FADE_DURATION` segundos o menos para que termine la canción, iniciamos la transición
-            if ((themeAudioPlayer.duration - themeAudioPlayer.currentTime) <= FADE_DURATION) {
-                playNextTrack();
+        function transitionToNextTrack() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            const playerToFadeOut = activePlayer;
+            const playerToFadeIn = (activePlayer === audio1) ? audio2 : audio1;
+            
+            currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+            playerToFadeIn.src = currentPlaylist[currentTrackIndex];
+
+            playerToFadeIn.play().then(() => {
+                fade(playerToFadeOut, { from: MAX_VOLUME, to: 0, duration: FADE_DURATION * 1000, onComplete: () => playerToFadeOut.pause() });
+                fade(playerToFadeIn, { from: 0, to: MAX_VOLUME, duration: FADE_DURATION * 1000, onComplete: () => {
+                    activePlayer = playerToFadeIn;
+                    isTransitioning = false;
+                }});
+            }).catch(e => {
+                console.error("Error al reproducir la siguiente pista:", e);
+                isTransitioning = false;
+            });
+        }
+
+        function handleTimeUpdate() {
+            if (!isMusicPlaying || isTransitioning || !activePlayer.duration) return;
+            if ((activePlayer.duration - activePlayer.currentTime) <= FADE_DURATION) {
+                transitionToNextTrack();
             }
         }
 
-        function playNextTrack() {
-            if (isFading) return; // Evita que la función se ejecute múltiples veces
-            isFading = true;
-
-            // 1. Fundido de salida para la canción actual (si está sonando)
-            const fadeOutPromise = new Promise(resolve => {
-                if (themeAudioPlayer.src && !themeAudioPlayer.paused) {
-                    fadeVolume(themeAudioPlayer, 0, FADE_DURATION * 1000, () => {
-                        themeAudioPlayer.pause();
-                        resolve();
-                    });
-                } else {
-                    resolve(); // Si no hay nada sonando, resuelve de inmediato
-                }
-            });
-
-            // 2. Cuando el fundido de salida termina, cargamos y reproducimos la siguiente canción
-            fadeOutPromise.then(() => {
-                currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
-                themeAudioPlayer.src = currentPlaylist[currentTrackIndex];
-                themeAudioPlayer.volume = 0;
-                
-                themeAudioPlayer.play().then(() => {
-                    // 3. Fundido de entrada para la nueva canción
-                    fadeVolume(themeAudioPlayer, MAX_VOLUME, FADE_DURATION * 1000, () => {
-                        isFading = false; // La transición ha terminado
-                    });
-                }).catch(e => {
-                    console.error("La reproducción de audio falló:", e);
-                    isFading = false;
-                });
-            });
-        }
-        
         function playMusic() {
             const body = document.body;
             if (body.classList.contains('theme-halloween')) {
@@ -1338,32 +1317,38 @@
             } else {
                 currentPlaylist = [];
             }
-
             if (currentPlaylist.length === 0) return;
 
-            if (!themeAudioPlayer) {
-                themeAudioPlayer = new Audio();
-                // Usamos 'timeupdate' para detectar el final de la canción con anticipación
-                themeAudioPlayer.addEventListener('timeupdate', handleTrackTransition);
+            if (!audio1) {
+                audio1 = new Audio();
+                audio2 = new Audio();
+                audio1.addEventListener('timeupdate', handleTimeUpdate);
+                audio2.addEventListener('timeupdate', handleTimeUpdate);
             }
 
             isMusicPlaying = true;
             document.getElementById('music-toggle-btn').textContent = '🔇';
-            currentTrackIndex = -1; // Para que al llamar playNextTrack() inicie en el índice 0
-            playNextTrack();
+            
+            activePlayer = audio1;
+            currentTrackIndex = 0;
+            activePlayer.src = currentPlaylist[currentTrackIndex];
+            
+            activePlayer.play().then(() => {
+                fade(activePlayer, { from: 0, to: MAX_VOLUME, duration: FADE_DURATION * 1000 });
+            }).catch(e => console.error("La reproducción inicial falló:", e));
         }
 
         function stopMusic() {
-            if (!themeAudioPlayer || !isMusicPlaying) return;
-            isMusicPlaying = false; // Marcamos que la música debe detenerse
+            if (!isMusicPlaying) return;
+            isMusicPlaying = false;
             
-            fadeVolume(themeAudioPlayer, 0, 1000, () => { // Fundido de salida rápido (1 seg)
-                themeAudioPlayer.pause();
-                themeAudioPlayer.currentTime = 0;
-                isFading = false;
-                clearInterval(fadeInterval);
-                document.getElementById('music-toggle-btn').textContent = '🎶';
-            });
+            const player1 = audio1;
+            const player2 = audio2;
+
+            if (player1 && !player1.paused) fade(player1, { from: player1.volume, to: 0, duration: 1000, onComplete: () => player1.pause() });
+            if (player2 && !player2.paused) fade(player2, { from: player2.volume, to: 0, duration: 1000, onComplete: () => player2.pause() });
+
+            document.getElementById('music-toggle-btn').textContent = '🎶';
         }
 
         function toggleThemeMusic() {
@@ -1378,26 +1363,29 @@
         // LÓGICA PARA EL CAMBIO DE TEMA GLOBAL
         // ================================================================================= //
         function applyTheme(themeName) {
-            stopMusic(); // Detenemos la música actual al cambiar de tema
+            stopMusic();
             
             console.log(`Aplicando tema: ${themeName}`);
             const body = document.body;
-            body.classList.remove('theme-halloween', 'theme-christmas'); // Limpiar temas anteriores
+            body.classList.remove('theme-halloween', 'theme-christmas');
             
+            const musicButton = document.getElementById('music-toggle-btn');
+            const toggleThemeButton = document.getElementById('toggle-theme-btn');
+
+            if (themeName === 'halloween' || themeName === 'christmas') {
+                musicButton.style.display = 'block';
+                toggleThemeButton.style.display = 'none'; // Ocultar botón de alternar tema
+            } else {
+                musicButton.style.display = 'none';
+                toggleThemeButton.style.display = 'block'; // Mostrar botón de alternar tema
+            }
+
             const mainTitle = document.querySelector('.main-title');
             const mainLogo = document.getElementById('main-logo');
             const smallLogos = document.querySelectorAll('.logo-small');
             const cartIcon = document.querySelector('.cart-icon');
             const confirmOrderIcon = document.getElementById('confirm-order-icon');
             const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-            const musicButton = document.getElementById('music-toggle-btn');
-            
-            // Lógica para mostrar/ocultar el botón de música
-            if (themeName === 'halloween' || themeName === 'christmas') {
-                musicButton.style.display = 'block';
-            } else {
-                musicButton.style.display = 'none';
-            }
             
             let logoSrc = 'LOGO.png';
             let titleText = '¡Bienvenido a KalCTas!';
