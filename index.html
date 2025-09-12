@@ -934,6 +934,7 @@
 
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
+             <a href="#" id="music-toggle-btn" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
              <div class="cart-icon-wrapper">
                  <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
              </div>
@@ -1241,9 +1242,85 @@
         const mainContainer = document.getElementById('main-container');
 
         // ================================================================================= //
+        // --- NUEVA LÓGICA PARA LA MÚSICA DE AMBIENTE ---
+        // ================================================================================= //
+        
+        let themeAudioPlayer = null;
+        let isMusicPlaying = false;
+        let currentPlaylist = [];
+        let currentTrackIndex = 0;
+
+        function toggleThemeMusic() {
+            if (isMusicPlaying) {
+                stopMusic();
+            } else {
+                playMusic();
+            }
+        }
+
+        function playMusic() {
+            const body = document.body;
+            // Definimos la lista de canciones según el tema
+            if (body.classList.contains('theme-halloween')) {
+                currentPlaylist = ['HALLOWEEN1.mp3', 'HALLOWEEN2.mp3'];
+            } else if (body.classList.contains('theme-christmas')) {
+                currentPlaylist = ['LUCESNAVIDAD.mp3'];
+            } else {
+                currentPlaylist = []; // No hay música para el tema default
+            }
+
+            if (currentPlaylist.length === 0) {
+                console.log("No hay música disponible para este tema.");
+                return;
+            }
+
+            // Creamos el reproductor de audio si no existe
+            if (!themeAudioPlayer) {
+                themeAudioPlayer = new Audio();
+                themeAudioPlayer.volume = 0.7; // Volumen al 70%
+                
+                // Evento para reproducir la siguiente canción cuando una termina
+                themeAudioPlayer.addEventListener('ended', () => {
+                    currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+                    playTrack(currentTrackIndex);
+                });
+            }
+
+            isMusicPlaying = true;
+            document.getElementById('music-toggle-btn').textContent = '🔇';
+            currentTrackIndex = 0; // Empezamos desde la primera canción
+            playTrack(currentTrackIndex);
+        }
+
+        function playTrack(index) {
+            if (!themeAudioPlayer || !currentPlaylist[index]) return;
+            themeAudioPlayer.src = currentPlaylist[index];
+            themeAudioPlayer.play().catch(error => {
+                console.error("La reproducción de audio falló. El navegador podría estar bloqueándolo.", error);
+                stopMusic(); // Si falla, reseteamos el estado
+            });
+        }
+
+        function stopMusic() {
+            if (themeAudioPlayer) {
+                themeAudioPlayer.pause();
+                themeAudioPlayer.currentTime = 0;
+            }
+            isMusicPlaying = false;
+            currentPlaylist = [];
+            currentTrackIndex = 0;
+            const musicButton = document.getElementById('music-toggle-btn');
+            if (musicButton) {
+                musicButton.textContent = '🎶';
+            }
+        }
+
+        // ================================================================================= //
         // LÓGICA PARA EL CAMBIO DE TEMA GLOBAL
         // ================================================================================= //
         function applyTheme(themeName) {
+            stopMusic(); // Detenemos la música actual al cambiar de tema
+            
             console.log(`Aplicando tema: ${themeName}`);
             const body = document.body;
             body.classList.remove('theme-halloween', 'theme-christmas'); // Limpiar temas anteriores
