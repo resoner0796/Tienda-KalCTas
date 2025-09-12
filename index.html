@@ -183,7 +183,7 @@
             font-size: 1.1em;
             color: var(--color-text-primary);
             position: absolute;
-            top: 85px; /* MODIFICADO: Aumentado desde 60px para bajar el texto */
+            top: 85px;
             left: 0;
             right: 0;
             z-index: 1;
@@ -191,7 +191,7 @@
         }
         
         .logo {
-            margin-top: 50px; /* MODIFICADO: Añadido para bajar más el logo */
+            margin-top: 50px;
             max-width: 300px;
             animation: pulse 2.5s infinite ease-in-out;
             margin-bottom: 0;
@@ -739,7 +739,7 @@
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
             line-height: 1.2;
             font-size: 2.2em; /* Tamaño ajustado para Halloween */
-            top: 65px; /* MODIFICADO: Aumentado desde 40px */
+            top: 65px;
         }
         body.theme-halloween .main-title .subtitle {
             font-size: 0.6em;
@@ -825,7 +825,7 @@
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
             line-height: 1.2;
             font-size: 2.2em; /* Tamaño ajustado para Navidad */
-            top: 65px; /* MODIFICADO: Aumentado desde 40px */
+            top: 65px;
         }
         body.theme-christmas .main-title .subtitle {
             font-size: 0.6em;
@@ -867,6 +867,12 @@
         body.theme-christmas .account-panel,
         body.theme-christmas .cart-panel {
             border-width: 2px;
+        }
+
+        /* MODIFICACIÓN AÑADIDA: Corrección para el botón deshabilitado en tema Navidad */
+        body.theme-christmas .btn:disabled {
+            color: var(--color-background); /* Texto oscuro para contraste sobre fondo claro */
+            opacity: 0.8; /* Se ve más 'deshabilitado' */
         }
         
         .snow {
