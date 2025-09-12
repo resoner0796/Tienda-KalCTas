@@ -1331,8 +1331,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            applyInitialTheme(); // Aplicar tema claro/oscuro guardado
-            mainContainer.classList.add('show');
+            applyInitialTheme(); // Aplicar tema claro/oscuro guardado localmente
             window.scrollTo(0, 0); 
 
             // Escuchar cambios de tema desde Firestore
@@ -1342,11 +1341,15 @@
                     const theme = doc.data().temaActual || 'default';
                     applyTheme(theme);
                 } else {
-                    applyTheme('default'); // Fallback si no hay config
+                    applyTheme('default'); // Tema por defecto si no hay configuración
                 }
+                // *** CORRECCIÓN ***: Mostrar el contenedor principal DESPUÉS de aplicar el tema
+                mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración de tema:", err);
-                applyTheme('default'); // Fallback en caso de error
+                applyTheme('default'); // Tema por defecto en caso de error
+                // *** CORRECCIÓN ***: Mostrar el contenedor también si hay un error
+                mainContainer.classList.add('show');
             });
         });
         
