@@ -1194,7 +1194,7 @@
 
                 <button type="submit" class="btn btn-add">
                     <span>Confirmar Pedido</span>
-                    <span id="confirm-order-icon">🛍️</span>
+                    <span id="confirm-order-icon">🛒</span>
                 </button>
                 </form>
         </div>
@@ -1242,7 +1242,7 @@
         const mainContainer = document.getElementById('main-container');
 
         // ================================================================================= //
-        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE (CON CROSSFADE CORREGIDO) ---
+        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE (CON CROSSFADE Y LOOP CORREGIDOS) ---
         // ================================================================================= //
         
         let audio1, audio2;
@@ -1255,6 +1255,7 @@
         const FADE_DURATION = 3; // Duración del fundido en segundos
         const MAX_VOLUME = 0.3; // Volumen máximo al 30%
 
+        // Función de utilidad para crear un fundido de volumen
         function fade(player, options) {
             let startVolume = options.from;
             let endVolume = options.to;
@@ -1262,25 +1263,26 @@
             let onComplete = options.onComplete;
 
             player.volume = startVolume;
-            let steps = 40;
-            let stepDuration = duration / steps;
-            let stepSize = (endVolume - startVolume) / steps;
+            const steps = 50; // Número de pasos para suavizar la transición
+            const stepDuration = duration / steps;
+            const stepSize = (endVolume - startVolume) / steps;
             
             let currentStep = 0;
             const fadeInterval = setInterval(() => {
+                currentStep++;
                 if (currentStep >= steps) {
                     clearInterval(fadeInterval);
-                    player.volume = endVolume;
+                    player.volume = endVolume; // Asegura el valor final exacto
                     if (onComplete) onComplete();
                     return;
                 }
                 player.volume += stepSize;
-                currentStep++;
             }, stepDuration);
         }
 
+        // Función principal para la transición entre canciones
         function transitionToNextTrack() {
-            if (isTransitioning) return;
+            if (isTransitioning || !isMusicPlaying) return;
             isTransitioning = true;
             
             const playerToFadeOut = activePlayer;
@@ -1288,11 +1290,14 @@
             
             currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
             playerToFadeIn.src = currentPlaylist[currentTrackIndex];
-
+            
             playerToFadeIn.play().then(() => {
-                fade(playerToFadeOut, { from: MAX_VOLUME, to: 0, duration: FADE_DURATION * 1000, onComplete: () => playerToFadeOut.pause() });
+                // Inicia ambos fundidos al mismo tiempo
+                if(playerToFadeOut) {
+                    fade(playerToFadeOut, { from: playerToFadeOut.volume, to: 0, duration: FADE_DURATION * 1000, onComplete: () => playerToFadeOut.pause() });
+                }
                 fade(playerToFadeIn, { from: 0, to: MAX_VOLUME, duration: FADE_DURATION * 1000, onComplete: () => {
-                    activePlayer = playerToFadeIn;
+                    activePlayer = playerToFadeIn; // El nuevo reproductor se vuelve el activo
                     isTransitioning = false;
                 }});
             }).catch(e => {
@@ -1300,11 +1305,19 @@
                 isTransitioning = false;
             });
         }
-
+        
+        // Se activa constantemente para verificar si debemos empezar la transición
         function handleTimeUpdate() {
-            if (!isMusicPlaying || isTransitioning || !activePlayer.duration) return;
+            if (!isMusicPlaying || isTransitioning || !activePlayer || !activePlayer.duration) return;
             if ((activePlayer.duration - activePlayer.currentTime) <= FADE_DURATION) {
                 transitionToNextTrack();
+            }
+        }
+        
+        // Fallback por si 'timeupdate' no se dispara (ej. tab en segundo plano)
+        function handleTrackEnd() {
+            if (!isTransitioning) {
+                 transitionToNextTrack();
             }
         }
 
@@ -1319,11 +1332,14 @@
             }
             if (currentPlaylist.length === 0) return;
 
+            // Crea los reproductores de audio si no existen
             if (!audio1) {
                 audio1 = new Audio();
                 audio2 = new Audio();
                 audio1.addEventListener('timeupdate', handleTimeUpdate);
                 audio2.addEventListener('timeupdate', handleTimeUpdate);
+                audio1.addEventListener('ended', handleTrackEnd); // Fallback para loop
+                audio2.addEventListener('ended', handleTrackEnd); // Fallback para loop
             }
 
             isMusicPlaying = true;
@@ -1334,7 +1350,7 @@
             activePlayer.src = currentPlaylist[currentTrackIndex];
             
             activePlayer.play().then(() => {
-                fade(activePlayer, { from: 0, to: MAX_VOLUME, duration: FADE_DURATION * 1000 });
+                fade(activePlayer, { from: 0, to: MAX_VOLUME, duration: 1500 }); // Fade-in inicial más rápido
             }).catch(e => console.error("La reproducción inicial falló:", e));
         }
 
@@ -1342,13 +1358,11 @@
             if (!isMusicPlaying) return;
             isMusicPlaying = false;
             
-            const player1 = audio1;
-            const player2 = audio2;
-
-            if (player1 && !player1.paused) fade(player1, { from: player1.volume, to: 0, duration: 1000, onComplete: () => player1.pause() });
-            if (player2 && !player2.paused) fade(player2, { from: player2.volume, to: 0, duration: 1000, onComplete: () => player2.pause() });
+            if (audio1 && !audio1.paused) fade(audio1, { from: audio1.volume, to: 0, duration: 1000, onComplete: () => audio1.pause() });
+            if (audio2 && !audio2.paused) fade(audio2, { from: audio2.volume, to: 0, duration: 1000, onComplete: () => audio2.pause() });
 
             document.getElementById('music-toggle-btn').textContent = '🎶';
+            isTransitioning = false;
         }
 
         function toggleThemeMusic() {
@@ -1384,7 +1398,6 @@
             const mainLogo = document.getElementById('main-logo');
             const smallLogos = document.querySelectorAll('.logo-small');
             const cartIcon = document.querySelector('.cart-icon');
-            const confirmOrderIcon = document.getElementById('confirm-order-icon');
             const themeColorMeta = document.querySelector('meta[name="theme-color"]');
             
             let logoSrc = 'LOGO.png';
@@ -1413,7 +1426,7 @@
             mainLogo.src = logoSrc;
             smallLogos.forEach(logo => logo.src = logoSrc);
             cartIcon.textContent = cartIconText;
-            confirmOrderIcon.textContent = cartIconText;
+            // El icono del botón de confirmar pedido se actualiza al abrir el modal correspondiente
             themeColorMeta.setAttribute('content', themeColor);
             
             const snowContainer = document.getElementById('snow-container');
@@ -1481,7 +1494,7 @@
         });
         
         // ================================================================================= //
-        // LÓGICA ORIGINAL DE LA APP (SIN CAMBIOS FUNCIONALES MAYORES)
+        // LÓGICA ORIGINAL DE LA APP (CON AJUSTE EN ICONO DE CONFIRMAR PEDIDO)
         // ================================================================================= //
         
         function showMessage(text) {
@@ -2139,6 +2152,17 @@
             document.getElementById('payment-method-input').value = metodoPago;
             document.getElementById('order-id-input').value = orderId || '';
             document.getElementById('confirm-order-title').textContent = `Datos de Entrega (${metodoPago})`;
+
+            // AJUSTE PARA ICONO DE CONFIRMAR PEDIDO
+            const confirmIcon = document.getElementById('confirm-order-icon');
+            const bodyClasses = document.body.classList;
+            if (bodyClasses.contains('theme-christmas')) {
+                confirmIcon.textContent = '🎄';
+            } else if (bodyClasses.contains('theme-halloween')) {
+                confirmIcon.textContent = '🧹';
+            } else {
+                confirmIcon.textContent = '🛒';
+            }
             
             const dateInput = document.getElementById('delivery-date');
             const tomorrow = new Date();
@@ -2279,7 +2303,8 @@
                 showMessage(`Hubo un error: ${error.message}. Intenta de nuevo.`);
             } finally {
                 submitButton.disabled = false;
-                submitButton.innerHTML = `<span>Confirmar Pedido</span><span id="confirm-order-icon">🛍️</span>`;
+                const confirmIcon = document.getElementById('confirm-order-icon');
+                submitButton.innerHTML = `<span>Confirmar Pedido</span><span id="confirm-order-icon">${confirmIcon.textContent}</span>`;
             }
         });
 
