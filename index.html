@@ -1242,76 +1242,135 @@
         const mainContainer = document.getElementById('main-container');
 
         // ================================================================================= //
-        // --- NUEVA LÓGICA PARA LA MÚSICA DE AMBIENTE ---
+        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE (CON CROSSFADE) ---
         // ================================================================================= //
         
         let themeAudioPlayer = null;
         let isMusicPlaying = false;
+        let isFading = false;
         let currentPlaylist = [];
         let currentTrackIndex = 0;
+        let fadeInterval = null;
+        
+        const FADE_DURATION = 3; // Duración del fundido en segundos
+        const MAX_VOLUME = 0.5; // Volumen máximo al 50%
+
+        // Función genérica para hacer el fundido de volumen
+        function fadeVolume(player, targetVolume, duration, callback) {
+            clearInterval(fadeInterval);
+            const startVolume = player.volume;
+            const volumeChange = targetVolume - startVolume;
+            if (volumeChange === 0) {
+                if (callback) callback();
+                return;
+            }
+            const stepTime = 50; // ms por cada paso de volumen
+            const numSteps = duration / stepTime;
+            const stepSize = volumeChange / numSteps;
+            let currentStep = 0;
+
+            fadeInterval = setInterval(() => {
+                currentStep++;
+                let newVolume = startVolume + (stepSize * currentStep);
+                
+                if ((stepSize > 0 && newVolume > targetVolume) || (stepSize < 0 && newVolume < targetVolume)) {
+                    newVolume = targetVolume;
+                }
+                
+                player.volume = newVolume;
+
+                if (currentStep >= numSteps) {
+                    clearInterval(fadeInterval);
+                    player.volume = targetVolume;
+                    if (callback) callback();
+                }
+            }, stepTime);
+        }
+
+        function handleTrackTransition() {
+            if (!isMusicPlaying || isFading || !themeAudioPlayer.duration) return;
+            // Si faltan `FADE_DURATION` segundos o menos para que termine la canción, iniciamos la transición
+            if ((themeAudioPlayer.duration - themeAudioPlayer.currentTime) <= FADE_DURATION) {
+                playNextTrack();
+            }
+        }
+
+        function playNextTrack() {
+            if (isFading) return; // Evita que la función se ejecute múltiples veces
+            isFading = true;
+
+            // 1. Fundido de salida para la canción actual (si está sonando)
+            const fadeOutPromise = new Promise(resolve => {
+                if (themeAudioPlayer.src && !themeAudioPlayer.paused) {
+                    fadeVolume(themeAudioPlayer, 0, FADE_DURATION * 1000, () => {
+                        themeAudioPlayer.pause();
+                        resolve();
+                    });
+                } else {
+                    resolve(); // Si no hay nada sonando, resuelve de inmediato
+                }
+            });
+
+            // 2. Cuando el fundido de salida termina, cargamos y reproducimos la siguiente canción
+            fadeOutPromise.then(() => {
+                currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+                themeAudioPlayer.src = currentPlaylist[currentTrackIndex];
+                themeAudioPlayer.volume = 0;
+                
+                themeAudioPlayer.play().then(() => {
+                    // 3. Fundido de entrada para la nueva canción
+                    fadeVolume(themeAudioPlayer, MAX_VOLUME, FADE_DURATION * 1000, () => {
+                        isFading = false; // La transición ha terminado
+                    });
+                }).catch(e => {
+                    console.error("La reproducción de audio falló:", e);
+                    isFading = false;
+                });
+            });
+        }
+        
+        function playMusic() {
+            const body = document.body;
+            if (body.classList.contains('theme-halloween')) {
+                currentPlaylist = ['HALLOWEEN1.mp3', 'HALLOWEEN2.mp3'];
+            } else if (body.classList.contains('theme-christmas')) {
+                currentPlaylist = ['LUCESNAVIDAD.mp3'];
+            } else {
+                currentPlaylist = [];
+            }
+
+            if (currentPlaylist.length === 0) return;
+
+            if (!themeAudioPlayer) {
+                themeAudioPlayer = new Audio();
+                // Usamos 'timeupdate' para detectar el final de la canción con anticipación
+                themeAudioPlayer.addEventListener('timeupdate', handleTrackTransition);
+            }
+
+            isMusicPlaying = true;
+            document.getElementById('music-toggle-btn').textContent = '🔇';
+            currentTrackIndex = -1; // Para que al llamar playNextTrack() inicie en el índice 0
+            playNextTrack();
+        }
+
+        function stopMusic() {
+            if (!themeAudioPlayer || !isMusicPlaying) return;
+            isMusicPlaying = false; // Marcamos que la música debe detenerse
+            
+            fadeVolume(themeAudioPlayer, 0, 1000, () => { // Fundido de salida rápido (1 seg)
+                themeAudioPlayer.pause();
+                themeAudioPlayer.currentTime = 0;
+                isFading = false;
+                clearInterval(fadeInterval);
+                document.getElementById('music-toggle-btn').textContent = '🎶';
+            });
+        }
 
         function toggleThemeMusic() {
             if (isMusicPlaying) {
                 stopMusic();
             } else {
                 playMusic();
-            }
-        }
-
-        function playMusic() {
-            const body = document.body;
-            // Definimos la lista de canciones según el tema
-            if (body.classList.contains('theme-halloween')) {
-                currentPlaylist = ['HALLOWEEN1.mp3', 'HALLOWEEN2.mp3'];
-            } else if (body.classList.contains('theme-christmas')) {
-                currentPlaylist = ['LUCESNAVIDAD.mp3'];
-            } else {
-                currentPlaylist = []; // No hay música para el tema default
-            }
-
-            if (currentPlaylist.length === 0) {
-                console.log("No hay música disponible para este tema.");
-                return;
-            }
-
-            // Creamos el reproductor de audio si no existe
-            if (!themeAudioPlayer) {
-                themeAudioPlayer = new Audio();
-                themeAudioPlayer.volume = 0.7; // Volumen al 70%
-                
-                // Evento para reproducir la siguiente canción cuando una termina
-                themeAudioPlayer.addEventListener('ended', () => {
-                    currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
-                    playTrack(currentTrackIndex);
-                });
-            }
-
-            isMusicPlaying = true;
-            document.getElementById('music-toggle-btn').textContent = '🔇';
-            currentTrackIndex = 0; // Empezamos desde la primera canción
-            playTrack(currentTrackIndex);
-        }
-
-        function playTrack(index) {
-            if (!themeAudioPlayer || !currentPlaylist[index]) return;
-            themeAudioPlayer.src = currentPlaylist[index];
-            themeAudioPlayer.play().catch(error => {
-                console.error("La reproducción de audio falló. El navegador podría estar bloqueándolo.", error);
-                stopMusic(); // Si falla, reseteamos el estado
-            });
-        }
-
-        function stopMusic() {
-            if (themeAudioPlayer) {
-                themeAudioPlayer.pause();
-                themeAudioPlayer.currentTime = 0;
-            }
-            isMusicPlaying = false;
-            currentPlaylist = [];
-            currentTrackIndex = 0;
-            const musicButton = document.getElementById('music-toggle-btn');
-            if (musicButton) {
-                musicButton.textContent = '🎶';
             }
         }
 
@@ -1331,6 +1390,14 @@
             const cartIcon = document.querySelector('.cart-icon');
             const confirmOrderIcon = document.getElementById('confirm-order-icon');
             const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+            const musicButton = document.getElementById('music-toggle-btn');
+            
+            // Lógica para mostrar/ocultar el botón de música
+            if (themeName === 'halloween' || themeName === 'christmas') {
+                musicButton.style.display = 'block';
+            } else {
+                musicButton.style.display = 'none';
+            }
             
             let logoSrc = 'LOGO.png';
             let titleText = '¡Bienvenido a KalCTas!';
@@ -1339,7 +1406,6 @@
             if (body.classList.contains('dark-mode')) {
                  themeColor = '#121212';
             }
-
 
             if (themeName === 'halloween') {
                 body.classList.add('theme-halloween');
@@ -1362,7 +1428,6 @@
             confirmOrderIcon.textContent = cartIconText;
             themeColorMeta.setAttribute('content', themeColor);
             
-            // Lógica para nieve en Navidad
             const snowContainer = document.getElementById('snow-container');
             if (themeName === 'christmas' && snowContainer.children.length === 0) {
                  const numberOfSnowflakes = 40;
@@ -1408,24 +1473,21 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            applyInitialTheme(); // Aplicar tema claro/oscuro guardado localmente
+            applyInitialTheme();
             window.scrollTo(0, 0); 
 
-            // Escuchar cambios de tema desde Firestore
             const configRef = db.collection('configuracion').doc('tienda');
             configRef.onSnapshot(doc => {
                 if (doc.exists) {
                     const theme = doc.data().temaActual || 'default';
                     applyTheme(theme);
                 } else {
-                    applyTheme('default'); // Tema por defecto si no hay configuración
+                    applyTheme('default');
                 }
-                // *** CORRECCIÓN ***: Mostrar el contenedor principal DESPUÉS de aplicar el tema
                 mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración de tema:", err);
-                applyTheme('default'); // Tema por defecto en caso de error
-                // *** CORRECCIÓN ***: Mostrar el contenedor también si hay un error
+                applyTheme('default');
                 mainContainer.classList.add('show');
             });
         });
