@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Creepster&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#FFFFFF"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -40,6 +40,7 @@
             
             --font-family: 'Poppins', sans-serif;
             --font-themed: 'Poppins', sans-serif;
+            --font-elegant: 'Playfair Display', serif;
             --border-radius: 8px;
             --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.05);
             --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1496,21 +1497,19 @@
             configRef.onSnapshot(doc => {
                 const data = doc.data() || {};
                 
-                // Aplicar tema
                 const theme = data.temaActual || 'default';
                 applyTheme(theme);
 
-                // Aplicar costo de envío
                 if (data.costoEnvio !== undefined && data.costoEnvio !== null) {
                     SHIPPING_COST = data.costoEnvio;
                 }
-                updateShippingCostUI(); // Actualiza el texto en la UI
+                updateShippingCostUI(); 
                 
                 mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración:", err);
                 applyTheme('default');
-                updateShippingCostUI(); // Asegura mostrar el valor por defecto en caso de error
+                updateShippingCostUI(); 
                 mainContainer.classList.add('show');
             });
 
@@ -1807,6 +1806,7 @@
                         <div class="order-details">
                             <p><strong>Total:</strong> $${total}</p>
                             <p><strong>Método de pago:</strong> ${pedido.metodoPago}</p>
+                            ${pedido.empaque ? `<p><strong>Empaque:</strong> ${pedido.empaque}</p>` : ''}
                             ${deliveryDetailsHtml}
                             ${pedido.comentarios ? `<p><strong>Comentarios:</strong> ${pedido.comentarios}</p>` : ''}
                             <p><strong>Productos:</strong></p>
@@ -2232,6 +2232,7 @@
 
         function toggleOtherLocation() {
             const locationSelect = document.getElementById('delivery-location');
+            const otherLocationNote = document.getElementById('other-location-note');
             otherLocationNote.style.display = locationSelect.value === 'Otro' ? 'block' : 'none';
             otherLocationNote.required = locationSelect.value === 'Otro';
         }
