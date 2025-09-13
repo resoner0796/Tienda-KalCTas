@@ -1009,11 +1009,13 @@
             </div>
 
             <section class="empaques-section">
-                <h2 class="section-title">Empaques</h2>
-                <video width="100%" autoplay loop muted playsinline preload="auto">
-    <source src="Presentacionempaque.mp4" type="video/mp4">
-    Tu navegador no soporta la reproducción de video.
-</video>
+                <h2 class="section-title">Nuestros Empaques</h2>
+                
+                <video id="empaque-video" width="100%" loop muted playsinline preload="auto" controls>
+                    <source src="Presentacionempaque.mp4" type="video/mp4">
+                    Tu navegador no soporta la reproducción de video.
+                </video>
+                
                 <div class="empaques-grid">
                     <div class="empaque-card">
                         <img src="Frankie.jpg" alt="Empaque Frankie" onclick="verImagen('Frankie.jpg')">
@@ -1609,6 +1611,18 @@
                 });
                 renderCategoryButtons();
             });
+
+            // CORRECCIÓN: Intentar reproducir el video cuando la página esté lista
+            const empaqueVideo = document.getElementById('empaque-video');
+            if (empaqueVideo) {
+                const promise = empaqueVideo.play();
+                if (promise !== undefined) {
+                    promise.catch(error => {
+                        console.log("La reproducción automática del video fue bloqueada por el navegador. Se requieren controles manuales.");
+                        empaqueVideo.controls = true;
+                    });
+                }
+            }
         });
         
         // ================================================================================= //
