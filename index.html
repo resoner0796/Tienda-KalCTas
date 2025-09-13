@@ -1011,7 +1011,7 @@
             <section class="empaques-section">
                 <h2 class="section-title">Nuestros Empaques</h2>
                 
-                <video id="empaque-video" width="100%" loop muted playsinline preload="auto" controls>
+                <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto">
                     <source src="Presentacionempaques.mp4" type="video/mp4">
                     Tu navegador no soporta la reproducción de video.
                 </video>
@@ -1031,6 +1031,7 @@
                     </div>
                 </div>
             </section>
+            
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
@@ -1612,13 +1613,12 @@
                 renderCategoryButtons();
             });
 
-            // CORRECCIÓN: Intentar reproducir el video cuando la página esté lista
             const empaqueVideo = document.getElementById('empaque-video');
             if (empaqueVideo) {
                 const promise = empaqueVideo.play();
                 if (promise !== undefined) {
                     promise.catch(error => {
-                        console.log("La reproducción automática del video fue bloqueada por el navegador. Se requieren controles manuales.");
+                        console.log("La reproducción automática del video fue bloqueada. Habilitando controles manuales.");
                         empaqueVideo.controls = true;
                     });
                 }
