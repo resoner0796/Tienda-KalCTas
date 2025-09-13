@@ -723,7 +723,6 @@
         .empaques-section video {
             width: 100%;
             border-radius: var(--border-radius);
-            margin-bottom: 25px;
             box-shadow: var(--shadow-soft);
         }
         .empaques-grid {
@@ -731,6 +730,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             width: 100%;
+            margin-bottom: 25px; /* Espacio entre galería y video */
         }
         .empaque-card {
             text-align: center;
@@ -1010,6 +1010,7 @@
 
             <section class="empaques-section">
                 <h2 class="section-title">Nuestros Empaques</h2>
+                
                 <div class="empaques-grid">
                     <div class="empaque-card">
                         <img src="Frankie.jpg" alt="Empaque Frankie" onclick="verImagen('Frankie.jpg')">
@@ -1024,10 +1025,13 @@
                         <p>Tradicional Gris</p>
                     </div>
                 </div>
+                
                 <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto">
                     <source src="Presentacionempaques.mp4" type="video/mp4">
                     Tu navegador no soporta la reproducción de video.
-                </video>            </section>
+                </video>
+
+            </section>
             
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
