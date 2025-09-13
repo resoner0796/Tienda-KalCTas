@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Creepster&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#FFFFFF"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -40,7 +40,6 @@
             
             --font-family: 'Poppins', sans-serif;
             --font-themed: 'Poppins', sans-serif;
-            --font-elegant: 'Playfair Display', serif;
             --border-radius: 8px;
             --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.05);
             --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -663,9 +662,9 @@
             transition: all 0.2s ease;
         }
         .cart-item button:hover { background: var(--color-danger); color: white; }
-        .delivery-options { padding: 15px 25px; border-top: 1px solid var(--color-border); }
-        .delivery-options label { display: block; margin-bottom: 10px; font-weight: 600; text-align: left; }
-        .delivery-options select {
+        .delivery-options, .packaging-options { padding: 15px 25px; border-top: 1px solid var(--color-border); }
+        .delivery-options label, .packaging-options label { display: block; margin-bottom: 10px; font-weight: 600; text-align: left; }
+        .delivery-options select, .packaging-options select {
             width: 100%; padding: 10px; border-radius: var(--border-radius); border: 1px solid var(--color-border);
             background-color: var(--color-background); color: var(--color-text-primary); font-family: var(--font-family);
         }
@@ -694,6 +693,64 @@
         .my-orders-item .status.Pendiente { background-color: #F1C40F; color: #111; }
         .my-orders-item .status.Confirmado { background-color: var(--color-secondary); }
         .my-orders-item .status.Cancelado { background-color: var(--color-danger); }
+
+        /* --- Sección de Empaques --- */
+        .empaques-section {
+            width: 100%;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--color-border);
+        }
+        .section-title {
+            font-size: 1.6em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background-color: var(--color-secondary);
+        }
+        .empaques-section video {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-soft);
+        }
+        .empaques-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+        .empaque-card {
+            text-align: center;
+        }
+        .empaque-card img {
+            width: 100%;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s ease;
+        }
+        .empaque-card img:hover {
+            transform: scale(1.05);
+        }
+        .empaque-card p {
+            margin-top: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
 
         /* Footer */
         .footer-social {
@@ -754,7 +811,8 @@
         body.theme-halloween .payment-modal-content h3, 
         body.theme-halloween .my-orders-modal-content h3,
         body.theme-halloween .account-panel h3,
-        body.theme-halloween .cart-panel h3 {
+        body.theme-halloween .cart-panel h3,
+        body.theme-halloween .section-title {
             font-family: var(--font-themed);
             font-size: 2.5em;
             letter-spacing: 1px;
@@ -840,7 +898,8 @@
         body.theme-christmas .payment-modal-content h3, 
         body.theme-christmas .my-orders-modal-content h3,
         body.theme-christmas .account-panel h3,
-        body.theme-christmas .cart-panel h3 {
+        body.theme-christmas .cart-panel h3,
+        body.theme-christmas .section-title {
             font-family: var(--font-themed);
             font-size: 2.5em;
             letter-spacing: 1px;
@@ -948,7 +1007,25 @@
 
             <div class="button-container" id="main-buttons">
             </div>
-            
+
+            <section class="empaques-section">
+                <h2 class="section-title">Empaques</h2>
+                <video src="Presentacionempaque.mp4" autoplay muted loop playsinline></video>
+                <div class="empaques-grid">
+                    <div class="empaque-card">
+                        <img src="Frankie.jpg" alt="Empaque Frankie" onclick="verImagen('Frankie.jpg')">
+                        <p>Frankie</p>
+                    </div>
+                    <div class="empaque-card">
+                        <img src="Naranja.jpg" alt="Empaque Naranja" onclick="verImagen('Naranja.jpg')">
+                        <p>Naranja</p>
+                    </div>
+                    <div class="empaque-card">
+                        <img src="Tradicional Gris.jpg" alt="Empaque Tradicional Gris" onclick="verImagen('Tradicional Gris.jpg')">
+                        <p>Tradicional Gris</p>
+                    </div>
+                </div>
+            </section>
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
@@ -1025,6 +1102,14 @@
             <select id="delivery-method" onchange="renderizarCarrito()">
                 <option value="punto-medio">Punto medio ($0.00)</option>
                 <option value="domicilio" id="delivery-option-home">Entrega a domicilio ($70.00)</option>
+            </select>
+        </div>
+        <div class="packaging-options">
+            <label for="packaging-method">Empaque:</label>
+            <select id="packaging-method">
+                <option value="Frankie">Frankie</option>
+                <option value="Naranja">Naranja</option>
+                <option value="Tradicional Gris">Tradicional Gris</option>
             </select>
         </div>
         <div class="cart-total" id="cart-total"></div>
@@ -1219,7 +1304,7 @@
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
-        // --- VARIABLE GLOBAL PARA COSTO DE ENVÍO ---
+        // --- VARIABLE GLOBAL PARA COSTO DE ENVÍO --- 
         let SHIPPING_COST = 70.00; // Valor por defecto, se actualizará desde la BD
         
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
@@ -1497,19 +1582,21 @@
             configRef.onSnapshot(doc => {
                 const data = doc.data() || {};
                 
+                // Aplicar tema
                 const theme = data.temaActual || 'default';
                 applyTheme(theme);
 
+                // Aplicar costo de envío
                 if (data.costoEnvio !== undefined && data.costoEnvio !== null) {
                     SHIPPING_COST = data.costoEnvio;
                 }
-                updateShippingCostUI(); 
+                updateShippingCostUI(); // Actualiza el texto en la UI
                 
                 mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración:", err);
                 applyTheme('default');
-                updateShippingCostUI(); 
+                updateShippingCostUI(); // Asegura mostrar el valor por defecto en caso de error
                 mainContainer.classList.add('show');
             });
 
@@ -2120,6 +2207,7 @@
                 if (!userDoc.exists) throw new Error("Usuario no encontrado.");
                 
                 const userData = userDoc.data();
+                const empaqueSeleccionado = document.getElementById('packaging-method').value;
                 
                 const counterRef = db.collection('contadores').doc('pedidos');
                 const counterDoc = await transaction.get(counterRef);
@@ -2139,6 +2227,7 @@
                         telefono: userData.telefono || 'N/A'
                     },
                     productos: carrito,
+                    empaque: empaqueSeleccionado,
                     montoTotal: paymentIntent.amount / 100,
                     metodoPago: 'Tarjeta',
                     estado: 'Confirmado', 
@@ -2232,7 +2321,6 @@
 
         function toggleOtherLocation() {
             const locationSelect = document.getElementById('delivery-location');
-            const otherLocationNote = document.getElementById('other-location-note');
             otherLocationNote.style.display = locationSelect.value === 'Otro' ? 'block' : 'none';
             otherLocationNote.required = locationSelect.value === 'Otro';
         }
@@ -2247,6 +2335,7 @@
             const orderId = document.getElementById('order-id-input').value;
             const comentarios = document.getElementById('delivery-comments').value;
             const deliveryMethod = document.getElementById('delivery-method').value;
+            const empaqueSeleccionado = document.getElementById('packaging-method').value;
 
             let datosEntrega = {};
 
@@ -2273,6 +2362,7 @@
                     await pedidoRef.update({
                         datosEntrega: datosEntrega,
                         comentarios: comentarios || null,
+                        empaque: empaqueSeleccionado
                     });
                     showMessage(`¡Pedido ${metodoPago === 'Tarjeta' ? 'confirmado' : 'registrado'} con éxito! Nos comunicaremos contigo.`);
                 } else { 
@@ -2311,6 +2401,7 @@
                                 telefono: userData.telefono || 'N/A'
                             },
                             productos: carrito,
+                            empaque: empaqueSeleccionado,
                             montoTotal: montoTotal,
                             metodoPago,
                             datosEntrega, 
@@ -2321,7 +2412,7 @@
 
                         transaction.update(userRef, { carrito: [] });
                     });
-                      showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
+                     showMessage(`¡Pedido registrado con éxito! Tu folio es ${folioFormateado}. Nos comunicaremos contigo.`);
                 }
 
                 cerrarModalEntrega();
