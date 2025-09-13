@@ -946,7 +946,7 @@
             </div>
 
             <div class="button-container" id="main-buttons">
-                </div>
+            </div>
             
             <div class="footer-social">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
@@ -1023,7 +1023,7 @@
             <label for="delivery-method">Forma de entrega:</label>
             <select id="delivery-method" onchange="renderizarCarrito()">
                 <option value="punto-medio">Punto medio ($0.00)</option>
-                <option value="domicilio">Entrega a domicilio ($70.00)</option>
+                <option value="domicilio" id="delivery-option-home">Entrega a domicilio ($70.00)</option>
             </select>
         </div>
         <div class="cart-total" id="cart-total"></div>
@@ -1218,6 +1218,9 @@
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
+        // --- VARIABLE GLOBAL PARA COSTO DE ENVÍO ---
+        let SHIPPING_COST = 70.00; // Valor por defecto, se actualizará desde la BD
+        
         const stripe = Stripe('pk_live_51S3iN8HKopuKlEeyEx2ky47AAwskql3jsLCLSmOXP4g006Udp5HR5dZh8B9xtZBoQT4TlXojltnbH6JzEJjKtHuF00PIlf7ALJ');
         let elements;
         let cardElement;
@@ -1241,8 +1244,8 @@
         let currentPlaylist = [];
         let currentTrackIndex = 0;
         
-        const FADE_DURATION = 3; // Duración del fundido en segundos
-        const MAX_VOLUME = 0.3; // Volumen máximo al 30%
+        const FADE_DURATION = 3; 
+        const MAX_VOLUME = 0.3; 
 
         function fade(player, options) {
             let startVolume = options.from;
@@ -1357,23 +1360,21 @@
         }
 
         // ================================================================================= //
-        // LÓGICA PARA EL CAMBIO DE TEMA Y VISIBILIDAD DE CATEGORÍAS
+        // LÓGICA PARA EL CAMBIO DE TEMA, VISIBILIDAD Y COSTO DE ENVÍO
         // ================================================================================= //
         
-        // Objeto global para almacenar la visibilidad de las categorías
         let categoryVisibility = {};
 
-        async function fetchCategoryVisibility() {
-            const snapshot = await db.collection('categorias').get();
-            snapshot.forEach(doc => {
-                categoryVisibility[doc.id] = doc.data().visible;
-            });
-            renderCategoryButtons();
+        function updateShippingCostUI() {
+            const option = document.getElementById('delivery-option-home');
+            if (option) {
+                option.textContent = `Entrega a domicilio ($${SHIPPING_COST.toFixed(2)})`;
+            }
         }
-        
+
         function renderCategoryButtons() {
             const buttonContainer = document.getElementById('main-buttons');
-            buttonContainer.innerHTML = ''; // Limpiar botones existentes
+            buttonContainer.innerHTML = ''; 
 
             const categories = [
                 { id: 'KalCTas2-4', text: 'KalCTas 2/4', class: 'btn-primary' },
@@ -1382,8 +1383,6 @@
             ];
 
             categories.forEach(cat => {
-                // Si la categoría no está definida en la DB, se asume visible (true).
-                // Si está definida como false, no se muestra.
                 if (categoryVisibility[cat.id] !== false) {
                     const button = document.createElement('button');
                     button.className = `btn ${cat.class}`;
@@ -1397,7 +1396,6 @@
         function applyTheme(themeName) {
             stopMusic();
             
-            console.log(`Aplicando tema: ${themeName}`);
             const body = document.body;
             body.classList.remove('theme-halloween', 'theme-christmas');
             
@@ -1494,19 +1492,25 @@
             applyInitialTheme();
             window.scrollTo(0, 0); 
 
-            // Escuchar cambios de tema y visibilidad de categorías
             const configRef = db.collection('configuracion').doc('tienda');
             configRef.onSnapshot(doc => {
-                if (doc.exists) {
-                    const theme = doc.data().temaActual || 'default';
-                    applyTheme(theme);
-                } else {
-                    applyTheme('default');
+                const data = doc.data() || {};
+                
+                // Aplicar tema
+                const theme = data.temaActual || 'default';
+                applyTheme(theme);
+
+                // Aplicar costo de envío
+                if (data.costoEnvio !== undefined && data.costoEnvio !== null) {
+                    SHIPPING_COST = data.costoEnvio;
                 }
+                updateShippingCostUI(); // Actualiza el texto en la UI
+                
                 mainContainer.classList.add('show');
             }, err => {
-                console.error("Error al obtener configuración de tema:", err);
+                console.error("Error al obtener configuración:", err);
                 applyTheme('default');
+                updateShippingCostUI(); // Asegura mostrar el valor por defecto en caso de error
                 mainContainer.classList.add('show');
             });
 
@@ -1519,7 +1523,7 @@
         });
         
         // ================================================================================= //
-        // LÓGICA ORIGINAL DE LA APP
+        // LÓGICA DE LA APLICACIÓN
         // ================================================================================= //
         
         function showMessage(text) {
@@ -1856,7 +1860,7 @@
                 const carrito = userDoc.data().carrito || [];
                 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                const shippingCost = deliveryMethod === 'domicilio' ? SHIPPING_COST : 0;
 
                 if (carrito.length === 0) {
                     cartList.innerHTML = '<p>Tu carrito está vacío.</p>';
@@ -1949,7 +1953,7 @@
                 const carrito = userDoc.data().carrito || [];
 
                 const deliveryMethod = document.getElementById('delivery-method').value;
-                const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                const shippingCost = deliveryMethod === 'domicilio' ? SHIPPING_COST : 0;
                 const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                 const total = subtotal + shippingCost;
 
@@ -2155,7 +2159,7 @@
                     if (userDoc.exists) {
                         const carrito = userDoc.data().carrito || [];
                         const deliveryMethod = document.getElementById('delivery-method').value;
-                        const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                        const shippingCost = deliveryMethod === 'domicilio' ? SHIPPING_COST : 0;
                         const subtotal = carrito.reduce((sum, item) => sum + item.precio, 0);
                         const total = subtotal + shippingCost;
                         
@@ -2284,7 +2288,7 @@
                         if (carrito.length === 0) throw new Error('El carrito está vacío.');
                         
                         const subtotal = carrito.reduce((sum, producto) => sum + producto.precio, 0);
-                        const shippingCost = deliveryMethod === 'domicilio' ? 70 : 0;
+                        const shippingCost = deliveryMethod === 'domicilio' ? SHIPPING_COST : 0;
                         const montoTotal = subtotal + shippingCost;
 
                         const counterRef = db.collection('contadores').doc('pedidos');
@@ -2348,7 +2352,6 @@
 
             contenedor.innerHTML = '<p>Cargando modelos...</p>';
 
-            // Comprobar si la categoría está visible
             if (categoryVisibility[categoria] === false) {
                 contenedor.innerHTML = '<p>Esta categoría no está disponible por el momento.</p>';
                 return;
