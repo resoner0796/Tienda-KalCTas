@@ -1351,17 +1351,32 @@
         let currentVideoIndex = 0;
         const videoElement = document.getElementById('empaque-video');
         const videoSource = document.getElementById('empaque-video-source');
+        let areEmpaquesVisible = false;
+        let isVideoPlaylistVisible = false;
+
+        function updateEmpaquesSectionVisibility() {
+            const section = document.getElementById('empaques-section');
+            if (!section) return;
+
+            if (areEmpaquesVisible || isVideoPlaylistVisible) {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
 
         function setupVideoPlaylist(videos) {
             videoPlaylist = videos;
             if (videoPlaylist.length === 0) {
                 videoElement.style.display = 'none';
-                return;
+                isVideoPlaylistVisible = false;
+            } else {
+                videoElement.style.display = 'block';
+                isVideoPlaylistVisible = true;
+                currentVideoIndex = 0;
+                playNextVideoInPlaylist();
             }
-            
-            videoElement.style.display = 'block';
-            currentVideoIndex = 0;
-            playNextVideoInPlaylist();
+            updateEmpaquesSectionVisibility();
         }
 
         function playNextVideoInPlaylist() {
@@ -1527,29 +1542,32 @@
         
         function renderizarGaleriaEmpaques(empaques) {
             const grid = document.getElementById('empaques-grid');
-            const section = document.getElementById('empaques-section');
-            if (!grid || !section) return;
+            const title = document.querySelector('.empaques-section .section-title');
+            if (!grid || !title) return;
 
             const empaquesVisibles = empaques.filter(e => e.visible);
 
             if (empaquesVisibles.length === 0) {
-                section.style.display = 'none';
-                return;
+                grid.style.display = 'none';
+                title.style.display = 'none';
+                areEmpaquesVisible = false;
+            } else {
+                grid.style.display = 'flex';
+                title.style.display = 'inline-block';
+                areEmpaquesVisible = true;
+                grid.innerHTML = '';
+                empaquesVisibles.forEach(empaque => {
+                    const card = document.createElement('div');
+                    card.className = 'empaque-card';
+                    const imageUrl = ASSETS_BASE_URL + empaque.imagenUrl;
+                    card.innerHTML = `
+                        <img src="${imageUrl}" alt="Empaque ${empaque.nombre}" onclick="verImagen('${imageUrl}')">
+                        <p>${empaque.nombre}</p>
+                    `;
+                    grid.appendChild(card);
+                });
             }
-
-            section.style.display = 'block';
-            grid.innerHTML = '';
-
-            empaquesVisibles.forEach(empaque => {
-                const card = document.createElement('div');
-                card.className = 'empaque-card';
-                const imageUrl = ASSETS_BASE_URL + empaque.imagenUrl;
-                card.innerHTML = `
-                    <img src="${imageUrl}" alt="Empaque ${empaque.nombre}" onclick="verImagen('${imageUrl}')">
-                    <p>${empaque.nombre}</p>
-                `;
-                grid.appendChild(card);
-            });
+            updateEmpaquesSectionVisibility();
         }
 
         function renderizarOpcionesEmpaques(empaques) {
