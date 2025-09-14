@@ -725,16 +725,41 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-soft);
         }
+        
+        /* --- AJUSTE PARA GALERÍA DE EMPAQUES HORIZONTAL --- */
         .empaques-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex; /* Cambiado de grid a flex */
+            overflow-x: auto; /* Habilita el scroll horizontal */
+            flex-wrap: nowrap; /* Evita que los elementos salten a la siguiente línea */
             gap: 15px;
             width: 100%;
-            margin-bottom: 25px; /* Espacio entre galería y video */
+            margin-bottom: 25px;
+            padding-bottom: 15px; /* Espacio para la barra de scroll */
+            scroll-snap-type: x mandatory; /* Hace que el scroll se "pegue" a los elementos */
+            -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+        }
+        /* Estilo sutil para la barra de scroll */
+        .empaques-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+        .empaques-grid::-webkit-scrollbar-track {
+            background: var(--color-background);
+            border-radius: 4px;
+        }
+        .empaques-grid::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 4px;
+        }
+        .empaques-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--color-text-secondary);
         }
         .empaque-card {
             text-align: center;
+            flex: 0 0 110px; /* Evita que las tarjetas se encojan o estiren, y les da un tamaño base */
+            scroll-snap-align: center; /* Centra el elemento al que se hace scroll */
         }
+        /* --- FIN DE AJUSTE --- */
+
         .empaque-card img {
             width: 100%;
             border-radius: var(--border-radius);
@@ -1471,7 +1496,6 @@
             });
         }
         
-        // --- NUEVA FUNCIÓN PARA RENDERIZAR LA GALERÍA DE EMPAQUES ---
         function renderizarGaleriaEmpaques(empaques) {
             const grid = document.getElementById('empaques-grid');
             const section = document.getElementById('empaques-section');
@@ -1485,7 +1509,7 @@
             }
 
             section.style.display = 'block';
-            grid.innerHTML = ''; // Limpiar la galería actual
+            grid.innerHTML = '';
 
             empaquesVisibles.forEach(empaque => {
                 const card = document.createElement('div');
@@ -1498,14 +1522,13 @@
             });
         }
 
-        // --- NUEVA FUNCIÓN PARA RENDERIZAR LAS OPCIONES DE EMPAQUE EN EL CARRITO ---
         function renderizarOpcionesEmpaques(empaques) {
             const select = document.getElementById('packaging-method');
             if (!select) return;
             
             const empaquesVisibles = empaques.filter(e => e.visible);
 
-            select.innerHTML = ''; // Limpiar opciones actuales
+            select.innerHTML = '';
 
             if (empaquesVisibles.length === 0) {
                 select.innerHTML = '<option value="" disabled>No hay empaques disponibles</option>';
@@ -1620,7 +1643,6 @@
             applyInitialTheme();
             window.scrollTo(0, 0); 
 
-            // Listener para la configuración general (tema, costo de envío)
             const configRef = db.collection('configuracion').doc('tienda');
             configRef.onSnapshot(doc => {
                 const data = doc.data() || {};
@@ -1633,17 +1655,28 @@
                 if (data.costoEnvio !== undefined && data.costoEnvio !== null) {
                     SHIPPING_COST = data.costoEnvio;
                 }
-                updateShippingCostUI(); // Actualiza el texto en la UI
+                updateShippingCostUI();
+
+                // *** AJUSTE PARA VISIBILIDAD DEL VIDEO ***
+                const videoElement = document.getElementById('empaque-video');
+                if (videoElement) {
+                    // Si el campo no existe o es true, el video es visible. Solo se oculta si es explícitamente false.
+                    const isVideoVisible = data.videoEmpaquesVisible !== false; 
+                    videoElement.style.display = isVideoVisible ? 'block' : 'none';
+                }
                 
                 mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración:", err);
                 applyTheme('default');
-                updateShippingCostUI(); // Asegura mostrar el valor por defecto en caso de error
+                updateShippingCostUI();
+                const videoElement = document.getElementById('empaque-video');
+                if (videoElement) {
+                    videoElement.style.display = 'block'; // Mostrar por defecto si hay error
+                }
                 mainContainer.classList.add('show');
             });
 
-            // Listener para la visibilidad de categorías de productos
             db.collection('categorias').onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     categoryVisibility[change.doc.id] = change.doc.data().visible;
@@ -1651,18 +1684,15 @@
                 renderCategoryButtons();
             });
 
-            // --- NUEVO LISTENER PARA LA VISIBILIDAD DE EMPAQUES ---
             db.collection('empaques').orderBy('nombre').onSnapshot(snapshot => {
                 const empaques = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarGaleriaEmpaques(empaques);
                 renderizarOpcionesEmpaques(empaques);
             }, err => {
                 console.error("Error al obtener los empaques:", err);
-                // Ocultar la sección si hay un error
                 const section = document.getElementById('empaques-section');
                 if(section) section.style.display = 'none';
             });
-
 
             const empaqueVideo = document.getElementById('empaque-video');
             if (empaqueVideo) {
@@ -1677,7 +1707,8 @@
         });
         
         // ================================================================================= //
-        // LÓGICA DE LA APLICACIÓN
+        // LÓGICA DE LA APLICACIÓN (AUTENTICACIÓN, CARRITO, PEDIDOS, ETC.)
+        // (Esta parte no ha sido modificada, se mantiene igual que la versión anterior)
         // ================================================================================= //
         
         function showMessage(text) {
