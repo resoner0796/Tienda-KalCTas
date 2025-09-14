@@ -724,8 +724,9 @@
             width: 100%;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-soft);
+            margin-top: 25px; /* Espacio entre galería y video */
         }
-        
+
         /* --- AJUSTE PARA GALERÍA DE EMPAQUES HORIZONTAL --- */
         .empaques-grid {
             display: flex; /* Cambiado de grid a flex */
@@ -733,26 +734,16 @@
             flex-wrap: nowrap; /* Evita que los elementos salten a la siguiente línea */
             gap: 15px;
             width: 100%;
-            margin-bottom: 25px;
             padding-bottom: 15px; /* Espacio para la barra de scroll */
             scroll-snap-type: x mandatory; /* Hace que el scroll se "pegue" a los elementos */
             -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
         }
         /* Estilo sutil para la barra de scroll */
-        .empaques-grid::-webkit-scrollbar {
-            height: 8px;
-        }
-        .empaques-grid::-webkit-scrollbar-track {
-            background: var(--color-background);
-            border-radius: 4px;
-        }
-        .empaques-grid::-webkit-scrollbar-thumb {
-            background: var(--color-border);
-            border-radius: 4px;
-        }
-        .empaques-grid::-webkit-scrollbar-thumb:hover {
-            background: var(--color-text-secondary);
-        }
+        .empaques-grid::-webkit-scrollbar { height: 8px; }
+        .empaques-grid::-webkit-scrollbar-track { background: var(--color-background); border-radius: 4px; }
+        .empaques-grid::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+        .empaques-grid::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary); }
+
         .empaque-card {
             text-align: center;
             flex: 0 0 110px; /* Evita que las tarjetas se encojan o estiren, y les da un tamaño base */
@@ -766,6 +757,7 @@
             border: 1px solid var(--color-border);
             box-shadow: var(--shadow-soft);
             transition: transform 0.2s ease;
+            cursor: pointer;
         }
         .empaque-card img:hover {
             transform: scale(1.05);
@@ -1040,7 +1032,7 @@
                     </div>
                 
                 <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto">
-                    <source src="Presentacionempaques.mp4" type="video/mp4">
+                    <source src="" type="video/mp4" id="empaque-video-source">
                     Tu navegador no soporta la reproducción de video.
                 </video>
 
@@ -1321,6 +1313,9 @@
         let currentUser = null;
         let unsubscribeMisPedidos = null; 
         
+        // --- CONSTANTE PARA URL BASE DE IMÁGENES Y VIDEOS ---
+        const ASSETS_BASE_URL = 'https://resoner0796.github.io/Tienda-KalCTas/';
+        
         // --- VARIABLE GLOBAL PARA COSTO DE ENVÍO --- 
         let SHIPPING_COST = 70.00; // Valor por defecto, se actualizará desde la BD
         
@@ -1382,7 +1377,7 @@
             const playerToFadeIn = (activePlayer === audio1) ? audio2 : audio1;
             
             currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
-            playerToFadeIn.src = currentPlaylist[currentTrackIndex];
+            playerToFadeIn.src = ASSETS_BASE_URL + currentPlaylist[currentTrackIndex];
             
             playerToFadeIn.play().then(() => {
                 if(playerToFadeOut) {
@@ -1436,7 +1431,7 @@
             
             activePlayer = audio1;
             currentTrackIndex = 0;
-            activePlayer.src = currentPlaylist[currentTrackIndex];
+            activePlayer.src = ASSETS_BASE_URL + currentPlaylist[currentTrackIndex];
             
             activePlayer.play().then(() => {
                 fade(activePlayer, { from: 0, to: MAX_VOLUME, duration: 1500 });
@@ -1463,7 +1458,7 @@
         }
 
         // ================================================================================= //
-        // LÓGICA PARA EL CAMBIO DE TEMA, VISIBILIDAD Y COSTO DE ENVÍO
+        // LÓGICA PARA EL CAMBIO DE TEMA Y VISIBILIDAD
         // ================================================================================= //
         
         let categoryVisibility = {};
@@ -1514,8 +1509,9 @@
             empaquesVisibles.forEach(empaque => {
                 const card = document.createElement('div');
                 card.className = 'empaque-card';
+                const imageUrl = ASSETS_BASE_URL + empaque.imagenUrl;
                 card.innerHTML = `
-                    <img src="${empaque.imagenUrl}" alt="Empaque ${empaque.nombre}" onclick="verImagen('${empaque.imagenUrl}')">
+                    <img src="${imageUrl}" alt="Empaque ${empaque.nombre}" onclick="verImagen('${imageUrl}')">
                     <p>${empaque.nombre}</p>
                 `;
                 grid.appendChild(card);
@@ -1567,7 +1563,7 @@
             const cartIcon = document.querySelector('.cart-icon');
             const themeColorMeta = document.querySelector('meta[name="theme-color"]');
             
-            let logoSrc = 'LOGO.png';
+            let logoSrc = ASSETS_BASE_URL + 'LOGO.png';
             let titleText = '¡Bienvenido a KalCTas!';
             let cartIconText = '🛍️';
             let themeColor = '#FFFFFF';
@@ -1577,13 +1573,13 @@
 
             if (themeName === 'halloween') {
                 body.classList.add('theme-halloween');
-                logoSrc = 'LOGOHALLOWEEN.png';
+                logoSrc = ASSETS_BASE_URL + 'LOGOHALLOWEEN.png';
                 titleText = '¡Boo! 👻<br><span class="subtitle">¡Bienvenido a KalCTas!</span>';
                 cartIconText = '🎃';
                 themeColor = '#0d0221';
             } else if (themeName === 'christmas') {
                 body.classList.add('theme-christmas');
-                logoSrc = 'LOGONAVIDAD.png';
+                logoSrc = ASSETS_BASE_URL + 'LOGONAVIDAD.png';
                 titleText = '¡Jo Jo Jo! 🎅🏻<br><span class="subtitle">¡Bienvenido a KalCTas!</span>';
                 cartIconText = '🎁';
                 themeColor = '#0a2f35';
@@ -1643,40 +1639,27 @@
             applyInitialTheme();
             window.scrollTo(0, 0); 
 
-            const configRef = db.collection('configuracion').doc('tienda');
-            configRef.onSnapshot(doc => {
+            // Listener para la configuración general (tema, costo de envío)
+            db.collection('configuracion').doc('tienda').onSnapshot(doc => {
                 const data = doc.data() || {};
                 
-                // Aplicar tema
                 const theme = data.temaActual || 'default';
                 applyTheme(theme);
 
-                // Aplicar costo de envío
                 if (data.costoEnvio !== undefined && data.costoEnvio !== null) {
                     SHIPPING_COST = data.costoEnvio;
                 }
                 updateShippingCostUI();
-
-                // *** AJUSTE PARA VISIBILIDAD DEL VIDEO ***
-                const videoElement = document.getElementById('empaque-video');
-                if (videoElement) {
-                    // Si el campo no existe o es true, el video es visible. Solo se oculta si es explícitamente false.
-                    const isVideoVisible = data.videoEmpaquesVisible !== false; 
-                    videoElement.style.display = isVideoVisible ? 'block' : 'none';
-                }
                 
                 mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración:", err);
                 applyTheme('default');
                 updateShippingCostUI();
-                const videoElement = document.getElementById('empaque-video');
-                if (videoElement) {
-                    videoElement.style.display = 'block'; // Mostrar por defecto si hay error
-                }
                 mainContainer.classList.add('show');
             });
 
+            // Listener para la visibilidad de categorías de productos
             db.collection('categorias').onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     categoryVisibility[change.doc.id] = change.doc.data().visible;
@@ -1684,6 +1667,7 @@
                 renderCategoryButtons();
             });
 
+            // Listener para la visibilidad de empaques
             db.collection('empaques').orderBy('nombre').onSnapshot(snapshot => {
                 const empaques = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarGaleriaEmpaques(empaques);
@@ -1693,22 +1677,38 @@
                 const section = document.getElementById('empaques-section');
                 if(section) section.style.display = 'none';
             });
+            
+            // *** NUEVO LISTENER PARA EL VIDEO ACTIVO ***
+            db.collection('videos').where('activo', '==', true).limit(1).onSnapshot(snapshot => {
+                const videoElement = document.getElementById('empaque-video');
+                const videoSource = document.getElementById('empaque-video-source');
+                if (!videoElement || !videoSource) return;
 
-            const empaqueVideo = document.getElementById('empaque-video');
-            if (empaqueVideo) {
-                const promise = empaqueVideo.play();
-                if (promise !== undefined) {
-                    promise.catch(error => {
-                        console.log("La reproducción automática del video fue bloqueada. Habilitando controles manuales.");
-                        empaqueVideo.controls = true;
-                    });
+                if (snapshot.empty) {
+                    // Si no hay ningún video activo, se oculta
+                    videoElement.style.display = 'none';
+                } else {
+                    const videoData = snapshot.docs[0].data();
+                    const newSrc = ASSETS_BASE_URL + videoData.videoUrl;
+                    
+                    // Solo actualiza si la URL es diferente para evitar recargas innecesarias
+                    if (videoSource.src !== newSrc) {
+                        videoSource.src = newSrc;
+                        videoElement.load(); // Carga la nueva fuente de video
+                        videoElement.play().catch(e => console.log("La reproducción automática fue prevenida."));
+                    }
+                    videoElement.style.display = 'block'; // Asegura que sea visible
                 }
-            }
+            }, err => {
+                console.error("Error al obtener video activo:", err);
+                const videoElement = document.getElementById('empaque-video');
+                if(videoElement) videoElement.style.display = 'none'; // Ocultar si hay error
+            });
+
         });
         
         // ================================================================================= //
         // LÓGICA DE LA APLICACIÓN (AUTENTICACIÓN, CARRITO, PEDIDOS, ETC.)
-        // (Esta parte no ha sido modificada, se mantiene igual que la versión anterior)
         // ================================================================================= //
         
         function showMessage(text) {
@@ -2058,8 +2058,9 @@
                 carrito.forEach((producto, index) => {
                     const listItem = document.createElement('li');
                     listItem.className = 'cart-item';
+                    const imageUrl = ASSETS_BASE_URL + producto.imagenUrl;
                     listItem.innerHTML = `
-                        <img src="${producto.imagenUrl}" alt="${producto.nombre}" class="cart-item-img" onclick="verImagen('${producto.imagenUrl}')">
+                        <img src="${imageUrl}" alt="${producto.nombre}" class="cart-item-img" onclick="verImagen('${imageUrl}')">
                         <div class="cart-item-details">
                             <span class="name">${producto.nombre}</span>
                             <span class="price">$${producto.precio.toFixed(2)}</span>
@@ -2569,13 +2570,14 @@
                     let cartEmoji = '🛍️';
                     if (document.body.classList.contains('theme-halloween')) cartEmoji = '🎃';
                     if (document.body.classList.contains('theme-christmas')) cartEmoji = '🎁';
+                    const imageUrl = ASSETS_BASE_URL + producto.imagenUrl;
                     
                     card.innerHTML = `
-                        <img src="${producto.imagenUrl}" alt="${producto.nombre}">
+                        <img src="${imageUrl}" alt="${producto.nombre}">
                         <p class="product-price">$${producto.precio.toFixed(2)}</p>
                         <p>${producto.nombre}</p>
                         <div class="model-buttons">
-                            <button class="btn btn-neutral" onclick="verImagen('${producto.imagenUrl}')"><span>Ver</span></button>
+                            <button class="btn btn-neutral" onclick="verImagen('${imageUrl}')"><span>Ver</span></button>
                             <button class="btn btn-add" data-id="${doc.id}" ${producto.stock <= 0 || !currentUser ? 'disabled' : ''}>
                                 <span>${producto.stock <= 0 ? 'Agotado' : 'Agregar '+cartEmoji}</span>
                             </button>
