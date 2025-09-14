@@ -726,7 +726,7 @@
             box-shadow: var(--shadow-soft);
             margin-top: 25px; /* Espacio entre galería y video */
         }
-
+        
         /* --- AJUSTE PARA GALERÍA DE EMPAQUES HORIZONTAL --- */
         .empaques-grid {
             display: flex; /* Cambiado de grid a flex */
@@ -1019,7 +1019,7 @@
             
             <div>
                 <h1 class="main-title">¡Bienvenido a KalCTas!</h1>
-                <img src="LOGO.png" alt="Logo de la tienda" class="logo" id="main-logo">
+                <img src="" alt="Logo de la tienda" class="logo" id="main-logo">
             </div>
 
             <div class="button-container" id="main-buttons">
@@ -1029,9 +1029,10 @@
                 <h2 class="section-title">Nuestros Empaques</h2>
                 
                 <div class="empaques-grid" id="empaques-grid">
-                    </div>
+                    <!-- El contenido se genera dinámicamente -->
+                </div>
                 
-                <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto">
+                <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto" style="display: none;">
                     <source src="" type="video/mp4" id="empaque-video-source">
                     Tu navegador no soporta la reproducción de video.
                 </video>
@@ -1051,7 +1052,7 @@
         </main>
 
         <section id="pantalla-2-4" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
             
             <div class="model-grid" id="grid-2-4"></div>
             <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
@@ -1060,7 +1061,7 @@
         </section>
 
         <section id="pantalla-3-4" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
             
             <div class="model-grid" id="grid-3-4"></div>
             <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
@@ -1069,7 +1070,7 @@
         </section>
 
         <section id="pantalla-largas" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="LOGO.png" alt="Logo de la tienda" class="logo-small"></a>
+            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
             
             <div class="model-grid" id="grid-largas"></div>
             <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
@@ -1119,7 +1120,8 @@
         <div class="packaging-options">
             <label for="packaging-method">Empaque:</label>
             <select id="packaging-method">
-                </select>
+                <!-- Opciones generadas por JS -->
+            </select>
         </div>
         <div class="cart-total" id="cart-total"></div>
         <div class="cart-buttons">
@@ -1332,7 +1334,7 @@
         const mainContainer = document.getElementById('main-container');
 
         // ================================================================================= //
-        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE ---
+        // --- LÓGICA PARA LA MÚSICA DE AMBIENTE Y VIDEO ---
         // ================================================================================= //
         
         let audio1, audio2;
@@ -1341,9 +1343,41 @@
         let isTransitioning = false;
         let currentPlaylist = [];
         let currentTrackIndex = 0;
-        
         const FADE_DURATION = 3; 
         const MAX_VOLUME = 0.3; 
+
+        // --- LÓGICA DE LA PLAYLIST DE VIDEO ---
+        let videoPlaylist = [];
+        let currentVideoIndex = 0;
+        const videoElement = document.getElementById('empaque-video');
+        const videoSource = document.getElementById('empaque-video-source');
+
+        function setupVideoPlaylist(videos) {
+            videoPlaylist = videos;
+            if (videoPlaylist.length === 0) {
+                videoElement.style.display = 'none';
+                return;
+            }
+            
+            videoElement.style.display = 'block';
+            currentVideoIndex = 0;
+            playNextVideoInPlaylist();
+        }
+
+        function playNextVideoInPlaylist() {
+            if (videoPlaylist.length === 0) return;
+            
+            videoSource.src = ASSETS_BASE_URL + videoPlaylist[currentVideoIndex].videoUrl;
+            videoElement.load();
+            videoElement.play().catch(e => console.log("La reproducción automática del video fue prevenida por el navegador."));
+            
+            currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length; // Prepara el siguiente índice
+        }
+
+        if (videoElement) {
+            videoElement.addEventListener('ended', playNextVideoInPlaylist);
+        }
+        // --- FIN DE LÓGICA DE PLAYLIST ---
 
         function fade(player, options) {
             let startVolume = options.from;
@@ -1639,7 +1673,6 @@
             applyInitialTheme();
             window.scrollTo(0, 0); 
 
-            // Listener para la configuración general (tema, costo de envío)
             db.collection('configuracion').doc('tienda').onSnapshot(doc => {
                 const data = doc.data() || {};
                 
@@ -1659,7 +1692,6 @@
                 mainContainer.classList.add('show');
             });
 
-            // Listener para la visibilidad de categorías de productos
             db.collection('categorias').onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     categoryVisibility[change.doc.id] = change.doc.data().visible;
@@ -1667,7 +1699,6 @@
                 renderCategoryButtons();
             });
 
-            // Listener para la visibilidad de empaques
             db.collection('empaques').orderBy('nombre').onSnapshot(snapshot => {
                 const empaques = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarGaleriaEmpaques(empaques);
@@ -1678,31 +1709,12 @@
                 if(section) section.style.display = 'none';
             });
             
-            // *** NUEVO LISTENER PARA EL VIDEO ACTIVO ***
-            db.collection('videos').where('activo', '==', true).limit(1).onSnapshot(snapshot => {
-                const videoElement = document.getElementById('empaque-video');
-                const videoSource = document.getElementById('empaque-video-source');
-                if (!videoElement || !videoSource) return;
-
-                if (snapshot.empty) {
-                    // Si no hay ningún video activo, se oculta
-                    videoElement.style.display = 'none';
-                } else {
-                    const videoData = snapshot.docs[0].data();
-                    const newSrc = ASSETS_BASE_URL + videoData.videoUrl;
-                    
-                    // Solo actualiza si la URL es diferente para evitar recargas innecesarias
-                    if (videoSource.src !== newSrc) {
-                        videoSource.src = newSrc;
-                        videoElement.load(); // Carga la nueva fuente de video
-                        videoElement.play().catch(e => console.log("La reproducción automática fue prevenida."));
-                    }
-                    videoElement.style.display = 'block'; // Asegura que sea visible
-                }
+            db.collection('videos').where('enPlaylist', '==', true).orderBy('fechaCreacion').onSnapshot(snapshot => {
+                const videos = snapshot.docs.map(doc => doc.data());
+                setupVideoPlaylist(videos);
             }, err => {
-                console.error("Error al obtener video activo:", err);
-                const videoElement = document.getElementById('empaque-video');
-                if(videoElement) videoElement.style.display = 'none'; // Ocultar si hay error
+                console.error("Error al obtener la playlist de videos:", err);
+                videoElement.style.display = 'none';
             });
 
         });
@@ -2637,7 +2649,7 @@
                         imagenUrl: productoData.imagenUrl
                     });
 
-                    transaction.update(productoRef, { stock: productoData.stock - 1 });
+                    transaction.update(productoRef, { stock: firebase.firestore.FieldValue.increment(-1) });
                     transaction.update(userRef, { carrito: carrito });
                 });
                 
