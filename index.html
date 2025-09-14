@@ -1008,23 +1008,11 @@
             <div class="button-container" id="main-buttons">
             </div>
 
-            <section class="empaques-section">
+            <section class="empaques-section" id="empaques-section">
                 <h2 class="section-title">Nuestros Empaques</h2>
                 
-                <div class="empaques-grid">
-                    <div class="empaque-card">
-                        <img src="Frankie.jpg" alt="Empaque Frankie" onclick="verImagen('Frankie.jpg')">
-                        <p>Frankie</p>
+                <div class="empaques-grid" id="empaques-grid">
                     </div>
-                    <div class="empaque-card">
-                        <img src="Naranja.jpg" alt="Empaque Naranja" onclick="verImagen('Naranja.jpg')">
-                        <p>Naranja</p>
-                    </div>
-                    <div class="empaque-card">
-                        <img src="Tradicional Gris.jpg" alt="Empaque Tradicional Gris" onclick="verImagen('Tradicional Gris.jpg')">
-                        <p>Tradicional Gris</p>
-                    </div>
-                </div>
                 
                 <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto">
                     <source src="Presentacionempaques.mp4" type="video/mp4">
@@ -1114,10 +1102,7 @@
         <div class="packaging-options">
             <label for="packaging-method">Empaque:</label>
             <select id="packaging-method">
-                <option value="Frankie">Frankie</option>
-                <option value="Naranja">Naranja</option>
-                <option value="Tradicional Gris">Tradicional Gris</option>
-            </select>
+                </select>
         </div>
         <div class="cart-total" id="cart-total"></div>
         <div class="cart-buttons">
@@ -1485,6 +1470,56 @@
                 }
             });
         }
+        
+        // --- NUEVA FUNCIÓN PARA RENDERIZAR LA GALERÍA DE EMPAQUES ---
+        function renderizarGaleriaEmpaques(empaques) {
+            const grid = document.getElementById('empaques-grid');
+            const section = document.getElementById('empaques-section');
+            if (!grid || !section) return;
+
+            const empaquesVisibles = empaques.filter(e => e.visible);
+
+            if (empaquesVisibles.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            grid.innerHTML = ''; // Limpiar la galería actual
+
+            empaquesVisibles.forEach(empaque => {
+                const card = document.createElement('div');
+                card.className = 'empaque-card';
+                card.innerHTML = `
+                    <img src="${empaque.imagenUrl}" alt="Empaque ${empaque.nombre}" onclick="verImagen('${empaque.imagenUrl}')">
+                    <p>${empaque.nombre}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- NUEVA FUNCIÓN PARA RENDERIZAR LAS OPCIONES DE EMPAQUE EN EL CARRITO ---
+        function renderizarOpcionesEmpaques(empaques) {
+            const select = document.getElementById('packaging-method');
+            if (!select) return;
+            
+            const empaquesVisibles = empaques.filter(e => e.visible);
+
+            select.innerHTML = ''; // Limpiar opciones actuales
+
+            if (empaquesVisibles.length === 0) {
+                select.innerHTML = '<option value="" disabled>No hay empaques disponibles</option>';
+                return;
+            }
+
+            empaquesVisibles.forEach(empaque => {
+                const option = document.createElement('option');
+                option.value = empaque.nombre;
+                option.textContent = empaque.nombre;
+                select.appendChild(option);
+            });
+        }
+
 
         function applyTheme(themeName) {
             stopMusic();
@@ -1585,6 +1620,7 @@
             applyInitialTheme();
             window.scrollTo(0, 0); 
 
+            // Listener para la configuración general (tema, costo de envío)
             const configRef = db.collection('configuracion').doc('tienda');
             configRef.onSnapshot(doc => {
                 const data = doc.data() || {};
@@ -1607,12 +1643,26 @@
                 mainContainer.classList.add('show');
             });
 
+            // Listener para la visibilidad de categorías de productos
             db.collection('categorias').onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     categoryVisibility[change.doc.id] = change.doc.data().visible;
                 });
                 renderCategoryButtons();
             });
+
+            // --- NUEVO LISTENER PARA LA VISIBILIDAD DE EMPAQUES ---
+            db.collection('empaques').orderBy('nombre').onSnapshot(snapshot => {
+                const empaques = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarGaleriaEmpaques(empaques);
+                renderizarOpcionesEmpaques(empaques);
+            }, err => {
+                console.error("Error al obtener los empaques:", err);
+                // Ocultar la sección si hay un error
+                const section = document.getElementById('empaques-section');
+                if(section) section.style.display = 'none';
+            });
+
 
             const empaqueVideo = document.getElementById('empaque-video');
             if (empaqueVideo) {
