@@ -1032,7 +1032,7 @@
                     <!-- El contenido se genera dinámicamente -->
                 </div>
                 
-                <video id="empaque-video" width="100%" autoplay loop muted playsinline preload="auto" style="display: none;">
+                <video id="empaque-video" width="100%" muted playsinline preload="auto" style="display: none;">
                     <source src="" type="video/mp4" id="empaque-video-source">
                     Tu navegador no soporta la reproducción de video.
                 </video>
@@ -1358,6 +1358,7 @@
             const section = document.getElementById('empaques-section');
             if (!section) return;
 
+            // CORRECCIÓN: La sección es visible si hay empaques O si hay videos.
             if (areEmpaquesVisible || isVideoPlaylistVisible) {
                 section.style.display = 'block';
             } else {
@@ -1369,28 +1370,45 @@
             videoPlaylist = videos;
             if (videoPlaylist.length === 0) {
                 videoElement.style.display = 'none';
+                videoElement.pause();
+                videoSource.removeAttribute('src');
                 isVideoPlaylistVisible = false;
             } else {
                 videoElement.style.display = 'block';
                 isVideoPlaylistVisible = true;
-                currentVideoIndex = 0;
+                currentVideoIndex = -1; 
                 playNextVideoInPlaylist();
             }
             updateEmpaquesSectionVisibility();
         }
 
         function playNextVideoInPlaylist() {
-            if (videoPlaylist.length === 0) return;
+            if (videoPlaylist.length === 0) {
+                 videoElement.style.display = 'none';
+                 isVideoPlaylistVisible = false;
+                 updateEmpaquesSectionVisibility();
+                 return;
+            };
+
+            currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
             
             videoSource.src = ASSETS_BASE_URL + videoPlaylist[currentVideoIndex].videoUrl;
             videoElement.load();
-            videoElement.play().catch(e => console.log("La reproducción automática del video fue prevenida por el navegador."));
             
-            currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length; // Prepara el siguiente índice
+            videoElement.muted = true;
+            
+            const playPromise = videoElement.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.warn("La reproducción automática fue prevenida por el navegador. El usuario debe interactuar con la página para iniciar el video.", error);
+                    // Opcional: Mostrar un ícono de play sobre el video para que el usuario pueda iniciarlo manualmente.
+                });
+            }
         }
 
         if (videoElement) {
-            videoElement.addEventListener('ended', playNextVideoInPlaylist);
+            videoElement.addEventListener('ended', playNextVideoInPlaylist, false);
         }
         // --- FIN DE LÓGICA DE PLAYLIST ---
 
