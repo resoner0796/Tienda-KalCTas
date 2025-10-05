@@ -97,14 +97,16 @@
     }
 
     /* --- Estilos Generales --- */
-    /* --- CORRECCIÓN SCROLL: Se simplifica el body para evitar conflictos de layout --- */
+    /* --- CORRECCIÓN CENTRADO: Se usa 'grid' para centrar el contenedor sin afectar el scroll --- */
     body {
         margin: 0;
         font-family: var(--font-family);
         background-color: var(--color-background);
         color: var(--color-text-primary);
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
         text-align: center;
-        padding: 20px 0; /* Añade espacio vertical para que el container no pegue con los bordes */
     }
 
     body.theme-halloween, body.theme-christmas {
@@ -115,7 +117,7 @@
     /* --- Contenedor Principal --- */
     .container {
         background-color: var(--color-surface);
-        padding: 0 20px 25px 20px; /* Ajustado el padding superior a 0, ya que el header lo manejará */
+        padding: 25px 20px;
         border-radius: var(--border-radius);
         border: 1px solid var(--color-border);
         box-shadow: var(--shadow-medium);
@@ -129,14 +131,12 @@
         opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.8s ease, transform 0.8s ease, max-width 0.5s ease;
-        max-height: 95vh; /* Se usa max-height en lugar de min-height para un mejor control */
+        max-height: 90vh; /* Se usa max-height para controlar el tamaño y permitir el scroll */
         overflow-y: auto; 
         overflow-x: hidden; 
         box-sizing: border-box;
         scrollbar-width: thin;
         scrollbar-color: var(--color-border) var(--color-surface);
-        /* --- CORRECCIÓN SCROLL: Se añade margin para centrar horizontalmente --- */
-        margin: 0 auto;
     }
 
     /* Estilo de scroll para navegadores Webkit (Chrome, Safari) */
@@ -191,15 +191,11 @@
         font-weight: 600;
     }
 
-    /* --- Estilos de Logo y Título (HEADER FIJO) --- */
-    /* --- CORRECCIÓN HEADER FIJO: Se convierte en un elemento 'sticky' --- */
+    /* --- Estilos de Logo y Título --- */
+    /* --- REVERSIÓN: El header de la pantalla principal vuelve a ser normal --- */
     #pantalla-principal > div:first-of-type {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        background-color: var(--color-surface);
-        padding: 0 10px 10px 10px; /* Padding para que no se pegue el contenido */
-        margin: 0 -20px 20px -20px; /* Margen negativo para que ocupe todo el ancho del container */
+        position: relative;
+        margin-bottom: 20px;
     }
 
     h1.main-title {
@@ -226,6 +222,19 @@
         margin: 0 auto 20px auto;
         cursor: pointer;
     }
+    
+    /* --- NUEVO: Cabecera pegajosa SÓLO para pantallas de categorías --- */
+    .screen:not(#pantalla-principal) .logo-small {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--color-surface);
+        padding: 15px 0;
+        margin-top: -25px; /* Compensa el padding del contenedor para que se pegue al borde */
+        margin-left: -20px; /* Compensa el padding del contenedor */
+        margin-right: -20px; /* Compensa el padding del contenedor */
+    }
+
 
     /* --- Animaciones --- */
     @keyframes pulse {
@@ -1032,14 +1041,12 @@
     /* ================================================================== */
     @media (min-width: 768px) {
         
-        /* --- Contenedor Principal Ampliado --- */
         .container {
             max-width: 1200px;
             padding: 40px;
             max-height: 90vh; 
         }
 
-        /* --- Layout de la pantalla principal en dos columnas --- */
         #pantalla-principal.screen.active {
             display: grid;
             grid-template-columns: 1fr 350px;
@@ -1050,17 +1057,12 @@
             height: 100%;
         }
 
-        /* --- HEADER FIJO EN ESCRITORIO: Se revierte el 'sticky' a 'relative' --- */
         #pantalla-principal > div:first-of-type {
-            position: relative;
             grid-column: 1 / 2; 
             grid-row: 1 / 2;   
             margin-bottom: 0;
-            padding: 0; /* Se resetea el padding */
-            margin: 0; /* Se resetea el margen */
         }
 
-        /* Contenedor de los botones de categoría */
         .button-container {
             grid-column: 1 / 2; 
             grid-row: 2 / 3;   
@@ -1074,7 +1076,6 @@
             padding: 18px 25px;
         }
 
-        /* Sección de Empaques en la segunda columna */
         .empaques-section {
             grid-column: 2 / 3;
             grid-row: 1 / 4;   
@@ -1088,7 +1089,6 @@
             flex-direction: column;
         }
 
-        /* Galería de Empaques en cuadrícula */
         .empaques-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -1103,7 +1103,6 @@
         }
         .empaques-grid::-webkit-scrollbar { display: none; }
 
-        /* Footer de redes sociales */
         .footer-social {
             grid-column: 1 / 2; 
             grid-row: 3 / 4;   
@@ -1127,7 +1126,6 @@
             font-size: 0.85em;
         }
 
-        /* Paneles laterales */
         .account-panel, .cart-panel {
             width: 380px; 
         }
