@@ -97,7 +97,6 @@
     }
 
     /* --- Estilos Generales --- */
-    /* --- CORRECCIÓN CENTRADO: Se usa 'grid' para centrar el contenedor sin afectar el scroll --- */
     body {
         margin: 0;
         font-family: var(--font-family);
@@ -131,7 +130,7 @@
         opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.8s ease, transform 0.8s ease, max-width 0.5s ease;
-        max-height: 90vh; /* Se usa max-height para controlar el tamaño y permitir el scroll */
+        max-height: 90vh;
         overflow-y: auto; 
         overflow-x: hidden; 
         box-sizing: border-box;
@@ -192,7 +191,6 @@
     }
 
     /* --- Estilos de Logo y Título --- */
-    /* --- REVERSIÓN: El header de la pantalla principal vuelve a ser normal --- */
     #pantalla-principal > div:first-of-type {
         position: relative;
         margin-bottom: 20px;
@@ -223,18 +221,15 @@
         cursor: pointer;
     }
     
-    /* --- NUEVO: Cabecera pegajosa SÓLO para pantallas de categorías --- */
+    /* --- CORRECCIÓN: Cabecera pegajosa y CENTRADA para pantallas de categorías --- */
     .screen:not(#pantalla-principal) .logo-small {
         position: sticky;
-        top: 0;
+        top: -25px; /* Se pega arriba, compensando el padding del contenedor */
         z-index: 50;
         background: var(--color-surface);
-        padding: 15px 0;
-        margin-top: -25px; /* Compensa el padding del contenedor para que se pegue al borde */
-        margin-left: -20px; /* Compensa el padding del contenedor */
-        margin-right: -20px; /* Compensa el padding del contenedor */
+        padding: 25px 0 10px 0; /* Espacio vertical para que no se vea apretado */
+        margin-top: -25px; /* Compensa el padding superior del contenedor */
     }
-
 
     /* --- Animaciones --- */
     @keyframes pulse {
