@@ -18,9 +18,11 @@
     <script src="https://js.stripe.com/v3/"></script>
     
    <style>
-    /* =... (Todo tu código base sin cambios hasta la sección de la cabecera) ... */
+    /* ================================================================== */
+    /* --- ESTILOS UNIFICADOS PARA TODOS LOS TEMAS --- */
+    /* ================================================================== */
     
-    /* Mantenemos tus estilos base intactos */
+    /* --- TEMA DEFAULT (CLARO) --- */
     :root {
         --color-background: #f8f9fa;
         --color-surface: #ffffff;
@@ -34,6 +36,7 @@
         --color-text-primary: #212529;
         --color-text-secondary: #6c757d;
         --color-border: #dee2e6;
+        
         --font-family: 'Poppins', sans-serif;
         --font-themed: 'Poppins', sans-serif;
         --border-radius: 8px;
@@ -41,6 +44,7 @@
         --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
+    /* --- TEMA DEFAULT (OSCURO) --- */
     body.dark-mode {
         --color-background: #121212;
         --color-surface: #1e1e1e;
@@ -56,6 +60,7 @@
         --color-border: #343a40;
     }
 
+    /* --- TEMA HALLOWEEN --- */
     body.theme-halloween {
         --color-background: #0d0221;
         --color-surface: #261c3e;
@@ -70,6 +75,7 @@
         --border-radius: 12px;
     }
 
+    /* --- TEMA NAVIDAD --- */
     body.theme-christmas {
         --color-background: #0a2f35;
         --color-surface: #1d576b;
@@ -84,10 +90,12 @@
         --border-radius: 12px;
     }
 
+    /* Transición suave para el cambio de tema */
     body, .container, .auth-modal-content, .model-card, .account-panel, .cart-panel, .auth-form input, .btn, .auth-button {
         transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
+    /* --- Estilos Generales --- */
     body {
         margin: 0;
         font-family: var(--font-family);
@@ -104,6 +112,7 @@
         overflow: hidden;
     }
 
+    /* --- Contenedor Principal --- */
     .container {
         background-color: var(--color-surface);
         padding: 25px 20px;
@@ -127,6 +136,7 @@
         scrollbar-color: var(--color-border) var(--color-surface);
     }
 
+    /* Estilo de scroll para navegadores Webkit (Chrome, Safari) */
     .container::-webkit-scrollbar { width: 8px; }
     .container::-webkit-scrollbar-track { background: var(--color-surface); }
     .container::-webkit-scrollbar-thumb { background-color: var(--color-border); border-radius: 4px; border: 2px solid var(--color-surface); }
@@ -165,6 +175,7 @@
         font-weight: 600;
     }
 
+    /* --- Estilos de Logo y Título --- */
     #pantalla-principal > div:first-of-type {
         position: relative;
         margin-bottom: 20px;
@@ -194,52 +205,15 @@
         margin: 0 auto 20px auto;
         cursor: pointer;
     }
-
-    /* === SOLUCIÓN DEFINITIVA PARA HEADER === */
     
-    /* 1. Botones DENTRO del contenedor en TODAS las pantallas */
-    .header-icons, .auth-button {
-        position: absolute; /* NO 'fixed'. Ahora se posicionan relativos al .container */
-        top: 25px; /* Ajusta la distancia desde el borde superior del .container */
-        z-index: 100;
-    }
-    .header-icons {
-        right: 20px; /* Distancia desde el borde derecho del .container */
-        display: flex;
-        gap: 15px;
-    }
-    .auth-button {
-        left: 20px; /* Distancia desde el borde izquierdo del .container */
-    }
-
-    /* 2. Header STICKY SÓLO en pantallas de categorías */
-    .screen:not(#pantalla-principal) .logo-small {
-        position: sticky;
-        top: 0; /* Se pega al borde superior del área de scroll */
-        z-index: 50; /* Por debajo de los botones para que no los tape */
-        background-color: var(--color-surface);
-        padding-top: 55px; /* Espacio para que los botones de arriba no se solapen */
-        padding-bottom: 15px;
-        /* Truco para que la barra ocupe todo el ancho y se vea bien */
-        margin-left: -20px;
-        margin-right: -20px;
-        margin-top: -25px;
-    }
-
-    /* 3. Se mantienen los estilos visuales de los botones */
-    .header-icon { font-size: 1.8em; color: var(--color-text-primary); cursor: pointer; transition: transform 0.2s ease; text-decoration: none; }
-    .header-icon:hover { transform: scale(1.1); }
-    .auth-button { background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 8px 16px; border-radius: 50px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s ease; box-shadow: var(--shadow-soft); }
-    .auth-button:hover { background-color: var(--color-background); border-color: var(--color-text-secondary); }
-
-    /* === FIN DE LA SOLUCIÓN === */
-    
-    /* El resto del código que me pasaste se mantiene intacto */
+    /* --- Animaciones (sin cambios) --- */
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     @keyframes blink { 50% { opacity: 0.2; } }
     @keyframes swing { 0% { transform: rotate(10deg); } 50% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
     @keyframes fall { 0% { transform: translateY(-10vh) translateX(0); } 100% { transform: translateY(110vh) translateX(15px); } }
     @keyframes flash { 0%, 100% { background: rgba(255,255,255,0.4); box-shadow: none; } 50% { background: var(--light-color); box-shadow: 0 0 10px var(--light-color), 0 0 20px var(--light-color); } }
+
+    /* --- Estilo de Botones (sin cambios) --- */
     .btn { padding: 12px 18px; border: none; border-radius: var(--border-radius); font-size: 0.9em; font-weight: 600; font-family: var(--font-family); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; width: 100%; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: var(--shadow-soft); }
     .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
     .btn:disabled { background-color: var(--color-border); color: var(--color-text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
@@ -255,6 +229,45 @@
     .btn-neutral:hover { background-color: var(--color-background); }
     .btn-danger { background-color: var(--color-danger); color: #ffffff; }
     .button-container { display: flex; flex-direction: column; gap: 15px; width: 100%; }
+    
+    /* --- Cabecera --- */
+    /* --- SOLUCIÓN DEFINITIVA: Botones usan STICKY para pegarse al contenedor --- */
+    .header-icons, .auth-button {
+        position: sticky; /* CAMBIO CLAVE: de 'fixed' a 'sticky' */
+        top: 20px;
+        z-index: 100;
+    }
+    .header-icons {
+        /* Posicionamiento a la derecha */
+        margin-left: auto; /* Empuja el elemento a la derecha */
+        margin-right: 5px; /* Pequeño ajuste para que no se pegue al borde del scrollbar */
+        width: fit-content; /* Se ajusta al contenido de los íconos */
+        display: flex;
+        gap: 15px;
+    }
+    .auth-button {
+        /* Posicionamiento a la izquierda */
+        margin-right: auto; /* Empuja el elemento a la izquierda */
+        width: fit-content; /* Se ajusta al contenido del botón */
+    }
+
+    /* --- SOLUCIÓN DEFINITIVA: Header STICKY para el logo en categorías --- */
+    .screen:not(#pantalla-principal) .logo-small {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: var(--color-surface);
+        padding: 15px 0;
+        margin-top: -25px; /* Compensa el padding superior del .container */
+    }
+
+    /* Se mantienen los estilos visuales de los elementos del header */
+    .header-icon { font-size: 1.8em; color: var(--color-text-primary); cursor: pointer; transition: transform 0.2s ease; text-decoration: none; }
+    .header-icon:hover { transform: scale(1.1); }
+    .auth-button { background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 8px 16px; border-radius: 50px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s ease; box-shadow: var(--shadow-soft); }
+    .auth-button:hover { background-color: var(--color-background); border-color: var(--color-text-secondary); }
+
+    /* Galería de Productos (sin cambios) */
     .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px; width: 100%; }
     .model-card { background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 15px; box-shadow: var(--shadow-soft); transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: center; }
     .model-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-medium); }
@@ -263,6 +276,8 @@
     .model-buttons .btn { width: calc(50% - 5px); padding: 10px; font-size: 0.75em; }
     .product-price { font-weight: 700; color: var(--color-primary); font-size: 1.2em; margin-bottom: 5px; }
     .model-card p:not(.product-price) { font-size: 0.9em; color: var(--color-text-secondary); }
+
+    /* Modales y Paneles (sin cambios) */
     .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
     .modal-content-img { max-width: 90%; max-height: 90%; display: block; margin: auto; border-radius: var(--border-radius); }
     .close-modal { position: absolute; top: 15px; right: 25px; color: var(--color-text-secondary); font-size: 35px; font-weight: bold; transition: 0.3s; z-index: 25; }
@@ -274,6 +289,8 @@
     .payment-modal-content .info-container { text-align: left; background-color: var(--color-background); padding: 20px; border-radius: var(--border-radius); margin-top: 20px; border: 1px solid var(--color-border); }
     .payment-modal-content .info-container p { margin: 8px 0; }
     .payment-modal-content .info-container strong { color: var(--color-primary); }
+
+    /* El resto del CSS que me pasaste permanece intacto */
     .auth-form { display: flex; flex-direction: column; gap: 15px; }
     .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea { padding: 14px; border-radius: var(--border-radius); border: 1px solid var(--color-border); font-size: 1em; font-family: var(--font-family); background-color: var(--color-background); color: var(--color-text-primary); transition: border-color 0.2s ease, box-shadow 0.2s ease; }
     .auth-form input::placeholder, .auth-form textarea::placeholder { color: var(--color-text-secondary); opacity: 0.7; }
@@ -392,7 +409,6 @@
     .light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
     .light.purple { --light-color: #d48aff; animation-delay: 1s; }
 
-
     /* ================================================================== */
     /* --- ESTILOS PARA ESCRITORIO --- */
     /* ================================================================== */
@@ -402,6 +418,17 @@
             max-width: 1200px;
             padding: 40px;
             max-height: 90vh; 
+        }
+
+        /* --- SOLUCIÓN DEFINITIVA ESCRITORIO: Posicionamiento de botones --- */
+        .header-icons, .auth-button {
+            top: 40px;
+        }
+        .header-icons {
+            right: 40px;
+        }
+        .auth-button {
+            left: 40px;
         }
 
         #pantalla-principal.screen.active {
