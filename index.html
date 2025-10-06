@@ -136,6 +136,11 @@
         scrollbar-width: thin;
         scrollbar-color: var(--color-border) var(--color-surface);
     }
+    /* Añadir padding superior extra en temas para las luces */
+    body.theme-christmas .container, body.theme-halloween .container {
+        padding-top: 50px;
+    }
+
 
     /* Estilo de scroll para navegadores Webkit (Chrome, Safari) */
     .container::-webkit-scrollbar { width: 8px; }
@@ -203,19 +208,36 @@
 
     .logo-small {
         display: block;
-        width: 115px;
-        margin: 0 auto 20px auto;
+        width: 110px; 
+        margin: 0;
         cursor: pointer;
     }
     
-    /* --- Animaciones (sin cambios) --- */
+    /* --- Animaciones --- */
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     @keyframes blink { 50% { opacity: 0.2; } }
     @keyframes swing { 0% { transform: rotate(10deg); } 50% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
     @keyframes fall { 0% { transform: translateY(-10vh) translateX(0); } 100% { transform: translateY(110vh) translateX(15px); } }
     @keyframes flash { 0%, 100% { background: rgba(255,255,255,0.4); box-shadow: none; } 50% { background: var(--light-color); box-shadow: 0 0 10px var(--light-color), 0 0 20px var(--light-color); } }
 
-    /* --- Estilo de Botones (sin cambios) --- */
+    /* --- Animación de entrada para elementos --- */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .screen.active .animate-on-load {
+        opacity: 0;
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    /* --- Estilo de Botones --- */
     .btn { padding: 12px 18px; border: none; border-radius: var(--border-radius); font-size: 0.9em; font-weight: 600; font-family: var(--font-family); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; width: 100%; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: var(--shadow-soft); }
     .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
     .btn:disabled { background-color: var(--color-border); color: var(--color-text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
@@ -232,12 +254,17 @@
     .btn-danger { background-color: var(--color-danger); color: #ffffff; }
     .button-container { display: flex; flex-direction: column; gap: 15px; width: 100%; }
     
-    /* --- SOLUCIÓN DEFINITIVA (PARTE 1): Posicionamiento de botones DENTRO del container --- */
-    .header-icons, .auth-button {
-        position: absolute; /* CAMBIO CLAVE: de 'fixed' a 'absolute' */
+    /* --- Posicionamiento de botones solo para pantalla principal --- */
+    .auth-button, .header-icons {
+        position: absolute; 
         top: 20px;
         z-index: 100;
     }
+    body.theme-christmas .auth-button, body.theme-christmas .header-icons,
+    body.theme-halloween .auth-button, body.theme-halloween .header-icons {
+        top: 45px; /* Baja los botones para no chocar con las luces */
+    }
+
     .header-icons {
         right: 25px;
         display: flex;
@@ -245,28 +272,64 @@
     }
     .auth-button {
         left: 25px;
-    }
-
-    /* --- SOLUCIÓN DEFINITIVA (PARTE 2): Header STICKY para las pantallas de categorías --- */
-    .screen:not(#pantalla-principal) > *:first-child {
-        position: sticky;
-        top: 0;
-        z-index: 50; /* Menor que los botones para que pasen por encima si es necesario */
         background-color: var(--color-surface);
-        /* Truco para que la barra pegajosa ocupe todo el ancho y se vea limpia */
-        margin-left: -20px;
-        margin-right: -20px;
-        margin-top: -25px;
-        padding: 25px 20px 15px 20px;
+        border: 1px solid var(--color-border);
+        color: var(--color-text-primary);
+        padding: 8px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-soft);
+        white-space: nowrap; /* Evita que el texto del botón se rompa en dos líneas */
     }
-
-    /* Estilos base de los botones y links se mantienen */
-    .header-icon { font-size: 1.8em; color: var(--color-text-primary); cursor: pointer; transition: transform 0.2s ease; text-decoration: none; }
-    .header-icon:hover { transform: scale(1.1); }
-    .auth-button { background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 8px 16px; border-radius: 50px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s ease; box-shadow: var(--shadow-soft); }
     .auth-button:hover { background-color: var(--color-background); border-color: var(--color-text-secondary); }
 
-    /* --- Galería de Productos (sin cambios) --- */
+
+    /* --- [MODIFICADO] Header para las pantallas de categorías (ya no es sticky) --- */
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        background-color: var(--color-surface);
+        margin: -25px -20px 0 -20px; /* Margen superior para pegar, horizontal para expandir */
+        padding: 10px 20px;
+        border-bottom: 1px solid var(--color-border);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    
+    /* Ajusta el margen superior inicial para los temas */
+    body.theme-christmas .category-header, body.theme-halloween .category-header {
+        margin-top: -50px;
+    }
+    
+    /* Centra el logo de forma absoluta dentro del header */
+    .category-header > a {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Reseteamos la posición de los botones cuando están dentro del nuevo header */
+    .category-header .auth-button, .category-header .header-icons {
+        position: static;
+        flex: 1;
+        top: auto; /* Resetea el 'top' heredado */
+        left: auto;
+        right: auto;
+    }
+    .category-header .auth-button {
+        max-width: 120px;
+    }
+    .category-header .header-icons {
+        justify-content: flex-end;
+    }
+    .header-icon { font-size: 1.8em; color: var(--color-text-primary); cursor: pointer; transition: transform 0.2s ease; text-decoration: none; }
+    .header-icon:hover { transform: scale(1.1); }
+
+    /* --- Galería de Productos --- */
     .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px; width: 100%; }
     .model-card { background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 15px; box-shadow: var(--shadow-soft); transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: center; }
     .model-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-medium); }
@@ -276,7 +339,13 @@
     .product-price { font-weight: 700; color: var(--color-primary); font-size: 1.2em; margin-bottom: 5px; }
     .model-card p:not(.product-price) { font-size: 0.9em; color: var(--color-text-secondary); }
 
-    /* --- Modales y Paneles (sin cambios) --- */
+    /* Aplicamos la animación a las tarjetas de producto cuando su pantalla se activa */
+    .screen.active .model-card {
+        opacity: 0;
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* --- Modales y Paneles --- */
     .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
     .modal-content-img { max-width: 90%; max-height: 90%; display: block; margin: auto; border-radius: var(--border-radius); }
     .close-modal { position: absolute; top: 15px; right: 25px; color: var(--color-text-secondary); font-size: 35px; font-weight: bold; transition: 0.3s; z-index: 25; }
@@ -368,7 +437,7 @@
     .account-buttons .social-btn span { display: none; }
     .account-buttons .social-btn svg { margin: 0; }
     
-    /* Temas específicos (sin cambios) */
+    /* Temas específicos */
     .theme-decoration { display: none; }
     body.theme-halloween h1.main-title { font-family: var(--font-themed); letter-spacing: 2px; color: var(--color-primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.5); line-height: 1.2; font-size: 1.8em; top: 45px; }
     body.theme-halloween .main-title .subtitle { font-size: 0.6em; letter-spacing: 1px; font-weight: normal; color: var(--color-text-secondary); display: block; margin-top: 5px; }
@@ -386,8 +455,19 @@
     body.theme-halloween .container::before, body.theme-halloween .container::after, body.theme-halloween .auth-modal-content::before, body.theme-halloween .auth-modal-content::after, body.theme-halloween .payment-modal-content::before, body.theme-halloween .payment-modal-content::after, body.theme-halloween .my-orders-modal-content::before, body.theme-halloween .my-orders-modal-content::after, body.theme-halloween .account-panel::before, body.theme-halloween .account-panel::after, body.theme-halloween .cart-panel::before, body.theme-halloween .cart-panel::after { content: ''; position: absolute; width: 150px; height: 150px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 A100,100 0 0,0 0,100 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L80,0 A80,80 0 0,0 0,80 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L60,0 A60,60 0 0,0 0,60 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L40,0 A40,40 0 0,0 0,40 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L20,0 A20,20 0 0,0 0,20 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='0' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='50' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; z-index: 0; opacity: 0.5; }
     body.theme-halloween .container::before, body.theme-halloween .auth-modal-content::before, body.theme-halloween .payment-modal-content::before, body.theme-halloween .my-orders-modal-content::before, body.theme-halloween .account-panel::before, body.theme-halloween .cart-panel::before { top: -10px; left: -10px; }
     body.theme-halloween .container::after, body.theme-halloween .auth-modal-content::after, body.theme-halloween .payment-modal-content::after, body.theme-halloween .my-orders-modal-content::after, body.theme-halloween .account-panel::after, body.theme-halloween .cart-panel::after { bottom: -10px; right: -10px; transform: rotate(180deg); }
+    
+    body.theme-christmas .lights { 
+        display: block; 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 40px; 
+        text-align: center; 
+        white-space: nowrap; 
+        z-index: 20; 
+    }
     body.theme-christmas #snow-container { display: block; }
-    body.theme-christmas .lights { display: block; }
     body.theme-christmas h1.main-title { font-family: var(--font-themed); letter-spacing: 2px; color: var(--color-primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.5); line-height: 1.2; font-size: 1.8em; top: 45px; }
     body.theme-christmas .main-title .subtitle { font-size: 0.6em; letter-spacing: 1px; font-weight: normal; color: var(--color-text-secondary); display: block; margin-top: 5px; }
     body.theme-christmas .auth-modal-content h3, body.theme-christmas .payment-modal-content h3, body.theme-christmas .my-orders-modal-content h3, body.theme-christmas .account-panel h3, body.theme-christmas .cart-panel h3, body.theme-christmas .section-title { font-family: var(--font-themed); font-size: 2em; letter-spacing: 1px; }
@@ -401,7 +481,6 @@
     body.theme-christmas .btn:disabled { color: var(--color-background); opacity: 0.8; }
     .snow { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; }
     .snowflake { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; opacity: 0.8; animation: fall linear infinite; }
-    .lights { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 40px; text-align: center; white-space: nowrap; z-index: 20; }
     .lights .light { position: relative; display: inline-block; width: 10px; height: 20px; background: #fff; margin: 0 10px; border-radius: 50%; animation: flash 1.2s infinite; }
     .lights .light::before { content: ''; position: absolute; top: -5px; left: 2px; width: 6px; height: 8px; background: #444; border-radius: 3px; }
     .light.red { --light-color: #ff5e5e; animation-delay: 0.2s; }
@@ -420,6 +499,9 @@
             max-width: 1200px;
             padding: 40px;
             max-height: 90vh; 
+        }
+        body.theme-christmas .container, body.theme-halloween .container {
+            padding-top: 60px;
         }
 
         #pantalla-principal.screen.active {
@@ -516,6 +598,7 @@
             <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
         </div>
 
+        <!-- Botones solo para la pantalla principal -->
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
              <a href="#" id="music-toggle-btn" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
@@ -526,15 +609,15 @@
 
         <main id="pantalla-principal" class="screen active">
             
-            <div>
+            <div class="animate-on-load" style="animation-delay: 0.1s;">
                 <h1 class="main-title">¡Bienvenido a KalCTas!</h1>
                 <img src="" alt="Logo de la tienda" class="logo" id="main-logo">
             </div>
 
-            <div class="button-container" id="main-buttons">
+            <div class="button-container animate-on-load" id="main-buttons" style="animation-delay: 0.2s;">
             </div>
 
-            <section class="empaques-section" id="empaques-section">
+            <section class="empaques-section animate-on-load" id="empaques-section" style="animation-delay: 0.3s;">
                 <h2 class="section-title">Nuestros Empaques</h2>
                 
                 <div class="empaques-grid" id="empaques-grid">
@@ -548,7 +631,7 @@
 
             </section>
             
-            <div class="footer-social">
+            <div class="footer-social animate-on-load" style="animation-delay: 0.4s;">
                 <a href="https://www.facebook.com/share/1PjKCe73T2/?mibextid=wwXIfr" target="_blank" class="social-btn facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
                     <span>¡Síguenos!</span>
@@ -559,10 +642,18 @@
                 </a>
             </div>
         </main>
-
+        
         <section id="pantalla-2-4" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
-            
+            <div class="category-header">
+                <button class="auth-button">Iniciar Sesión</button>
+                <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
+                <div class="header-icons">
+                    <a href="#" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+                    <div class="cart-icon-wrapper">
+                        <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
+                    </div>
+                </div>
+            </div>
             <div class="model-grid" id="grid-2-4"></div>
             <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
                 <span>Volver</span>
@@ -570,8 +661,16 @@
         </section>
 
         <section id="pantalla-3-4" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
-            
+             <div class="category-header">
+                <button class="auth-button">Iniciar Sesión</button>
+                <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
+                <div class="header-icons">
+                    <a href="#" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+                    <div class="cart-icon-wrapper">
+                        <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
+                    </div>
+                </div>
+            </div>
             <div class="model-grid" id="grid-3-4"></div>
             <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
                 <span>Volver</span>
@@ -579,8 +678,16 @@
         </section>
 
         <section id="pantalla-largas" class="screen">
-            <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
-            
+             <div class="category-header">
+                <button class="auth-button">Iniciar Sesión</button>
+                <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
+                <div class="header-icons">
+                    <a href="#" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+                    <div class="cart-icon-wrapper">
+                        <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
+                    </div>
+                </div>
+            </div>
             <div class="model-grid" id="grid-largas"></div>
             <button class="btn btn-neutral" style="margin-top: 20px;" onclick="mostrarPantalla('pantalla-principal')">
                 <span>Volver</span>
@@ -867,7 +974,6 @@
             const section = document.getElementById('empaques-section');
             if (!section) return;
 
-            // CORRECCIÓN: La sección es visible si hay empaques O si hay videos.
             if (areEmpaquesVisible || isVideoPlaylistVisible) {
                 section.style.display = 'block';
             } else {
@@ -911,7 +1017,6 @@
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.warn("La reproducción automática fue prevenida por el navegador. El usuario debe interactuar con la página para iniciar el video.", error);
-                    // Opcional: Mostrar un ícono de play sobre el video para que el usuario pueda iniciarlo manualmente.
                 });
             }
         }
@@ -919,7 +1024,6 @@
         if (videoElement) {
             videoElement.addEventListener('ended', playNextVideoInPlaylist, false);
         }
-        // --- FIN DE LÓGICA DE PLAYLIST ---
 
         function fade(player, options) {
             let startVolume = options.from;
@@ -1139,7 +1243,7 @@
             const mainTitle = document.querySelector('.main-title');
             const mainLogo = document.getElementById('main-logo');
             const smallLogos = document.querySelectorAll('.logo-small');
-            const cartIcon = document.querySelector('.cart-icon');
+            const cartIcons = document.querySelectorAll('.cart-icon'); // [CORRECCIÓN]
             const themeColorMeta = document.querySelector('meta[name="theme-color"]');
             
             let logoSrc = ASSETS_BASE_URL + 'LOGO.png';
@@ -1167,7 +1271,7 @@
             mainTitle.innerHTML = titleText;
             mainLogo.src = logoSrc;
             smallLogos.forEach(logo => logo.src = logoSrc);
-            cartIcon.textContent = cartIconText;
+            cartIcons.forEach(icon => icon.textContent = cartIconText); // [CORRECCIÓN]
             themeColorMeta.setAttribute('content', themeColor);
             
             const snowContainer = document.getElementById('snow-container');
@@ -1278,11 +1382,22 @@
         }
         
         function mostrarPantalla(idDePantalla) {
+            // Oculta todos los botones de la pantalla principal
+            document.getElementById('auth-button').style.display = 'none';
+            document.querySelector('.header-icons').style.display = 'none';
+            
             pantallas.forEach(pantalla => {
                 pantalla.classList.remove('active');
             });
+
             const pantallaActiva = document.getElementById(idDePantalla);
             if (pantallaActiva) {
+                // Si volvemos a la pantalla principal, mostramos sus botones
+                if (idDePantalla === 'pantalla-principal') {
+                    document.getElementById('auth-button').style.display = 'block';
+                    document.querySelector('.header-icons').style.display = 'flex';
+                }
+
                 setTimeout(() => {
                     pantallaActiva.classList.add('active');
                     if (idDePantalla.startsWith('pantalla-')) {
@@ -1294,16 +1409,21 @@
         
         auth.onAuthStateChanged(user => {
             currentUser = user;
-            const authButton = document.getElementById('auth-button');
-            if (user) {
-                authButton.textContent = 'Mi Cuenta';
-                authButton.onclick = () => mostrarPanelMiCuenta();
-                cargarDatosUsuario();
-            } else {
-                authButton.textContent = 'Iniciar Sesión';
-                authButton.onclick = () => mostrarAuthModal();
-                if (unsubscribeMisPedidos) unsubscribeMisPedidos(); 
-            }
+            const authButtons = document.querySelectorAll('.auth-button'); // Selecciona todos
+            
+            authButtons.forEach(authButton => {
+                if (user) {
+                    authButton.textContent = 'Mi Cuenta';
+                    authButton.onclick = () => mostrarPanelMiCuenta();
+                } else {
+                    authButton.textContent = 'Iniciar Sesión';
+                    authButton.onclick = () => mostrarAuthModal();
+                }
+            });
+
+            if(user) cargarDatosUsuario();
+            if (!user && unsubscribeMisPedidos) unsubscribeMisPedidos();
+            
             const activeScreen = document.querySelector('.screen.active');
             if (activeScreen && activeScreen.id.startsWith('pantalla-')) {
                 generarGaleria(activeScreen.id);
@@ -2119,11 +2239,13 @@
                     return;
                 }
                 
-                snapshot.forEach(doc => {
+                snapshot.forEach((doc, index) => {
                     const producto = doc.data();
                     const card = document.createElement('div');
                     card.className = 'model-card';
                     
+                    card.style.animationDelay = `${index * 75}ms`;
+
                     let cartEmoji = '🛍️';
                     if (document.body.classList.contains('theme-halloween')) cartEmoji = '🎃';
                     if (document.body.classList.contains('theme-christmas')) cartEmoji = '🎁';
