@@ -137,7 +137,7 @@
         scrollbar-color: var(--color-border) var(--color-surface);
     }
     /* Añadir padding superior extra en temas para las luces */
-    body.theme-christmas .container, body.theme-halloween .container {
+    body.theme-christmas .container {
         padding-top: 50px;
     }
 
@@ -151,7 +151,6 @@
         opacity: 1;
     }
 
-    /* Se elimina el transform conflictivo de .screen */
     .screen {
         display: none;
         width: 100%;
@@ -260,8 +259,7 @@
         top: 20px;
         z-index: 100;
     }
-    body.theme-christmas .auth-button, body.theme-christmas .header-icons,
-    body.theme-halloween .auth-button, body.theme-halloween .header-icons {
+    body.theme-christmas .auth-button, body.theme-christmas .header-icons {
         top: 45px; /* Baja los botones para no chocar con las luces */
     }
 
@@ -287,7 +285,7 @@
     .auth-button:hover { background-color: var(--color-background); border-color: var(--color-text-secondary); }
 
 
-    /* --- [MODIFICADO] Header para las pantallas de categorías (ya no es sticky) --- */
+    /* --- Header para las pantallas de categorías (no es sticky) --- */
     .category-header {
         display: flex;
         justify-content: space-between;
@@ -301,7 +299,7 @@
     }
     
     /* Ajusta el margen superior inicial para los temas */
-    body.theme-christmas .category-header, body.theme-halloween .category-header {
+    body.theme-christmas .category-header {
         margin-top: -50px;
     }
     
@@ -358,7 +356,6 @@
     .payment-modal-content .info-container p { margin: 8px 0; }
     .payment-modal-content .info-container strong { color: var(--color-primary); }
 
-    /* El resto del CSS que me pasaste permanece intacto */
     .auth-form { display: flex; flex-direction: column; gap: 15px; }
     .auth-form input, .cash-form input, .cash-form select, .cash-form textarea, #delivery-form input, #delivery-form select, #delivery-form textarea { padding: 14px; border-radius: var(--border-radius); border: 1px solid var(--color-border); font-size: 1em; font-family: var(--font-family); background-color: var(--color-background); color: var(--color-text-primary); transition: border-color 0.2s ease, box-shadow 0.2s ease; }
     .auth-form input::placeholder, .auth-form textarea::placeholder { color: var(--color-text-secondary); opacity: 0.7; }
@@ -437,7 +434,7 @@
     .account-buttons .social-btn span { display: none; }
     .account-buttons .social-btn svg { margin: 0; }
     
-    /* Temas específicos */
+    /* --- Temas específicos --- */
     .theme-decoration { display: none; }
     body.theme-halloween h1.main-title { font-family: var(--font-themed); letter-spacing: 2px; color: var(--color-primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.5); line-height: 1.2; font-size: 1.8em; top: 45px; }
     body.theme-halloween .main-title .subtitle { font-size: 0.6em; letter-spacing: 1px; font-weight: normal; color: var(--color-text-secondary); display: block; margin-top: 5px; }
@@ -456,18 +453,20 @@
     body.theme-halloween .container::before, body.theme-halloween .auth-modal-content::before, body.theme-halloween .payment-modal-content::before, body.theme-halloween .my-orders-modal-content::before, body.theme-halloween .account-panel::before, body.theme-halloween .cart-panel::before { top: -10px; left: -10px; }
     body.theme-halloween .container::after, body.theme-halloween .auth-modal-content::after, body.theme-halloween .payment-modal-content::after, body.theme-halloween .my-orders-modal-content::after, body.theme-halloween .account-panel::after, body.theme-halloween .cart-panel::after { bottom: -10px; right: -10px; transform: rotate(180deg); }
     
+    body.theme-christmas #snow-container { display: block; }
+    /* Activar luces solo para Navidad y hacerlas full-width */
     body.theme-christmas .lights { 
-        display: block; 
+        display: flex; 
+        justify-content: space-around;
         position: absolute; 
         top: 0; 
         left: 0; 
         width: 100%; 
         height: 40px; 
-        text-align: center; 
         white-space: nowrap; 
         z-index: 20; 
+        overflow: hidden;
     }
-    body.theme-christmas #snow-container { display: block; }
     body.theme-christmas h1.main-title { font-family: var(--font-themed); letter-spacing: 2px; color: var(--color-primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.5); line-height: 1.2; font-size: 1.8em; top: 45px; }
     body.theme-christmas .main-title .subtitle { font-size: 0.6em; letter-spacing: 1px; font-weight: normal; color: var(--color-text-secondary); display: block; margin-top: 5px; }
     body.theme-christmas .auth-modal-content h3, body.theme-christmas .payment-modal-content h3, body.theme-christmas .my-orders-modal-content h3, body.theme-christmas .account-panel h3, body.theme-christmas .cart-panel h3, body.theme-christmas .section-title { font-family: var(--font-themed); font-size: 2em; letter-spacing: 1px; }
@@ -481,13 +480,47 @@
     body.theme-christmas .btn:disabled { color: var(--color-background); opacity: 0.8; }
     .snow { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; }
     .snowflake { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; opacity: 0.8; animation: fall linear infinite; }
-    .lights .light { position: relative; display: inline-block; width: 10px; height: 20px; background: #fff; margin: 0 10px; border-radius: 50%; animation: flash 1.2s infinite; }
+    .lights { display: none; } /* Ocultar por defecto */
+    .lights .light { position: relative; display: inline-block; width: 10px; height: 20px; background: #fff; margin: 0 2px; border-radius: 50%; animation: flash 1.2s infinite; }
     .lights .light::before { content: ''; position: absolute; top: -5px; left: 2px; width: 6px; height: 8px; background: #444; border-radius: 3px; }
     .light.red { --light-color: #ff5e5e; animation-delay: 0.2s; }
     .light.yellow { --light-color: #ffff8a; animation-delay: 0.4s; }
     .light.green { --light-color: #8aff8a; animation-delay: 0.6s; }
     .light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
     .light.purple { --light-color: #d48aff; animation-delay: 1s; }
+    
+    /* ================================================================== */
+    /* --- ESTILOS PARA MÓVIL (AJUSTES FINOS) --- */
+    /* ================================================================== */
+    @media (max-width: 767px) {
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden; /* Evita scroll en el body */
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            padding-top: 25px; /* Restablecer padding para móvil */
+        }
+        body.theme-christmas .container {
+             padding-top: 50px; /* Mantener padding para luces */
+        }
+        .category-header .auth-button {
+            padding: 5px 10px;
+            font-size: 0.7em;
+            max-width: 95px;
+        }
+        .category-header .logo-small {
+            width: 85px;
+        }
+    }
 
 
     /* ================================================================== */
@@ -500,7 +533,7 @@
             padding: 40px;
             max-height: 90vh; 
         }
-        body.theme-christmas .container, body.theme-halloween .container {
+        body.theme-christmas .container {
             padding-top: 60px;
         }
 
@@ -594,8 +627,13 @@
     <div class="theme-decoration snow" id="snow-container"></div>
 
     <div class="container" id="main-container">
+        <!-- Añadidos más foquitos para cubrir el ancho -->
         <div class="theme-decoration lights">
-            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div><div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
         </div>
 
         <!-- Botones solo para la pantalla principal -->
@@ -698,6 +736,8 @@
     <div id="account-panel" class="account-panel">
         <div class="theme-decoration lights">
             <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
         </div>
         <span class="close-modal" onclick="cerrarPanelMiCuenta()">&times;</span>
         <h3>Mi Cuenta</h3>
@@ -721,6 +761,8 @@
 
     <div id="cart-panel" class="cart-panel">
         <div class="theme-decoration lights">
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
+            <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
             <div class="light red"></div><div class="light yellow"></div><div class="light green"></div><div class="light blue"></div><div class="light purple"></div>
         </div>
         <span class="close-modal" onclick="cerrarPanelCarrito()">&times;</span>
@@ -1243,7 +1285,7 @@
             const mainTitle = document.querySelector('.main-title');
             const mainLogo = document.getElementById('main-logo');
             const smallLogos = document.querySelectorAll('.logo-small');
-            const cartIcons = document.querySelectorAll('.cart-icon'); // [CORRECCIÓN]
+            const cartIcons = document.querySelectorAll('.cart-icon'); 
             const themeColorMeta = document.querySelector('meta[name="theme-color"]');
             
             let logoSrc = ASSETS_BASE_URL + 'LOGO.png';
@@ -1271,7 +1313,7 @@
             mainTitle.innerHTML = titleText;
             mainLogo.src = logoSrc;
             smallLogos.forEach(logo => logo.src = logoSrc);
-            cartIcons.forEach(icon => icon.textContent = cartIconText); // [CORRECCIÓN]
+            cartIcons.forEach(icon => icon.textContent = cartIconText);
             themeColorMeta.setAttribute('content', themeColor);
             
             const snowContainer = document.getElementById('snow-container');
@@ -1336,6 +1378,8 @@
                 mainContainer.classList.add('show');
             }, err => {
                 console.error("Error al obtener configuración:", err);
+                // [CORRECCIÓN] Mostrar un mensaje de error claro si la base de datos no está disponible.
+                showMessage('Error de Conexión: La base de datos no está disponible. Contacta al administrador.');
                 applyTheme('default');
                 updateShippingCostUI();
                 mainContainer.classList.add('show');
