@@ -447,7 +447,6 @@
     body.theme-halloween .model-card:hover { box-shadow: 0 0 20px var(--color-accent); }
     .cart-icon-wrapper { position: relative; }
     .cart-icon-wrapper::after { content: ''; display: none; }
-    body.theme-halloween .cart-icon-wrapper::after { display: block; content: '🕷️'; position: absolute; font-size: 35px; top: 35px; left: 15%; transform: translateX(-50%); transform-origin: top center; animation: swing 4s infinite ease-in-out; }
     body.theme-halloween .container, body.theme-halloween .auth-modal-content, body.theme-halloween .payment-modal-content, body.theme-halloween .my-orders-modal-content, body.theme-halloween .account-panel, body.theme-halloween .cart-panel { border-width: 2px; }
     body.theme-halloween .container::before, body.theme-halloween .container::after, body.theme-halloween .auth-modal-content::before, body.theme-halloween .auth-modal-content::after, body.theme-halloween .payment-modal-content::before, body.theme-halloween .payment-modal-content::after, body.theme-halloween .my-orders-modal-content::before, body.theme-halloween .my-orders-modal-content::after, body.theme-halloween .account-panel::before, body.theme-halloween .account-panel::after, body.theme-halloween .cart-panel::before, body.theme-halloween .cart-panel::after { content: ''; position: absolute; width: 150px; height: 150px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 A100,100 0 0,0 0,100 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L80,0 A80,80 0 0,0 0,80 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L60,0 A60,60 0 0,0 0,60 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L40,0 A40,40 0 0,0 0,40 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M0,0 L20,0 A20,20 0 0,0 0,20 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='0' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='100' y2='50' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; z-index: 0; opacity: 0.5; }
     body.theme-halloween .container::before, body.theme-halloween .auth-modal-content::before, body.theme-halloween .payment-modal-content::before, body.theme-halloween .my-orders-modal-content::before, body.theme-halloween .account-panel::before, body.theme-halloween .cart-panel::before { top: -10px; left: -10px; }
@@ -639,7 +638,7 @@
         <!-- Botones solo para la pantalla principal -->
         <button id="auth-button" class="auth-button">Iniciar Sesión</button>
         <div class="header-icons">
-             <a href="#" id="music-toggle-btn" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+             <a href="#" class="header-icon music-toggle-btn" onclick="toggleThemeMusic()">🎶</a>
              <div class="cart-icon-wrapper">
                  <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
              </div>
@@ -686,7 +685,7 @@
                 <button class="auth-button">Iniciar Sesión</button>
                 <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
                 <div class="header-icons">
-                    <a href="#" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+                    <a href="#" class="header-icon music-toggle-btn" onclick="toggleThemeMusic()">🎶</a>
                     <div class="cart-icon-wrapper">
                         <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
                     </div>
@@ -703,7 +702,7 @@
                 <button class="auth-button">Iniciar Sesión</button>
                 <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
                 <div class="header-icons">
-                    <a href="#" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+                    <a href="#" class="header-icon music-toggle-btn" onclick="toggleThemeMusic()">🎶</a>
                     <div class="cart-icon-wrapper">
                         <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
                     </div>
@@ -720,7 +719,7 @@
                 <button class="auth-button">Iniciar Sesión</button>
                 <a href="#" onclick="mostrarPantalla('pantalla-principal')"><img src="" alt="Logo de la tienda" class="logo-small"></a>
                 <div class="header-icons">
-                    <a href="#" class="header-icon" onclick="toggleThemeMusic()">🎶</a>
+                    <a href="#" class="header-icon music-toggle-btn" onclick="toggleThemeMusic()">🎶</a>
                     <div class="cart-icon-wrapper">
                         <a href="#" class="header-icon cart-icon" onclick="mostrarPanelCarrito()">🛍️</a>
                     </div>
@@ -1149,7 +1148,7 @@
             }
 
             isMusicPlaying = true;
-            document.getElementById('music-toggle-btn').textContent = '🔇';
+            document.querySelectorAll('.music-toggle-btn').forEach(btn => btn.textContent = '🔇');
             
             activePlayer = audio1;
             currentTrackIndex = 0;
@@ -1167,7 +1166,7 @@
             if (audio1 && !audio1.paused) fade(audio1, { from: audio1.volume, to: 0, duration: 1000, onComplete: () => audio1.pause() });
             if (audio2 && !audio2.paused) fade(audio2, { from: audio2.volume, to: 0, duration: 1000, onComplete: () => audio2.pause() });
 
-            document.getElementById('music-toggle-btn').textContent = '🎶';
+            document.querySelectorAll('.music-toggle-btn').forEach(btn => btn.textContent = '🎶');
             isTransitioning = false;
         }
 
@@ -1271,14 +1270,14 @@
             const body = document.body;
             body.classList.remove('theme-halloween', 'theme-christmas');
             
-            const musicButton = document.getElementById('music-toggle-btn');
+            const musicButtons = document.querySelectorAll('.music-toggle-btn');
             const toggleThemeButton = document.getElementById('toggle-theme-btn');
 
             if (themeName === 'halloween' || themeName === 'christmas') {
-                musicButton.style.display = 'block';
+                musicButtons.forEach(btn => btn.style.display = 'block');
                 toggleThemeButton.style.display = 'none';
             } else {
-                musicButton.style.display = 'none';
+                musicButtons.forEach(btn => btn.style.display = 'none');
                 toggleThemeButton.style.display = 'block';
             }
 
