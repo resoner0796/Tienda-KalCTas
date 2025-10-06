@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>KalCTas Tienda</title>
 
     <link rel="manifest" href="manifest.webmanifest">
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Creepster&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#FFFFFF"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="KalCTas">
     <link rel="apple-touch-icon" href="icon-192x192.png">
     
@@ -135,10 +135,12 @@
         box-sizing: border-box;
         scrollbar-width: thin;
         scrollbar-color: var(--color-border) var(--color-surface);
+        /* Padding para la barra de estado en iOS PWA */
+        padding-top: calc(25px + env(safe-area-inset-top));
     }
     /* Añadir padding superior extra en temas para las luces */
     body.theme-christmas .container {
-        padding-top: 50px;
+        padding-top: calc(50px + env(safe-area-inset-top));
     }
 
 
@@ -256,11 +258,11 @@
     /* --- Posicionamiento de botones solo para pantalla principal --- */
     .auth-button, .header-icons {
         position: absolute; 
-        top: 20px;
+        top: calc(20px + env(safe-area-inset-top));
         z-index: 100;
     }
     body.theme-christmas .auth-button, body.theme-christmas .header-icons {
-        top: 45px; /* Baja los botones para no chocar con las luces */
+        top: calc(45px + env(safe-area-inset-top));
     }
 
     .header-icons {
@@ -292,15 +294,17 @@
         align-items: center;
         width: 100%;
         background-color: var(--color-surface);
-        margin: -25px -20px 0 -20px; /* Margen superior para pegar, horizontal para expandir */
+        margin: calc(-25px - env(safe-area-inset-top)) -20px 0 -20px;
         padding: 10px 20px;
+        padding-top: calc(10px + env(safe-area-inset-top));
         border-bottom: 1px solid var(--color-border);
         box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
     
     /* Ajusta el margen superior inicial para los temas */
     body.theme-christmas .category-header {
-        margin-top: -50px;
+        margin-top: calc(-50px - env(safe-area-inset-top));
+        padding-top: calc(10px + env(safe-area-inset-top));
     }
     
     /* Centra el logo de forma absoluta dentro del header */
@@ -458,7 +462,7 @@
         display: flex; 
         justify-content: space-around;
         position: absolute; 
-        top: 0; 
+        top: env(safe-area-inset-top); 
         left: 0; 
         width: 100%; 
         height: 40px; 
@@ -506,10 +510,6 @@
             border-radius: 0;
             border: none;
             box-shadow: none;
-            padding-top: 25px; /* Restablecer padding para móvil */
-        }
-        body.theme-christmas .container {
-             padding-top: 50px; /* Mantener padding para luces */
         }
         .category-header .auth-button {
             padding: 5px 10px;
