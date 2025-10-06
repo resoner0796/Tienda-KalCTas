@@ -24,6 +24,7 @@
     
     /* --- TEMA DEFAULT (CLARO) --- */
     :root {
+        /* Tema Claro (Default) */
         --color-background: #f8f9fa;
         --color-surface: #ffffff;
         --color-primary: #4A55A2;
@@ -145,6 +146,7 @@
         opacity: 1;
     }
 
+    /* Se elimina el transform conflictivo de .screen */
     .screen {
         display: none;
         width: 100%;
@@ -230,44 +232,41 @@
     .btn-danger { background-color: var(--color-danger); color: #ffffff; }
     .button-container { display: flex; flex-direction: column; gap: 15px; width: 100%; }
     
-    /* --- Cabecera --- */
-    /* --- SOLUCIÓN DEFINITIVA: Botones usan STICKY para pegarse al contenedor --- */
+    /* --- SOLUCIÓN DEFINITIVA (PARTE 1): Posicionamiento de botones DENTRO del container --- */
     .header-icons, .auth-button {
-        position: sticky; /* CAMBIO CLAVE: de 'fixed' a 'sticky' */
+        position: absolute; /* CAMBIO CLAVE: de 'fixed' a 'absolute' */
         top: 20px;
         z-index: 100;
     }
     .header-icons {
-        /* Posicionamiento a la derecha */
-        margin-left: auto; /* Empuja el elemento a la derecha */
-        margin-right: 5px; /* Pequeño ajuste para que no se pegue al borde del scrollbar */
-        width: fit-content; /* Se ajusta al contenido de los íconos */
+        right: 25px;
         display: flex;
         gap: 15px;
     }
     .auth-button {
-        /* Posicionamiento a la izquierda */
-        margin-right: auto; /* Empuja el elemento a la izquierda */
-        width: fit-content; /* Se ajusta al contenido del botón */
+        left: 25px;
     }
 
-    /* --- SOLUCIÓN DEFINITIVA: Header STICKY para el logo en categorías --- */
-    .screen:not(#pantalla-principal) .logo-small {
+    /* --- SOLUCIÓN DEFINITIVA (PARTE 2): Header STICKY para las pantallas de categorías --- */
+    .screen:not(#pantalla-principal) > *:first-child {
         position: sticky;
         top: 0;
-        z-index: 50;
+        z-index: 50; /* Menor que los botones para que pasen por encima si es necesario */
         background-color: var(--color-surface);
-        padding: 15px 0;
-        margin-top: -25px; /* Compensa el padding superior del .container */
+        /* Truco para que la barra pegajosa ocupe todo el ancho y se vea limpia */
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-top: -25px;
+        padding: 25px 20px 15px 20px;
     }
 
-    /* Se mantienen los estilos visuales de los elementos del header */
+    /* Estilos base de los botones y links se mantienen */
     .header-icon { font-size: 1.8em; color: var(--color-text-primary); cursor: pointer; transition: transform 0.2s ease; text-decoration: none; }
     .header-icon:hover { transform: scale(1.1); }
     .auth-button { background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 8px 16px; border-radius: 50px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s ease; box-shadow: var(--shadow-soft); }
     .auth-button:hover { background-color: var(--color-background); border-color: var(--color-text-secondary); }
 
-    /* Galería de Productos (sin cambios) */
+    /* --- Galería de Productos (sin cambios) --- */
     .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px; width: 100%; }
     .model-card { background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 15px; box-shadow: var(--shadow-soft); transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: center; }
     .model-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-medium); }
@@ -277,7 +276,7 @@
     .product-price { font-weight: 700; color: var(--color-primary); font-size: 1.2em; margin-bottom: 5px; }
     .model-card p:not(.product-price) { font-size: 0.9em; color: var(--color-text-secondary); }
 
-    /* Modales y Paneles (sin cambios) */
+    /* --- Modales y Paneles (sin cambios) --- */
     .image-modal, .auth-modal, .alert-box, .edit-profile-modal, .payment-options-modal, .transfer-info-modal, .cash-payment-modal, .confirm-order-modal, .my-orders-modal, #card-payment-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
     .modal-content-img { max-width: 90%; max-height: 90%; display: block; margin: auto; border-radius: var(--border-radius); }
     .close-modal { position: absolute; top: 15px; right: 25px; color: var(--color-text-secondary); font-size: 35px; font-weight: bold; transition: 0.3s; z-index: 25; }
@@ -368,6 +367,8 @@
     .account-buttons .social-btn { width: auto; padding: 10px; border-radius: 50%; }
     .account-buttons .social-btn span { display: none; }
     .account-buttons .social-btn svg { margin: 0; }
+    
+    /* Temas específicos (sin cambios) */
     .theme-decoration { display: none; }
     body.theme-halloween h1.main-title { font-family: var(--font-themed); letter-spacing: 2px; color: var(--color-primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.5); line-height: 1.2; font-size: 1.8em; top: 45px; }
     body.theme-halloween .main-title .subtitle { font-size: 0.6em; letter-spacing: 1px; font-weight: normal; color: var(--color-text-secondary); display: block; margin-top: 5px; }
@@ -409,6 +410,7 @@
     .light.blue { --light-color: #8ad6ff; animation-delay: 0.8s; }
     .light.purple { --light-color: #d48aff; animation-delay: 1s; }
 
+
     /* ================================================================== */
     /* --- ESTILOS PARA ESCRITORIO --- */
     /* ================================================================== */
@@ -418,17 +420,6 @@
             max-width: 1200px;
             padding: 40px;
             max-height: 90vh; 
-        }
-
-        /* --- SOLUCIÓN DEFINITIVA ESCRITORIO: Posicionamiento de botones --- */
-        .header-icons, .auth-button {
-            top: 40px;
-        }
-        .header-icons {
-            right: 40px;
-        }
-        .auth-button {
-            left: 40px;
         }
 
         #pantalla-principal.screen.active {
